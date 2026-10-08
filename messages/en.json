@@ -1,0 +1,618 @@
+{
+  "meta": {
+    "title": "Sakina · Anonymous peer support",
+    "short": "Sakina",
+    "description": "Read real stories, find your community and share when you are ready. Anonymous peer support, not medical care."
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "skip": "Skip to content",
+    "optional": "(optional)"
+  },
+  "notFound": {
+    "title": "This page isn't here yet",
+    "body": "It may be coming soon, or the link is wrong. Help is still one tap away.",
+    "home": "Back to start"
+  },
+  "nav": {
+    "logoLabel": "Sakina, go to start",
+    "main": "Main",
+    "home": "Home",
+    "communities": "Communities",
+    "design": "Design system",
+    "preferences": "Language and theme",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "theme": "Theme",
+    "signIn": "Sign in",
+    "join": "Join anonymously",
+    "profile": "Profile",
+    "signOut": "Sign out"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "locale": {
+    "label": "Language"
+  },
+  "crisis": {
+    "button": "Get help now",
+    "buttonShort": "Help",
+    "title": "If you are in danger right now",
+    "body": "Please contact emergency services or someone you trust. You don't need an account for this.",
+    "whereAreYou": "Where are you?",
+    "placeholder": "[To be added after verification with local partners]",
+    "lines": {
+      "emergency": "Emergency services",
+      "listening": "Listening line",
+      "hospital": "Nearest hospital emergency"
+    },
+    "groundTitle": "While you wait",
+    "ground1": "Put both feet on the floor. Notice it holding you.",
+    "ground2": "Breathe in for 4, out for 6. Do it three times.",
+    "ground3": "Name five things you can see around you.",
+    "notEmergency": "Sakina is not an emergency service. Therapists here cannot send help to your location.",
+    "countries": {
+      "DZ": "Algeria",
+      "FR": "France",
+      "MA": "Morocco",
+      "TN": "Tunisia",
+      "OTHER": "Another country"
+    }
+  },
+  "footer": {
+    "note": "Sakina is anonymous peer support. It is not medical care, therapy, diagnosis or an emergency service. If you are in danger, use Get help now."
+  },
+  "story": {
+    "types": {
+      "story": "Story",
+      "checkin": "Check-in",
+      "win": "Small win"
+    },
+    "veilNote": "Content note: {topics}",
+    "topics": {
+      "selfharm": "self-harm",
+      "loss": "loss and grief",
+      "violence": "violence",
+      "abuse": "abuse",
+      "food": "food and body",
+      "substances": "substance use"
+    },
+    "reactions": "{count, plural, =0 {No reactions yet} one {# reaction} other {# reactions}}",
+    "membersOnly": "Members only",
+    "read": "Read story",
+    "readStoryNamed": "Read story: {title}",
+    "veil": {
+      "label": "Content note",
+      "title": "This story talks about {topics}",
+      "body": "Read it when you feel ready. You can stop at any time.",
+      "show": "Show the story",
+      "notNow": "Not now"
+    },
+    "react": {
+      "prompt": "How does this land for you?",
+      "relate": "I relate",
+      "strength": "Sending strength",
+      "helped": "This helped",
+      "thanks": "Thank you",
+      "note": "Reactions are private to the author. There are no downvotes on Sakina."
+    },
+    "actions": {
+      "save": "Save",
+      "saved": "Saved",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "copyFailed": "Couldn't copy the link.",
+      "report": "Report"
+    }
+  },
+  "community": {
+    "sensitivity": {
+      "standard": "Standard",
+      "sensitive": "Sensitive",
+      "high": "High sensitivity"
+    },
+    "meta": "{count, plural, =0 {000 members · no stories yet} one {000 members · # story} other {000 members · # stories}}",
+    "open": "Open",
+    "openNamed": "Open {name}"
+  },
+  "home": {
+    "badge": "Anonymous peer support · Algeria",
+    "titleA": "Find calm.",
+    "titleB": "Find your people.",
+    "sub": "Choose what you are going through, read real stories from people who understand, and share when you are ready. No real name, no phone number.",
+    "cta": "Find your community",
+    "readFirst": "Read stories first",
+    "fine": "Anonymous · 18+ · Not medical care",
+    "going": "What are you going through?",
+    "storiesTitle": "Stories you can read now",
+    "communitiesTitle": "Communities",
+    "safeTitle": "Safe by design",
+    "safe1": "Peer support, not medical care",
+    "safe1b": "Sakina connects people with shared experiences. Every post passes a safety check, and risky messages go to a therapist first.",
+    "safe2": "Therapists in the room",
+    "safe2b": "Verified psychologists and psychiatrists guide some rooms and read flagged posts. They listen and guide; they never diagnose or prescribe here.",
+    "therapistExample": "Therapist · Psychologist",
+    "safe3": "Help is one tap away",
+    "safe3b": "If you are in danger, you don't need an account. Help options are on every page."
+  },
+  "communities": {
+    "title": "Communities",
+    "sub": "One place for each experience. Read freely; join to take part."
+  },
+  "password": {
+    "hint": "At least 8 characters. Longer phrases with a number or symbol are stronger.",
+    "show": "Show",
+    "hide": "Hide",
+    "empty": " ",
+    "weak": "Strength: weak",
+    "okay": "Strength: okay",
+    "strong": "Strength: strong"
+  },
+  "design": {
+    "title": "Design system",
+    "tag": "Design system · v1",
+    "titleA": "Calm interfaces for",
+    "titleB": "hard moments.",
+    "sub": "Every token and component Sakina is built from, live. Switch language and theme to check each one in Arabic, French and English, light and dark.",
+    "sections": {
+      "color": "Colour",
+      "type": "Typography",
+      "buttons": "Buttons and icons",
+      "forms": "Forms",
+      "selection": "Chips, segments and tabs",
+      "display": "Badges, avatars, cards and notices",
+      "states": "Empty, error and loading",
+      "overlays": "Dialogs, toasts and crisis help",
+      "product": "Product components",
+      "general": "Menus, tooltips, search, steps, tables and tiles",
+      "account": "Account widgets",
+      "reading": "Reading widgets",
+      "composer": "Composer widgets",
+      "chat": "Chat widgets",
+      "panels": "Therapist and admin widgets"
+    },
+    "brand": {
+      "dawn": "Dawn Blue",
+      "calm": "Calm Green",
+      "lavender": "Soft Lavender",
+      "sand": "Warm Sand",
+      "ink": "Night Ink",
+      "terracotta": "Terracotta",
+      "night": "Night"
+    },
+    "tokensNote": "Theme tokens. These change with light and dark mode; components only use these names.",
+    "colorRule": "Pastels are for surfaces and illustration. Text uses ink, or the deep ink tints on soft fills, at 4.5:1 contrast or better. Crisis and errors use terracotta, never alarm red.",
+    "typeHero": "You are not alone.",
+    "sample": "Someone else has walked this path before.",
+    "typeNote": "English and French: Bricolage Grotesque for headings, Instrument Sans for text, JetBrains Mono for labels. Arabic: Cairo for headings, IBM Plex Sans Arabic for text, no letter spacing. Wordmark: Reem Kufi.",
+    "buttons": {
+      "primary": "Join anonymously",
+      "secondary": "Read a story",
+      "ghost": "Learn more",
+      "soft": "Join room",
+      "crisis": "Get help now",
+      "danger": "Delete",
+      "disabled": "Continue",
+      "large": "Large · 60",
+      "medium": "Medium · 52",
+      "small": "Small · 44",
+      "withIcon": "With icon"
+    },
+    "icons": {
+      "bell": "Notifications",
+      "search": "Search",
+      "save": "Save",
+      "report": "Report",
+      "add": "Add",
+      "send": "Send"
+    },
+    "buttonsNote": "One primary button per view. Every target is at least 44px. Arrows and send icons mirror in Arabic.",
+    "forms": {
+      "nickname": "Nickname",
+      "nicknameHint": "3 to 20 characters. Arabic letters are welcome.",
+      "nicknameTaken": "That nickname is taken. Try another.",
+      "password": "Password",
+      "country": "Country",
+      "optional": "(optional)",
+      "preferNot": "Prefer not to say",
+      "algeria": "Algeria",
+      "recovery": "Recovery method",
+      "recCode": "Recovery code",
+      "recCodeHint": "A one-time code you keep somewhere safe.",
+      "recEmail": "Recovery email",
+      "recEmailHint": "Stored encrypted. Never shown to members or therapists.",
+      "adult": "I am 18 or older.",
+      "allowDm": "Allow 1:1 chat requests",
+      "allowDmHint": "People can ask; you still decide.",
+      "words": "Your words",
+      "wordsPh": "Share your experience, not advice."
+    },
+    "selection": {
+      "postType": "Type of post",
+      "moods": "Mood",
+      "mood": {
+        "heavy": "Heavy",
+        "low": "Low",
+        "okay": "Okay",
+        "steady": "Steady",
+        "light": "Light"
+      },
+      "tintBlue": "Depression",
+      "tintGreen": "Anxiety",
+      "tintLav": "Panic attacks",
+      "tintSand": "Loneliness",
+      "tabsLabel": "Community sections",
+      "tabStories": "Stories",
+      "tabDisc": "Discussions",
+      "tabLive": "Live rooms",
+      "panelStories": "Stories panel. Arrow keys move between tabs.",
+      "panelDisc": "Discussions panel.",
+      "panelLive": "Live rooms panel."
+    },
+    "badges": {
+      "story": "Story",
+      "checkin": "Check-in",
+      "win": "Small win",
+      "therapist": "Therapist · Psychologist",
+      "live": "Live now",
+      "pending": "Pending",
+      "held": "Held for review",
+      "neutral": "Members only"
+    },
+    "cards": {
+      "surface": "Surface",
+      "blue": "Dawn Blue",
+      "green": "Calm Green",
+      "lav": "Soft Lavender",
+      "body": "Soft tinted cards, 28px radius."
+    },
+    "notices": {
+      "infoTitle": "New account limits",
+      "infoBody": "For the first days, posting is a little slower.",
+      "calmTitle": "Email confirmed",
+      "calmBody": "It stays encrypted and private.",
+      "warnTitle": "This might identify someone",
+      "warnBody": "Please remove the phone number before posting."
+    },
+    "states": {
+      "emptyTitle": "No stories here yet",
+      "emptyBody": "Be the first to share. Your words may help someone tonight.",
+      "emptyAction": "Share your story",
+      "errorTitle": "We couldn't load this",
+      "errorBody": "It is not you. Check your connection and try again. Your draft is safe.",
+      "retry": "Try again",
+      "loading": "Finding stories for you…"
+    },
+    "overlays": {
+      "openDialog": "Open a dialog",
+      "dialogTitle": "Delete this story?",
+      "dialogBody": "It disappears for everyone, along with its replies.",
+      "confirm": "Delete",
+      "showToast": "Show a toast",
+      "toastText": "Saved to your list"
+    },
+    "crisisNote": "Crisis help sits in the header, footer and key screens, signed in or not. Numbers stay as placeholders until verified with local partners.",
+    "productNote": "Member text keeps its own direction: an Arabic story reads right to left inside the French or English interface.",
+    "w": {
+      "menuButton": "Row actions",
+      "menuView": "View profile",
+      "menuSuspend": "Suspend",
+      "tooltip": "Only you can see your saved stories.",
+      "tooltipButton": "What does saving do?",
+      "search": "Search communities",
+      "clear": "Clear search",
+      "stepsLabel": "Sign-up progress",
+      "step1": "Communities",
+      "step2": "Identity",
+      "step3": "Security",
+      "tableCaption": "Accounts",
+      "colNickname": "Nickname",
+      "colJoined": "Joined",
+      "colStatus": "Status",
+      "active": "Active",
+      "suspended": "Suspended",
+      "tileQueue": "Open in therapist queue",
+      "tileHeld": "Held content",
+      "tileMembers": "Active members",
+      "placeholderData": "Placeholder data",
+      "loadMore": "Load more",
+      "loading": "Loading…",
+      "allLoaded": "You've reached the end.",
+      "openConfirm": "Suspend an account",
+      "confirmTitle": "Suspend sea_glass?",
+      "confirmBody": "They can still read and get help, and they can appeal once.",
+      "confirmOk": "Suspend",
+      "confirmReason": "Reason (shown to the member)",
+      "confirmHint": "Required. It is saved in the audit log.",
+      "confirmError": "Please write a short reason.",
+      "confirmDone": "Suspended. The reason is in the audit log.",
+      "openGate": "Try to react as a guest",
+      "showLockout": "Show the sign-in pause",
+      "guestSignedIn": "Header: guest and member",
+      "openReport": "Report a story",
+      "reported": "Thank you. A moderator will look at this.",
+      "reacted": "Reaction updated",
+      "replied": "Reply posted",
+      "openDm": "Request a 1:1 chat",
+      "dmSent": "Request sent",
+      "startMinute": "Start a guided minute",
+      "minuteDone": "Your guided minute is done.",
+      "draftSaved": "Pretend to save a draft",
+      "showPii": "Show identifying-details warning",
+      "showHeld": "Show the held-post message",
+      "auditCaption": "Audit log",
+      "auditSuspend": "Suspended account",
+      "auditVerify": "Verified therapist",
+      "auditHold": "Held by safety check",
+      "nextStep": "Next step"
+    }
+  },
+  "badges": {
+    "therapist": "Therapist · {kind}"
+  },
+  "therapistKind": {
+    "psychologist": "Psychologist",
+    "psychiatrist": "Psychiatrist"
+  },
+  "account": {
+    "nickname": {
+      "label": "Nickname",
+      "hint": "3 to 20 characters: letters, numbers, dot or underscore. Arabic letters are welcome. Don't use your real name.",
+      "checking": "Checking…",
+      "available": "This nickname is free.",
+      "taken": "That nickname is taken. Try another.",
+      "invalid": "Use 3 to 20 letters, numbers, dots or underscores.",
+      "tryOne": "Free now:"
+    },
+    "recovery": {
+      "onceTitle": "We show this code only once",
+      "onceBody": "Write it down or save it in a password manager. Sakina staff cannot see it or send it again.",
+      "codeLabel": "Your recovery code",
+      "copy": "Copy code",
+      "copied": "Copied",
+      "copyFailed": "Couldn't copy. Please select the code instead.",
+      "saved": "I saved my recovery code somewhere safe"
+    },
+    "gate": {
+      "title": {
+        "generic": "Join to take part",
+        "react": "Join to react",
+        "reply": "Join to reply",
+        "post": "Join to share",
+        "join": "Join to follow communities",
+        "save": "Join to save stories",
+        "report": "Join to report",
+        "room": "Join to enter rooms",
+        "chat": "Join to chat",
+        "dm": "Join to send requests"
+      },
+      "body": "Reading stays open to everyone. Taking part needs an anonymous account:",
+      "never1": "No real name",
+      "never2": "No phone number",
+      "only": "Just a nickname and a password",
+      "join": "Join anonymously",
+      "signIn": "Sign in",
+      "keepReading": "Keep reading"
+    },
+    "lockout": {
+      "title": "Sign-in paused for this account",
+      "body": "Too many tries. For your safety, try again in {time}, or recover your account now.",
+      "recover": "Recover my account"
+    },
+    "menu": {
+      "notifications": "{count, plural, =0 {Notifications} one {Notifications, # unread} other {Notifications, # unread}}",
+      "open": "Account menu for {nickname}",
+      "anonymous": "Anonymous account",
+      "profile": "Profile",
+      "saved": "Saved",
+      "discussions": "Discussions",
+      "signOut": "Sign out"
+    }
+  },
+  "report": {
+    "title": "Report this",
+    "body": "Reports are private. The author is not told who reported.",
+    "why": "What is the concern?",
+    "reasons": {
+      "unsafe": "Someone may be in danger",
+      "harassment": "Unkind or harassing",
+      "medical": "Medical advice or diagnosis",
+      "personal": "Shares personal details",
+      "spam": "Spam or advertising",
+      "other": "Something else"
+    },
+    "pickReason": "Choose a reason.",
+    "note": "Anything else?",
+    "alsoBlock": "Also block {nickname}",
+    "private": "If someone may be in danger, choose the first option: a therapist sees it right away.",
+    "send": "Send report"
+  },
+  "replies": {
+    "write": "Write a reply",
+    "hint": "Replies go through the same safety check as posts.",
+    "placeholder": "Respond with care. Share your experience, not advice.",
+    "post": "Post reply",
+    "tooShort": "Write a little more before posting.",
+    "removePii": "Please remove {what} before posting.",
+    "none": "No replies yet. A kind word can mean a lot.",
+    "heldOnlyYou": "Only you can see this until a therapist checks it",
+    "relate": "{count, plural, =0 {I relate} other {I relate · #}}",
+    "reply": "Reply",
+    "replyTo": "Reply to {nickname}",
+    "reportFrom": "Report reply from {nickname}",
+    "report": "Report"
+  },
+  "composer": {
+    "mood": {
+      "label": "How is today?",
+      "heavy": "Heavy",
+      "low": "Low",
+      "okay": "Okay",
+      "steady": "Steady",
+      "light": "Light"
+    },
+    "prompts": {
+      "label": "Need a starting point?",
+      "story": {
+        "1": "When it started, I…",
+        "2": "What I wish someone had told me is…",
+        "3": "Something that helped, slowly, was…"
+      },
+      "checkin": {
+        "1": "Today feels…",
+        "2": "One small thing I did today:",
+        "3": "What I need tonight is…"
+      },
+      "win": {
+        "1": "This week I managed to…",
+        "2": "A month ago I couldn't…",
+        "3": "I'm proud that…"
+      }
+    },
+    "veil": {
+      "label": "Add a content veil",
+      "hint": "Readers see a gentle note first and choose when to open it.",
+      "topics": "What does it touch on?"
+    },
+    "pii": {
+      "title": "This might identify someone",
+      "body": "We noticed details that could make you or someone else recognisable:",
+      "kinds": {
+        "phone": "a phone number",
+        "email": "an email address",
+        "handle": "a social media handle",
+        "social": "a social media app",
+        "name": "a real name",
+        "place": "a street or place"
+      },
+      "edit": "Edit my text",
+      "anyway": "Post anyway"
+    },
+    "draft": {
+      "saved": "Draft saved at {time}",
+      "auto": "Drafts save automatically as you write."
+    },
+    "held": {
+      "title": "Thank you for trusting us with this.",
+      "body": "Your words are safe with us. A therapist will read them soon. They aren't public yet.",
+      "body2": "If you are in danger right now, please use Get help now. You can also sit in a room with others while you wait.",
+      "rooms": "Go to discussions",
+      "home": "Go to home"
+    }
+  },
+  "chat": {
+    "typing": "{name} is writing…",
+    "messages": "Messages",
+    "message": {
+      "held": "Only you can see this until a therapist checks it",
+      "report": "Report",
+      "reportFrom": "Report message from {nickname}",
+      "dm": "Request 1:1",
+      "dmWith": "Ask {nickname} for a 1:1 chat",
+      "block": "Block",
+      "blockNamed": "Block {nickname}"
+    },
+    "room": {
+      "kind": {
+        "guided": "Guided room",
+        "peer": "Peer room",
+        "dm": "1:1 chat"
+      },
+      "live": "Live now",
+      "minute": "Guided minute",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "report": "Report",
+      "block": "Block",
+      "leave": "Leave",
+      "rule": {
+        "guided": "Guided by a therapist. Listening is welcome. No advice on medication or diagnosis.",
+        "peer": "Peer room watched by moderators. Be kind, keep everyone anonymous.",
+        "dm": "Private 1:1 chat. You can block or report at any time."
+      }
+    },
+    "composer": {
+      "label": "Write a message",
+      "hint": "Enter to send, Shift and Enter for a new line.",
+      "send": "Send",
+      "empty": "Write a message first.",
+      "tooLong": "Messages can be up to 1000 characters.",
+      "removePii": "For everyone's safety, please remove {what}."
+    },
+    "dm": {
+      "title": "Ask {nickname} for a 1:1 chat",
+      "body": "They can accept or decline. Your request stays private.",
+      "note": "A short note",
+      "send": "Send request"
+    },
+    "minute": {
+      "label": "Guided minute of breathing",
+      "in": "Breathe in…",
+      "out": "…and out",
+      "hint": "Follow the circle. Nothing else to do.",
+      "stop": "Stop"
+    }
+  },
+  "panel": {
+    "signOut": "Sign out",
+    "count": "{count, plural, one {# waiting} other {# waiting}}",
+    "risk": {
+      "high": "High risk",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "queue": {
+      "kind": {
+        "post": "Held post",
+        "chat": "Chat message",
+        "comment": "Reply",
+        "report": "Member report"
+      },
+      "status": {
+        "open": "Waiting",
+        "checking": "Checked in",
+        "escalated": "Escalated",
+        "resolved": "Resolved"
+      },
+      "open": "Open item from {nickname}",
+      "openShort": "Open"
+    },
+    "availability": {
+      "label": "Weekly availability",
+      "slot": {
+        "mor": "Morning",
+        "aft": "Afternoon",
+        "eve": "Evening"
+      },
+      "day": {
+        "sat": "Saturday",
+        "sun": "Sunday",
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday"
+      },
+      "on": "Available",
+      "off": "Off"
+    },
+    "audit": {
+      "time": "Time",
+      "actor": "Who",
+      "action": "Action",
+      "detail": "Details",
+      "type": {
+        "system": "System",
+        "admin": "Admin",
+        "therapist": "Therapist",
+        "member": "Member"
+      }
+    }
+  }
+}

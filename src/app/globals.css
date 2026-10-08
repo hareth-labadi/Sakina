@@ -1,0 +1,247 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Sakina design tokens
+   One source of truth. Components use the Tailwind names in @theme below,
+   never raw hex values.
+   ========================================================================== */
+
+/* Dark mode is driven by html[data-theme] (set before paint, see ThemeScript). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  /* Brand constants (same in both themes) */
+  --brand-dawn: #8bb8e8;
+  --brand-calm: #a8d5ba;
+  --brand-lavender: #c8b6ff;
+  --brand-sand: #f7f1e8;
+  --brand-ink: #0f1a2e;
+  --brand-terracotta: #b4553f;
+  --brand-night: #080c18;
+
+  /* Light theme */
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --surface-2: #f3f1eb;
+  --ink: #0f1a2e;
+  --ink-2: #3b4764;
+  --mute: #5a6681;
+  --line: #e8e4db;
+  --glass: rgb(250 248 244 / 0.82);
+
+  --blue-soft: #dcebfa;
+  --green-soft: #d8ede1;
+  --lav-soft: #e7e0fa;
+  --sand-soft: #f5ead6;
+  --warm-soft: #fbefe0;
+  --blue-ink: #2f639b;
+  --green-ink: #2f6b4e;
+  --lav-ink: #5b43b8;
+  --sand-ink: #7a5a1e;
+  --warm-ink: #b4553f;
+
+  --primary: #0f1a2e;
+  --primary-fg: #ffffff;
+  --focus: #8bb8e8;
+  --glow-a: rgb(139 184 232 / 0.4);
+  --glow-b: rgb(200 182 255 / 0.32);
+  --shadow-c: rgb(40 70 130 / 0.14);
+  --grad-text: linear-gradient(90deg, #2f639b, #6a52d0 70%, #2f6b4e);
+
+  /* Type (overridden for Arabic below) */
+  --font-ui: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-head: var(--font-bricolage), var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --tracking-body: 0.015em;
+  --tracking-head: -0.012em;
+  --leading-head: 1.05;
+  --weight-head: 600;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #080c18;
+  --surface: #0f1526;
+  --surface-2: #161e36;
+  --ink: #f4f1ea;
+  --ink-2: #c0c9de;
+  --mute: #9aa6c2;
+  --line: #232d4a;
+  --glass: rgb(8 12 24 / 0.78);
+
+  --blue-soft: #1b2f52;
+  --green-soft: #17322a;
+  --lav-soft: #2a2352;
+  --sand-soft: #33291a;
+  --warm-soft: #3a2722;
+  --blue-ink: #9cc4f0;
+  --green-ink: #a8d5ba;
+  --lav-ink: #c8b6ff;
+  --sand-ink: #e8c98f;
+  --warm-ink: #f0a38e;
+
+  --primary: #8bb8e8;
+  --primary-fg: #0b1224;
+  --glow-a: rgb(139 184 232 / 0.26);
+  --glow-b: rgb(200 182 255 / 0.18);
+  --shadow-c: rgb(0 0 0 / 0.5);
+  --grad-text: linear-gradient(90deg, #8bb8e8, #c8b6ff 60%, #a8d5ba);
+
+  color-scheme: dark;
+}
+
+/* Arabic: Cairo for headings, IBM Plex Sans Arabic for UI, no letter spacing. */
+:root[lang="ar"] {
+  --font-ui: var(--font-plex-ar), var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-head: var(--font-cairo), var(--font-plex-ar), ui-sans-serif, system-ui, sans-serif;
+  --tracking-body: 0;
+  --tracking-head: 0;
+  --leading-head: 1.35;
+  --weight-head: 700;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-glass: var(--glass);
+
+  --color-blue-soft: var(--blue-soft);
+  --color-green-soft: var(--green-soft);
+  --color-lav-soft: var(--lav-soft);
+  --color-sand-soft: var(--sand-soft);
+  --color-warm-soft: var(--warm-soft);
+  --color-blue-ink: var(--blue-ink);
+  --color-green-ink: var(--green-ink);
+  --color-lav-ink: var(--lav-ink);
+  --color-sand-ink: var(--sand-ink);
+  --color-warm-ink: var(--warm-ink);
+
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-focus: var(--focus);
+
+  --color-dawn: var(--brand-dawn);
+  --color-calm: var(--brand-calm);
+  --color-lavender: var(--brand-lavender);
+  --color-sand: var(--brand-sand);
+  --color-terracotta: var(--brand-terracotta);
+  --color-night: var(--brand-night);
+
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-head);
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-wordmark: var(--font-reem), var(--font-cairo), sans-serif;
+
+  --radius-field: 16px;
+  --radius-tile: 22px;
+  --radius-card: 28px;
+  --radius-hero: 32px;
+
+  --shadow-soft: 0 20px 50px var(--shadow-c);
+  --shadow-lift: 0 40px 120px var(--shadow-c);
+
+  /* Generous type scale (the owner asked for larger text). */
+  --text-caption: 0.9375rem;
+  --text-caption--line-height: 1.5;
+  --text-body: 1.125rem;
+  --text-body--line-height: 1.65;
+  --text-lead: 1.3125rem;
+  --text-lead--line-height: 1.6;
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    letter-spacing: var(--tracking-body);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--bg);
+    font-size: var(--text-body);
+    line-height: 1.65;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-head);
+    font-weight: var(--weight-head);
+    letter-spacing: var(--tracking-head);
+    line-height: var(--leading-head);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--lav-soft);
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------- Utilities ---------- */
+@utility text-gradient {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Mirror direction-bearing icons in RTL (arrows, chevrons, send). */
+@utility flip-rtl {
+  &:where([dir="rtl"] *) {
+    transform: scaleX(-1);
+  }
+}
+
+@utility tag-label {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  &:where([dir="rtl"] *) {
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(0.6); }
+  50% { transform: scale(1); }
+}

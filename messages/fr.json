@@ -1,0 +1,618 @@
+{
+  "meta": {
+    "title": "Sakina · Entraide anonyme",
+    "short": "Sakina",
+    "description": "Lisez de vraies histoires, trouvez votre communauté et partagez quand vous êtes prêt·e. Entraide anonyme entre pairs, pas un soin médical."
+  },
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "skip": "Aller au contenu",
+    "optional": "(facultatif)"
+  },
+  "notFound": {
+    "title": "Cette page n'existe pas encore",
+    "body": "Elle arrive peut-être bientôt, ou le lien est incorrect. L'aide reste à portée de main.",
+    "home": "Retour au début"
+  },
+  "nav": {
+    "logoLabel": "Sakina, retour au début",
+    "main": "Navigation principale",
+    "home": "Accueil",
+    "communities": "Communautés",
+    "design": "Système de design",
+    "preferences": "Langue et thème",
+    "menu": "Menu",
+    "closeMenu": "Fermer le menu",
+    "language": "Langue",
+    "theme": "Thème",
+    "signIn": "Se connecter",
+    "join": "Rejoindre anonymement",
+    "profile": "Profil",
+    "signOut": "Se déconnecter"
+  },
+  "theme": {
+    "label": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
+  "locale": {
+    "label": "Langue"
+  },
+  "crisis": {
+    "button": "Obtenir de l'aide",
+    "buttonShort": "Aide",
+    "title": "Si vous êtes en danger maintenant",
+    "body": "Contactez les services d'urgence ou une personne de confiance. Pas besoin de compte pour cela.",
+    "whereAreYou": "Où êtes-vous ?",
+    "placeholder": "[À ajouter après vérification avec les partenaires locaux]",
+    "lines": {
+      "emergency": "Services d'urgence",
+      "listening": "Ligne d'écoute",
+      "hospital": "Urgences hospitalières les plus proches"
+    },
+    "groundTitle": "En attendant",
+    "ground1": "Posez les deux pieds au sol. Sentez qu'il vous porte.",
+    "ground2": "Inspirez sur 4, expirez sur 6. Trois fois.",
+    "ground3": "Nommez cinq choses que vous voyez autour de vous.",
+    "notEmergency": "Sakina n'est pas un service d'urgence. Les thérapeutes ici ne peuvent pas envoyer d'aide là où vous êtes.",
+    "countries": {
+      "DZ": "Algérie",
+      "FR": "France",
+      "MA": "Maroc",
+      "TN": "Tunisie",
+      "OTHER": "Autre pays"
+    }
+  },
+  "footer": {
+    "note": "Sakina est une entraide anonyme entre pairs. Ce n'est ni un soin médical, ni une thérapie, ni un diagnostic, ni un service d'urgence. Si vous êtes en danger, utilisez Obtenir de l'aide."
+  },
+  "story": {
+    "types": {
+      "story": "Histoire",
+      "checkin": "Point du jour",
+      "win": "Petite victoire"
+    },
+    "veilNote": "Avertissement : {topics}",
+    "topics": {
+      "selfharm": "l'automutilation",
+      "loss": "la perte et le deuil",
+      "violence": "la violence",
+      "abuse": "les abus",
+      "food": "la nourriture et le corps",
+      "substances": "la consommation de substances"
+    },
+    "reactions": "{count, plural, =0 {Pas encore de réaction} one {# réaction} other {# réactions}}",
+    "membersOnly": "Réservé aux membres",
+    "read": "Lire l'histoire",
+    "readStoryNamed": "Lire l'histoire : {title}",
+    "veil": {
+      "label": "Avertissement de contenu",
+      "title": "Cette histoire parle de {topics}",
+      "body": "Lisez-la quand vous vous sentez prêt·e. Vous pouvez vous arrêter à tout moment.",
+      "show": "Afficher l'histoire",
+      "notNow": "Pas maintenant"
+    },
+    "react": {
+      "prompt": "Comment cette histoire résonne-t-elle pour vous ?",
+      "relate": "Je me reconnais",
+      "strength": "Je vous envoie de la force",
+      "helped": "Ça m'a aidé",
+      "thanks": "Merci",
+      "note": "Les réactions ne sont visibles que par l'auteur. Il n'y a pas de vote négatif sur Sakina."
+    },
+    "actions": {
+      "save": "Enregistrer",
+      "saved": "Enregistré",
+      "copy": "Copier le lien",
+      "copied": "Lien copié",
+      "copyFailed": "Impossible de copier le lien.",
+      "report": "Signaler"
+    }
+  },
+  "community": {
+    "sensitivity": {
+      "standard": "Standard",
+      "sensitive": "Sensible",
+      "high": "Très sensible"
+    },
+    "meta": "{count, plural, =0 {000 membres · pas encore d'histoire} one {000 membres · # histoire} other {000 membres · # histoires}}",
+    "open": "Ouvrir",
+    "openNamed": "Ouvrir {name}"
+  },
+  "home": {
+    "badge": "Entraide anonyme · Algérie",
+    "titleA": "Trouvez le calme.",
+    "titleB": "Trouvez les vôtres.",
+    "sub": "Choisissez ce que vous traversez, lisez de vraies histoires de personnes qui comprennent, et partagez quand vous êtes prêt·e. Sans vrai nom, sans numéro de téléphone.",
+    "cta": "Trouver ma communauté",
+    "readFirst": "Lire des histoires d'abord",
+    "fine": "Anonyme · 18+ · Pas un soin médical",
+    "going": "Que traversez-vous ?",
+    "storiesTitle": "Histoires à lire maintenant",
+    "communitiesTitle": "Communautés",
+    "safeTitle": "Sûr par conception",
+    "safe1": "De l'entraide, pas un soin médical",
+    "safe1b": "Sakina relie des personnes aux expériences communes. Chaque publication passe une vérification de sécurité, et les messages préoccupants vont d'abord à un·e thérapeute.",
+    "safe2": "Des thérapeutes présents",
+    "safe2b": "Des psychologues et psychiatres vérifié·es animent certains salons et lisent les publications signalées. Ils écoutent et orientent ; ils ne diagnostiquent ni ne prescrivent ici.",
+    "therapistExample": "Thérapeute · Psychologue",
+    "safe3": "L'aide à portée de main",
+    "safe3b": "Si vous êtes en danger, pas besoin de compte. Les options d'aide sont sur chaque page."
+  },
+  "communities": {
+    "title": "Communautés",
+    "sub": "Un lieu pour chaque expérience. Lisez librement ; rejoignez pour participer."
+  },
+  "password": {
+    "hint": "Au moins 8 caractères. Une phrase plus longue avec un chiffre ou un symbole est plus solide.",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "empty": " ",
+    "weak": "Robustesse : faible",
+    "okay": "Robustesse : correcte",
+    "strong": "Robustesse : élevée"
+  },
+  "design": {
+    "title": "Système de design",
+    "tag": "Système de design · v1",
+    "titleA": "Des interfaces calmes",
+    "titleB": "pour les moments difficiles.",
+    "sub": "Tous les éléments et composants de Sakina, en direct. Changez de langue et de thème pour vérifier chacun en arabe, français et anglais, en clair et en sombre.",
+    "sections": {
+      "color": "Couleurs",
+      "type": "Typographie",
+      "buttons": "Boutons et icônes",
+      "forms": "Formulaires",
+      "selection": "Pastilles, segments et onglets",
+      "display": "Badges, avatars, cartes et messages",
+      "states": "États vide, erreur et chargement",
+      "overlays": "Fenêtres, notifications et aide en cas de crise",
+      "product": "Composants du produit",
+      "general": "Menus, infobulles, recherche, étapes, tableaux et tuiles",
+      "account": "Éléments du compte",
+      "reading": "Éléments de lecture",
+      "composer": "Éléments de rédaction",
+      "chat": "Éléments de discussion",
+      "panels": "Éléments des espaces thérapeute et admin"
+    },
+    "brand": {
+      "dawn": "Bleu aube",
+      "calm": "Vert apaisé",
+      "lavender": "Lavande douce",
+      "sand": "Sable chaud",
+      "ink": "Encre de nuit",
+      "terracotta": "Terre cuite",
+      "night": "Nuit"
+    },
+    "tokensNote": "Jetons de thème. Ils changent avec le mode clair ou sombre ; les composants n'utilisent que ces noms.",
+    "colorRule": "Les pastels servent aux surfaces et aux illustrations. Le texte utilise l'encre, ou ses teintes foncées sur les fonds doux, avec un contraste d'au moins 4,5:1. Crise et erreurs en terre cuite, jamais en rouge d'alarme.",
+    "typeHero": "Vous n'êtes pas seul·e.",
+    "sample": "Quelqu'un d'autre a déjà parcouru ce chemin.",
+    "typeNote": "Anglais et français : Bricolage Grotesque pour les titres, Instrument Sans pour le texte, JetBrains Mono pour les étiquettes. Arabe : Cairo pour les titres, IBM Plex Sans Arabic pour le texte, sans espacement des lettres. Logo : Reem Kufi.",
+    "buttons": {
+      "primary": "Rejoindre anonymement",
+      "secondary": "Lire une histoire",
+      "ghost": "En savoir plus",
+      "soft": "Entrer dans le salon",
+      "crisis": "Obtenir de l'aide",
+      "danger": "Supprimer",
+      "disabled": "Continuer",
+      "large": "Grand · 60",
+      "medium": "Moyen · 52",
+      "small": "Petit · 44",
+      "withIcon": "Avec icône"
+    },
+    "icons": {
+      "bell": "Notifications",
+      "search": "Rechercher",
+      "save": "Enregistrer",
+      "report": "Signaler",
+      "add": "Ajouter",
+      "send": "Envoyer"
+    },
+    "buttonsNote": "Un seul bouton principal par écran. Chaque cible fait au moins 44 px. Les flèches et l'icône d'envoi s'inversent en arabe.",
+    "forms": {
+      "nickname": "Pseudo",
+      "nicknameHint": "3 à 20 caractères. Les lettres arabes sont acceptées.",
+      "nicknameTaken": "Ce pseudo est pris. Essayez-en un autre.",
+      "password": "Mot de passe",
+      "country": "Pays",
+      "optional": "(facultatif)",
+      "preferNot": "Je préfère ne pas le dire",
+      "algeria": "Algérie",
+      "recovery": "Moyen de récupération",
+      "recCode": "Code de récupération",
+      "recCodeHint": "Un code à conserver en lieu sûr.",
+      "recEmail": "E-mail de récupération",
+      "recEmailHint": "Stocké chiffré. Jamais visible par les membres ni par les thérapeutes.",
+      "adult": "J'ai 18 ans ou plus.",
+      "allowDm": "Autoriser les demandes en 1:1",
+      "allowDmHint": "Les autres peuvent demander ; vous décidez.",
+      "words": "Vos mots",
+      "wordsPh": "Partagez votre expérience, pas des conseils."
+    },
+    "selection": {
+      "postType": "Type de publication",
+      "moods": "Humeur",
+      "mood": {
+        "heavy": "Lourd",
+        "low": "Bas",
+        "okay": "Ça va",
+        "steady": "Stable",
+        "light": "Léger"
+      },
+      "tintBlue": "Dépression",
+      "tintGreen": "Anxiété",
+      "tintLav": "Attaques de panique",
+      "tintSand": "Solitude",
+      "tabsLabel": "Sections de la communauté",
+      "tabStories": "Histoires",
+      "tabDisc": "Discussions",
+      "tabLive": "Salons guidés",
+      "panelStories": "Section Histoires. Les flèches du clavier passent d'un onglet à l'autre.",
+      "panelDisc": "Section Discussions.",
+      "panelLive": "Section Salons guidés."
+    },
+    "badges": {
+      "story": "Histoire",
+      "checkin": "Point du jour",
+      "win": "Petite victoire",
+      "therapist": "Thérapeute · Psychologue",
+      "live": "En direct",
+      "pending": "En attente",
+      "held": "En attente de relecture",
+      "neutral": "Réservé aux membres"
+    },
+    "cards": {
+      "surface": "Surface",
+      "blue": "Bleu aube",
+      "green": "Vert apaisé",
+      "lav": "Lavande douce",
+      "body": "Cartes teintées et douces, rayon de 28 px."
+    },
+    "notices": {
+      "infoTitle": "Limites des nouveaux comptes",
+      "infoBody": "Les premiers jours, la publication est un peu plus lente.",
+      "calmTitle": "E-mail confirmé",
+      "calmBody": "Il reste chiffré et privé.",
+      "warnTitle": "Ceci pourrait identifier quelqu'un",
+      "warnBody": "Merci de retirer le numéro de téléphone avant de publier."
+    },
+    "states": {
+      "emptyTitle": "Pas encore d'histoires ici",
+      "emptyBody": "Soyez la première personne à partager. Vos mots aideront peut-être quelqu'un ce soir.",
+      "emptyAction": "Partager mon histoire",
+      "errorTitle": "Impossible de charger",
+      "errorBody": "Ce n'est pas vous. Vérifiez votre connexion et réessayez. Votre brouillon est en sécurité.",
+      "retry": "Réessayer",
+      "loading": "Recherche d'histoires pour vous…"
+    },
+    "overlays": {
+      "openDialog": "Ouvrir une fenêtre",
+      "dialogTitle": "Supprimer cette histoire ?",
+      "dialogBody": "Elle disparaît pour tout le monde, avec ses réponses.",
+      "confirm": "Supprimer",
+      "showToast": "Afficher une notification",
+      "toastText": "Ajouté à vos enregistrements"
+    },
+    "crisisNote": "L'aide en cas de crise est dans l'en-tête, le pied de page et les écrans clés, connecté·e ou non. Les numéros restent provisoires jusqu'à vérification avec les partenaires locaux.",
+    "productNote": "Le texte des membres garde son sens de lecture : une histoire en arabe se lit de droite à gauche même dans l'interface française ou anglaise.",
+    "w": {
+      "menuButton": "Actions de la ligne",
+      "menuView": "Voir le profil",
+      "menuSuspend": "Suspendre",
+      "tooltip": "Vous seul·e voyez vos histoires enregistrées.",
+      "tooltipButton": "À quoi sert l'enregistrement ?",
+      "search": "Rechercher une communauté",
+      "clear": "Effacer la recherche",
+      "stepsLabel": "Progression de l'inscription",
+      "step1": "Communautés",
+      "step2": "Identité",
+      "step3": "Sécurité",
+      "tableCaption": "Comptes",
+      "colNickname": "Pseudo",
+      "colJoined": "Inscription",
+      "colStatus": "Statut",
+      "active": "Actif",
+      "suspended": "Suspendu",
+      "tileQueue": "Ouverts dans la file thérapeutes",
+      "tileHeld": "Contenus en attente",
+      "tileMembers": "Membres actifs",
+      "placeholderData": "Données provisoires",
+      "loadMore": "Charger plus",
+      "loading": "Chargement…",
+      "allLoaded": "Vous êtes arrivé·e au bout.",
+      "openConfirm": "Suspendre un compte",
+      "confirmTitle": "Suspendre sea_glass ?",
+      "confirmBody": "La personne peut toujours lire et obtenir de l'aide, et peut faire un recours.",
+      "confirmOk": "Suspendre",
+      "confirmReason": "Motif (visible par le membre)",
+      "confirmHint": "Obligatoire. Enregistré dans le journal d'audit.",
+      "confirmError": "Merci d'écrire un motif court.",
+      "confirmDone": "Suspendu. Le motif est dans le journal d'audit.",
+      "openGate": "Essayer de réagir en visiteur",
+      "showLockout": "Afficher la pause de connexion",
+      "guestSignedIn": "En-tête : visiteur et membre",
+      "openReport": "Signaler une histoire",
+      "reported": "Merci. Un modérateur va examiner ce signalement.",
+      "reacted": "Réaction mise à jour",
+      "replied": "Réponse publiée",
+      "openDm": "Demander un 1:1",
+      "dmSent": "Demande envoyée",
+      "startMinute": "Démarrer une minute guidée",
+      "minuteDone": "Votre minute guidée est terminée.",
+      "draftSaved": "Simuler l'enregistrement d'un brouillon",
+      "showPii": "Afficher l'alerte d'informations personnelles",
+      "showHeld": "Afficher le message de publication en attente",
+      "auditCaption": "Journal d'audit",
+      "auditSuspend": "Compte suspendu",
+      "auditVerify": "Thérapeute vérifié·e",
+      "auditHold": "Mis en attente par la vérification",
+      "nextStep": "Étape suivante"
+    }
+  },
+  "badges": {
+    "therapist": "Thérapeute · {kind}"
+  },
+  "therapistKind": {
+    "psychologist": "Psychologue",
+    "psychiatrist": "Psychiatre"
+  },
+  "account": {
+    "nickname": {
+      "label": "Pseudo",
+      "hint": "3 à 20 caractères : lettres, chiffres, point ou tiret bas. Les lettres arabes sont acceptées. N'utilisez pas votre vrai nom.",
+      "checking": "Vérification…",
+      "available": "Ce pseudo est libre.",
+      "taken": "Ce pseudo est pris. Essayez-en un autre.",
+      "invalid": "Utilisez 3 à 20 lettres, chiffres, points ou tirets bas.",
+      "tryOne": "Libres :"
+    },
+    "recovery": {
+      "onceTitle": "Ce code n'est affiché qu'une seule fois",
+      "onceBody": "Notez-le ou enregistrez-le dans un gestionnaire de mots de passe. L'équipe Sakina ne peut ni le voir ni le renvoyer.",
+      "codeLabel": "Votre code de récupération",
+      "copy": "Copier le code",
+      "copied": "Copié",
+      "copyFailed": "Copie impossible. Sélectionnez le code à la place.",
+      "saved": "J'ai enregistré mon code de récupération en lieu sûr"
+    },
+    "gate": {
+      "title": {
+        "generic": "Rejoignez pour participer",
+        "react": "Rejoignez pour réagir",
+        "reply": "Rejoignez pour répondre",
+        "post": "Rejoignez pour partager",
+        "join": "Rejoignez pour suivre des communautés",
+        "save": "Rejoignez pour enregistrer des histoires",
+        "report": "Rejoignez pour signaler",
+        "room": "Rejoignez pour entrer dans les salons",
+        "chat": "Rejoignez pour discuter",
+        "dm": "Rejoignez pour envoyer des demandes"
+      },
+      "body": "La lecture reste ouverte à tous. Pour participer, il faut un compte anonyme :",
+      "never1": "Pas de vrai nom",
+      "never2": "Pas de numéro de téléphone",
+      "only": "Juste un pseudo et un mot de passe",
+      "join": "Rejoindre anonymement",
+      "signIn": "Se connecter",
+      "keepReading": "Continuer à lire"
+    },
+    "lockout": {
+      "title": "Connexion en pause pour ce compte",
+      "body": "Trop de tentatives. Pour votre sécurité, réessayez dans {time}, ou récupérez votre compte maintenant.",
+      "recover": "Récupérer mon compte"
+    },
+    "menu": {
+      "notifications": "{count, plural, =0 {Notifications} one {Notifications, # non lue} other {Notifications, # non lues}}",
+      "open": "Menu du compte de {nickname}",
+      "anonymous": "Compte anonyme",
+      "profile": "Profil",
+      "saved": "Enregistrés",
+      "discussions": "Discussions",
+      "signOut": "Se déconnecter"
+    }
+  },
+  "report": {
+    "title": "Signaler",
+    "body": "Les signalements sont privés. L'auteur ne sait pas qui a signalé.",
+    "why": "Quel est le problème ?",
+    "reasons": {
+      "unsafe": "Quelqu'un est peut-être en danger",
+      "harassment": "Malveillant ou harcelant",
+      "medical": "Conseil médical ou diagnostic",
+      "personal": "Partage d'informations personnelles",
+      "spam": "Spam ou publicité",
+      "other": "Autre chose"
+    },
+    "pickReason": "Choisissez un motif.",
+    "note": "Autre chose ?",
+    "alsoBlock": "Bloquer aussi {nickname}",
+    "private": "Si quelqu'un est peut-être en danger, choisissez la première option : un·e thérapeute le verra tout de suite.",
+    "send": "Envoyer le signalement"
+  },
+  "replies": {
+    "write": "Écrire une réponse",
+    "hint": "Les réponses passent la même vérification de sécurité que les publications.",
+    "placeholder": "Répondez avec douceur. Partagez votre expérience, pas des conseils.",
+    "post": "Publier la réponse",
+    "tooShort": "Écrivez un peu plus avant de publier.",
+    "removePii": "Merci de retirer {what} avant de publier.",
+    "none": "Pas encore de réponses. Un mot gentil peut compter beaucoup.",
+    "heldOnlyYou": "Vous seul·e voyez ceci jusqu'à la relecture d'un·e thérapeute",
+    "relate": "{count, plural, =0 {Je me reconnais} other {Je me reconnais · #}}",
+    "reply": "Répondre",
+    "replyTo": "Répondre à {nickname}",
+    "reportFrom": "Signaler la réponse de {nickname}",
+    "report": "Signaler"
+  },
+  "composer": {
+    "mood": {
+      "label": "Comment va aujourd'hui ?",
+      "heavy": "Lourd",
+      "low": "Bas",
+      "okay": "Ça va",
+      "steady": "Stable",
+      "light": "Léger"
+    },
+    "prompts": {
+      "label": "Besoin d'un point de départ ?",
+      "story": {
+        "1": "Quand ça a commencé, je…",
+        "2": "Ce que j'aurais aimé qu'on me dise, c'est…",
+        "3": "Ce qui m'a aidé, doucement, c'est…"
+      },
+      "checkin": {
+        "1": "Aujourd'hui, je me sens…",
+        "2": "Une petite chose faite aujourd'hui :",
+        "3": "Ce dont j'ai besoin ce soir, c'est…"
+      },
+      "win": {
+        "1": "Cette semaine, j'ai réussi à…",
+        "2": "Il y a un mois, je ne pouvais pas…",
+        "3": "Je suis fier·e de…"
+      }
+    },
+    "veil": {
+      "label": "Ajouter un voile de contenu",
+      "hint": "Les lecteurs voient d'abord une note douce et choisissent quand ouvrir.",
+      "topics": "De quoi est-il question ?"
+    },
+    "pii": {
+      "title": "Ceci pourrait identifier quelqu'un",
+      "body": "Nous avons repéré des détails qui pourraient vous rendre reconnaissable, vous ou quelqu'un d'autre :",
+      "kinds": {
+        "phone": "un numéro de téléphone",
+        "email": "une adresse e-mail",
+        "handle": "un pseudo de réseau social",
+        "social": "une application de réseau social",
+        "name": "un vrai nom",
+        "place": "une rue ou un lieu"
+      },
+      "edit": "Modifier mon texte",
+      "anyway": "Publier quand même"
+    },
+    "draft": {
+      "saved": "Brouillon enregistré à {time}",
+      "auto": "Les brouillons s'enregistrent automatiquement."
+    },
+    "held": {
+      "title": "Merci de nous avoir confié ces mots.",
+      "body": "Vos mots sont en sécurité avec nous. Un·e thérapeute les lira bientôt. Ils ne sont pas encore publics.",
+      "body2": "Si vous êtes en danger maintenant, utilisez Obtenir de l'aide. Vous pouvez aussi rejoindre un salon avec d'autres personnes en attendant.",
+      "rooms": "Aller aux discussions",
+      "home": "Aller à l'accueil"
+    }
+  },
+  "chat": {
+    "typing": "{name} écrit…",
+    "messages": "Messages",
+    "message": {
+      "held": "Vous seul·e voyez ceci jusqu'à la relecture d'un·e thérapeute",
+      "report": "Signaler",
+      "reportFrom": "Signaler le message de {nickname}",
+      "dm": "Demander un 1:1",
+      "dmWith": "Proposer un 1:1 à {nickname}",
+      "block": "Bloquer",
+      "blockNamed": "Bloquer {nickname}"
+    },
+    "room": {
+      "kind": {
+        "guided": "Salon guidé",
+        "peer": "Salon entre pairs",
+        "dm": "Discussion 1:1"
+      },
+      "live": "En direct",
+      "minute": "Minute guidée",
+      "mute": "Couper",
+      "unmute": "Réactiver",
+      "report": "Signaler",
+      "block": "Bloquer",
+      "leave": "Quitter",
+      "rule": {
+        "guided": "Animé par un·e thérapeute. Écouter suffit. Aucun conseil sur les médicaments ou les diagnostics.",
+        "peer": "Salon entre pairs suivi par des modérateurs. Restez bienveillant·e et gardez tout le monde anonyme.",
+        "dm": "Discussion privée en 1:1. Vous pouvez bloquer ou signaler à tout moment."
+      }
+    },
+    "composer": {
+      "label": "Écrire un message",
+      "hint": "Entrée pour envoyer, Maj et Entrée pour aller à la ligne.",
+      "send": "Envoyer",
+      "empty": "Écrivez d'abord un message.",
+      "tooLong": "Les messages font au maximum 1000 caractères.",
+      "removePii": "Pour la sécurité de tous, merci de retirer {what}."
+    },
+    "dm": {
+      "title": "Proposer un 1:1 à {nickname}",
+      "body": "Cette personne peut accepter ou refuser. Votre demande reste privée.",
+      "note": "Un petit mot",
+      "send": "Envoyer la demande"
+    },
+    "minute": {
+      "label": "Minute de respiration guidée",
+      "in": "Inspirez…",
+      "out": "…et expirez",
+      "hint": "Suivez le cercle. Rien d'autre à faire.",
+      "stop": "Arrêter"
+    }
+  },
+  "panel": {
+    "signOut": "Se déconnecter",
+    "count": "{count, plural, one {# en attente} other {# en attente}}",
+    "risk": {
+      "high": "Risque élevé",
+      "medium": "Moyen",
+      "low": "Faible"
+    },
+    "queue": {
+      "kind": {
+        "post": "Publication en attente",
+        "chat": "Message de salon",
+        "comment": "Réponse",
+        "report": "Signalement d'un membre"
+      },
+      "status": {
+        "open": "En attente",
+        "checking": "Contact pris",
+        "escalated": "Transmis",
+        "resolved": "Résolu"
+      },
+      "open": "Ouvrir l'élément de {nickname}",
+      "openShort": "Ouvrir"
+    },
+    "availability": {
+      "label": "Disponibilités de la semaine",
+      "slot": {
+        "mor": "Matin",
+        "aft": "Après-midi",
+        "eve": "Soir"
+      },
+      "day": {
+        "sat": "Samedi",
+        "sun": "Dimanche",
+        "mon": "Lundi",
+        "tue": "Mardi",
+        "wed": "Mercredi",
+        "thu": "Jeudi",
+        "fri": "Vendredi"
+      },
+      "on": "Disponible",
+      "off": "Indisponible"
+    },
+    "audit": {
+      "time": "Heure",
+      "actor": "Qui",
+      "action": "Action",
+      "detail": "Détails",
+      "type": {
+        "system": "Système",
+        "admin": "Admin",
+        "therapist": "Thérapeute",
+        "member": "Membre"
+      }
+    }
+  }
+}
