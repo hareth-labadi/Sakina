@@ -21,6 +21,20 @@ The image is the Next.js standalone server (`output: 'standalone'`), runs as a n
 
 Living style guide: **/ar/design**, **/fr/design**, **/en/design**. Check every new component there in all three languages and both themes before using it in a screen.
 
+## Branches and releases
+
+| Branch | What it is | Gets changes from |
+| --- | --- | --- |
+| `main` | Exactly what is live in production | Release PRs from `dev`, hotfixes |
+| `dev` | Integration and staging (default branch) | Feature PRs |
+| `feat/…` `fix/…` `chore/…` | One topic each, short-lived | You |
+
+- **New work:** branch from the latest `dev`, open a PR into `dev`, **squash merge** once CI passes and the other person has reviewed. Delete the branch.
+- **Release:** open a PR from `dev` into `main` and merge it with a **merge commit** (never squash: it makes `dev` and `main` disagree and the next release conflicts). Tag it (`v0.2.0`).
+- **Hotfix:** branch from `main`, PR into `main`, then merge `main` back into `dev`.
+- Nobody pushes to `dev` or `main` directly. CI (`.github/workflows/ci.yml`: lint, translations, build, typecheck, audit, Docker image) runs on every PR into either.
+- Working on two things at once? Use a separate folder per branch (`git worktree add ../sakina-<topic> -b feat/<topic> origin/dev`) instead of switching branches in one folder.
+
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Radix primitives (`radix-ui`) · next-intl 4 · class-variance-authority.
