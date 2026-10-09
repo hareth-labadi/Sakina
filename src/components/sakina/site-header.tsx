@@ -5,7 +5,9 @@ import { Popover } from 'radix-ui';
 import { useState } from 'react';
 import { IconButton, buttonVariants } from '@/components/ui/button';
 import { CloseIcon, GlobeIcon, MenuIcon } from '@/components/ui/icons';
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { setSession, useSession } from '@/lib/session';
+import { useToast } from '@/components/ui/toast';
 import { cn } from '@/lib/cn';
 import { CrisisHelp } from './crisis-help';
 import { Logo } from './logo';
@@ -19,9 +21,19 @@ const NAV = [
   { href: '/design', key: 'design' }
 ] as const;
 
-/** `user` comes from the session once auth exists; null/undefined = guest. */
-export function SiteHeader({ user, onSignOut = () => {} }: { user?: SessionUser | null; onSignOut?: () => void }) {
+/** Reads the session itself; pass `user` only to force a state (e.g. in the style guide). */
+export function SiteHeader({ user: userProp }: { user?: SessionUser | null } = {}) {
   const t = useTranslations('nav');
+  const sessionUser = useSession();
+  const user = userProp === undefined ? sessionUser : userProp;
+  const router = useRouter();
+  const { toast } = useToast();
+  const onSignOut = () => {
+    setSession(null);
+    setMenuOpen(false);
+    toast(t('signedOut'));
+    router.push('/');
+  };
   const tc = useTranslations('common');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);

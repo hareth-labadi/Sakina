@@ -50,11 +50,4 @@ export function RecoveryCodeBox({ code, saved, onSavedChange, error }: { code: s
   );
 }
 
-/** Generates a 12-character code like K7QM-4XPT-9HDA (no ambiguous characters). Mock: the server will issue real codes. */
-export function generateRecoveryCode(): string {
-  const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  const buf = new Uint32Array(12);
-  crypto.getRandomValues(buf);
-  const chars = Array.from(buf, (n) => A[n % A.length]);
-  return [chars.slice(0, 4), chars.slice(4, 8), chars.slice(8)].map((g) => g.join('')).join('-');
-}
+export { generateRecoveryCode } from '@/lib/recovery';
