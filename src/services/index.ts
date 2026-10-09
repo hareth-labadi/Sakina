@@ -45,6 +45,7 @@ export const accounts = {
 };
 
 export { auth };
+export { savedStories, storyPages } from './reading';
 
 export const stories = {
   async featured(): Promise<StorySummary[]> {
