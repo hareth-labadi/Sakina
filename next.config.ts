@@ -38,6 +38,15 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Self-contained server in .next/standalone, used by the Docker image.
   output: 'standalone',
+  /**
+   * The browser reaches the API at /api on this same origin (first-party cookies, no CORS);
+   * Next forwards it to the API server, which is never exposed itself. Read at build time, so
+   * the Docker image takes API_INTERNAL_URL as a build argument.
+   */
+  async rewrites() {
+    const target = process.env.API_INTERNAL_URL;
+    return target ? [{ source: '/api/:path*', destination: `${target}/:path*` }] : [];
+  },
   async headers() {
     return [
       {

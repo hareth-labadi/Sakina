@@ -1,9 +1,10 @@
-# Weekly update PRs for npm packages, the Docker base image and the GitHub Actions used in CI.
+# Weekly update PRs for npm packages, the Docker base images and the GitHub Actions used in CI,
+# for both the web app (/) and the API (/backend).
 # Minor and patch npm updates arrive grouped in one PR; major versions come one by one.
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directories: [/, /backend]
     target-branch: dev
     schedule:
       interval: weekly
@@ -13,7 +14,7 @@ updates:
         update-types: [minor, patch]
 
   - package-ecosystem: docker
-    directory: /
+    directories: [/, /backend]
     target-branch: dev
     schedule:
       interval: weekly
