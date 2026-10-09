@@ -19,7 +19,11 @@ docker compose up --build    # http://localhost:3000
 
 The image is the Next.js standalone server (`output: 'standalone'`), runs as a non-root user with a read-only filesystem. `NEXT_PUBLIC_API_URL` is a **build** argument (baked into the browser bundle), set in `compose.yaml`. Day-to-day development stays on `npm run dev`; Docker is for running the production build. The backend and database get their own services in `compose.yaml` (placeholders are already there).
 
-Living style guide: **/ar/design**, **/fr/design**, **/en/design**. Check every new component there in all three languages and both themes before using it in a screen.
+Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server only; it is not linked in the nav and returns 404 in production builds). Check every new component there in all three languages and both themes before using it in a screen.
+
+### CI
+
+`.github/workflows/ci.yml` runs on every pull request and every push to `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs for npm, the Docker base image and the Actions. Nothing deploys yet: that waits until hosting is chosen.
 
 ## Stack
 
