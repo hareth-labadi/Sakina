@@ -6,16 +6,7 @@ The web front end (Next.js) is at the repo root; the API (Fastify + Postgres) is
 
 ## Run it
 
-```bash
-npm install
-npm run dev          # http://localhost:3000 (redirects to /ar, /fr or /en)
-```
-
-Other scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run check:i18n`.
-
-### The API, for local development
-
-The screens still run on mock data; the auth API exists but the screens switch to it in a later PR.
+The screens use the API for accounts, so run both. Once:
 
 ```bash
 docker compose -f compose.dev.yaml up -d     # Postgres on 127.0.0.1:15432, Mailpit inbox on http://localhost:8025
@@ -23,10 +14,21 @@ cd backend
 cp .env.example .env                         # then set DATA_ENCRYPTION_KEY (openssl rand -base64 32)
 npm install
 npm run db:migrate
-npm run dev                                  # http://localhost:4000/health
+npm run db:seed                              # the demo accounts below
+cd ..
+npm install
 ```
 
-With `API_INTERNAL_URL=http://localhost:4000` in the root `.env.local`, the web dev server forwards `/api/*` to it (http://localhost:3000/api/health). Every email the API sends lands in Mailpit, nothing leaves the machine. API scripts: `npm run lint`, `typecheck`, `test` (uses its own `sakina_test` database, created automatically), `build`, `db:generate` (new migration after a schema change).
+Then, in two terminals:
+
+```bash
+cd backend && npm run dev                    # API on http://localhost:4000
+npm run dev                                  # site on http://localhost:3000 (redirects to /ar, /fr or /en)
+```
+
+The web dev server forwards `/api/*` to the API on port 4000 (override with `API_INTERNAL_URL` in `.env.local`). Every email the API sends lands in Mailpit (http://localhost:8025): open sign-up verification and password-reset links from there. Nothing leaves the machine.
+
+Web scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run check:i18n`. API scripts: `npm run lint`, `typecheck`, `test` (uses its own `sakina_test` database, created automatically), `build`, `db:generate` (new migration after a schema change), `db:migrate`, `db:seed` (resets the demo accounts, development only).
 
 Staff accounts (therapist, moderator, admin) never sign up on the site. Create them with the CLI; it prints a password and recovery code once:
 
@@ -85,7 +87,7 @@ src/
   i18n/              locales, routing, request config, locale-aware Link/router
   lib/               cn(), fonts, theme store, password strength, avatars
   data/              MOCK data (conditions list, sample stories, crisis placeholders)
-  services/          the only place the UI gets data from (mock today, API later)
+  services/          the only place the UI gets data from (api.ts: the one fetch wrapper)
   types/             domain types shared with the future API
   proxy.ts           locale detection and redirects (Next 16 "proxy" = old middleware)
 ```
@@ -106,21 +108,21 @@ button (+ IconButton) · icons · field (Field, Input, Textarea, Select) · pass
 - `chat/`: MessageBubble, MessageList, RoomHeader, MessageComposer, TypingIndicator, DmRequestDialog, GuidedMinute
 - `panel/`: PanelLayout, RiskPill, QueueRow, AvailabilityGrid, AuditTable
 
-Helpers: `lib/safety.ts` (identifying-details hints; the real safety check belongs on the server), `lib/use-countdown.ts`, `lib/password.ts`, `lib/recovery.ts` (codes, email masking), `lib/session.ts` (mock session), `lib/avatar.ts`, `lib/theme.tsx`.
+Helpers: `lib/safety.ts` (identifying-details hints; the real safety check belongs on the server), `lib/use-countdown.ts`, `lib/password.ts`, `lib/recovery.ts` (codes, email masking), `lib/session.ts` (who is signed in, mirrored from the API), `lib/avatar.ts`, `lib/theme.tsx`.
 
-## Account screens (mock)
+## Account screens
 
 `/[locale]/signup` (3 steps: communities, identity, security) · `/signin` (lockout after 5 tries, suspended accounts) · `/forgot` (recovery code or email link, then a new password) · `/verify-email`.
 
-These run on `services/auth.ts` with a fake database in the browser's localStorage (`sakina-mock-db-v1`; clear it to reset). Test accounts, password `calm-river-22` for all:
+They run on the API (`services/auth.ts`). Demo accounts in development, created by `npm run db:seed` in `backend/` (run it again to reset them), password `calm-river-22` for all. The sign-in page lists them in development only.
 
 | Nickname | Case |
 | --- | --- |
 | `amal_dawn` | regular member, recovery code `K7QM-4XPT-9HDA` |
-| `leaf_demo` | recovers by email (`leaf.demo@example.com`) |
+| `leaf_demo` | recovers by email (`leaf.demo@example.com`, the link arrives in Mailpit) |
 | `still_water` | suspended |
 
-The mock answers the same way for unknown nicknames and wrong emails, as the real API must, so nobody can learn which accounts exist.
+Emailed links open `/forgot?token=…` and `/verify-email?token=…`; the page checks the token once and removes it from the address bar.
 
 ## Rules of the design system
 
@@ -131,28 +133,38 @@ The mock answers the same way for unknown nicknames and wrong emails, as the rea
 - Every string goes in `messages/*.json`. Keys are type-checked against `en.json`; `npm run check:i18n` keeps ar/fr in sync.
 - No emoji, no invented statistics (use `000`), no emergency numbers until verified with local partners.
 
-## Connecting the front end to the API
+## Front end and API
 
-Pages call `src/services` only. Set `NEXT_PUBLIC_API_URL=/api` and replace each mock function body with `api<T>('/path')`; types in `src/types/domain.ts` become the API contract. Auth will use an httpOnly session cookie set by the API (no tokens in localStorage).
+Pages call `src/services` only, which call the API through `services/api.ts` at `/api` on the same origin. The session is an httpOnly cookie set by the API: no token is ever readable by JavaScript. `lib/session.ts` mirrors `GET /api/auth/me` for the screens and keeps only a non-secret hint (nickname, avatar) in localStorage so the header doesn't flash "Sign in" while it loads.
 
-API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, rate limits, same-origin check, error handling), `db/` (Drizzle schema, client, migration runner), `modules/auth/` (routes, sessions, lockout, emails, cleanup), `lib/` (hashing, encryption, recovery codes, mailer), `cli/` (staff accounts). Migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
+| Data | Where it comes from |
+| --- | --- |
+| Accounts, sessions, recovery, profile, community memberships | The API |
+| Communities, stories, story pages | Static sample data in `src/data` |
+| Saved stories, notifications | This browser's localStorage (`sakina-local-v2`, `services/mock-db.ts`) until their API exists |
 
-### Auth API
+To switch one of the remaining services: add the route in `backend/`, then replace the function body with `api<T>('/path')`; the signature stays, so the screens don't change. Types in `src/types/domain.ts` are the contract.
+
+API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, rate limits, same-origin check, error handling), `db/` (Drizzle schema, client, migration runner), `modules/auth/` (routes, sessions, lockout, emails, cleanup), `modules/account/` (profile, memberships), `lib/` (hashing, encryption, recovery codes, mailer), `cli/` (staff accounts); `db/seed.ts` (demo accounts, development only). Migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
+
+### API routes
 
 All under `/api` in the browser. Requests that change something must come from the site's own origin (`Origin` header), or they get `403`.
 
-| Route | Mock function | Answers |
+| Route | Service function | Answers |
 | --- | --- | --- |
 | `POST /auth/signup` | `signUp` | `201 {user, emailToVerify}` (masked) + session cookie · `409 nickname_taken` · `400 invalid` / `weak_password` |
 | `POST /auth/signin` `{nickname, password, remember}` | `signIn` | `200 {user}` + cookie · `401 {error:'invalid', attemptsLeft}` · `423 {error:'locked', until}` · `403 {error:'suspended', reason}` |
-| `POST /auth/signout` · `GET /auth/me` | (session) | `204` · `200 {user}` / `401` |
+| `POST /auth/signout` · `GET /auth/me` | `signOut` · `me` | `204` · `200 {user}` (`{user: null}` for guests) |
 | `POST /auth/recovery/code` `{nickname, code}` | `verifyRecoveryCode` | `200 {token}` · `400` · `423` |
 | `POST /auth/recovery/email` `{nickname, email, locale}` | `requestEmailReset` | always `202 {}`; a matching address gets a link to `/<locale>/forgot?token=…` |
 | `POST /auth/reset/check` `{token}` | `isResetTokenValid` | `{valid}` |
 | `POST /auth/reset` `{token, password}` | `resetPassword` | `{newRecoveryCode}` (code accounts) or `{newRecoveryCode: null}`; signs out every device |
 | `POST /auth/email/verify` `{token}` | `verifyEmail` | `204` · `400`; link goes to `/<locale>/verify-email?token=…` |
 | `POST /auth/email/resend` · `POST /auth/recovery/switch-to-code` · `GET /auth/recovery` | `resendVerification` · `switchToRecoveryCode` · `getRecoveryInfo` | need a session; the email only leaves masked |
-| `GET /accounts/nickname-availability?nickname=` | `isNicknameAvailable` + `suggestNicknames` | `{available, reason?, suggestions}` |
+| `GET /accounts/nickname-availability?nickname=` | `checkNickname` | `{available, reason?, suggestions}` |
+| `GET /me/profile` | `profile.get` | own profile, recovery email masked |
+| `GET /me/communities` · `PUT`/`DELETE /me/communities/:id` | `memberships` | `{communities}` · `204` (join and leave are idempotent) |
 
 Rules: 5 failed tries lock a nickname for 15 minutes, for unknown nicknames too, with the same answers and timing (no account enumeration). Sessions: 30 days with "remember me", otherwise a browser-session cookie limited to 12 hours on the server. Passwords and recovery codes are argon2id hashes; session and reset tokens are stored as SHA-256; the recovery email is AES-256-GCM encrypted. Expired sessions, tokens and old attempt counters are deleted hourly.
 

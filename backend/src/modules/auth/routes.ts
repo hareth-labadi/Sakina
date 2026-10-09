@@ -7,7 +7,7 @@
  * - Secrets never come back out: no hashes, no full email (masked only), recovery codes shown once.
  */
 import { and, eq, gt, inArray } from 'drizzle-orm';
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { Config } from '../../config.js';
 import type { Db } from '../../db/client.js';
@@ -19,7 +19,7 @@ import { burnVerifyTime, hashSecret, isAcceptablePassword, verifySecret } from '
 import { generateRecoveryCode, isRecoveryCodeFormat, maskEmail, normalizeRecoveryCode } from '../../lib/recovery.js';
 import { LOCALES, resetEmail, verifyEmail, type Locale } from './emails.js';
 import { clearFailures, lockedUntil, recordFailure } from './lockout.js';
-import { clearSessionCookie, currentAccount, endAllSessions, endSession, startSession, type SessionAccount } from './sessions.js';
+import { clearSessionCookie, currentAccount, endAllSessions, endSession, requireAccount, startSession, type SessionAccount } from './sessions.js';
 
 export type AuthDeps = { db: Db; config: Config; mailer: Mailer };
 
@@ -56,7 +56,7 @@ const signUpBody = z.object({
   locale
 });
 
-const toUser = (a: SessionAccount) => ({ nickname: a.nickname, avatar: a.avatar, role: a.role, unreadNotifications: 0 });
+export const toUser = (a: SessionAccount) => ({ nickname: a.nickname, avatar: a.avatar, role: a.role, unreadNotifications: 0 });
 
 const isUniqueViolation = (err: unknown): boolean => {
   const e = err as { code?: string; cause?: { code?: string } };
@@ -97,15 +97,6 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
     await db.delete(tokens).where(and(eq(tokens.accountId, accountId), eq(tokens.purpose, 'email_verify')));
     const value = await issueToken(accountId, 'email_verify', VERIFY_EMAIL_HOURS * 3_600_000);
     sendLater(req, { to, ...verifyEmail(config.PUBLIC_WEB_URL, lang, value) });
-  }
-
-  async function requireAccount(req: FastifyRequest, reply: FastifyReply) {
-    const s = await currentAccount(db, config, req);
-    if (!s) {
-      void reply.status(401).send({ error: 'unauthenticated' });
-      return null;
-    }
-    return s;
   }
 
   /* ---------- sign up ---------- */
@@ -181,10 +172,10 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
     return reply.status(204).send();
   });
 
-  app.get('/auth/me', async (req, reply) => {
-    const s = await requireAccount(req, reply);
-    if (!s) return reply;
-    return { user: toUser(s.account) };
+  /** Who is signed in. A guest is a normal answer here (200 with null), not an error. */
+  app.get('/auth/me', async (req) => {
+    const s = await currentAccount(db, config, req);
+    return { user: s ? toUser(s.account) : null };
   });
 
   /* ---------- recovery ---------- */
@@ -290,7 +281,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
   });
 
   app.post('/auth/email/resend', limit(3, '15 minutes'), async (req, reply) => {
-    const s = await requireAccount(req, reply);
+    const s = await requireAccount(db, config, req, reply);
     if (!s) return reply;
     const body = parse(z.object({ locale }), req.body ?? {});
     const [rec] = await db.select().from(recovery).where(eq(recovery.accountId, s.account.id));
@@ -302,7 +293,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
 
   /** Replaces the email (or the old code) with a new recovery code, shown once. */
   app.post('/auth/recovery/switch-to-code', limit(5, '15 minutes'), async (req, reply) => {
-    const s = await requireAccount(req, reply);
+    const s = await requireAccount(db, config, req, reply);
     if (!s) return reply;
     const code = generateRecoveryCode();
     const codeHash = await hashSecret(normalizeRecoveryCode(code));
@@ -316,7 +307,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
 
   /** How the signed-in member can recover their account. The email only ever leaves masked. */
   app.get('/auth/recovery', async (req, reply) => {
-    const s = await requireAccount(req, reply);
+    const s = await requireAccount(db, config, req, reply);
     if (!s) return reply;
     const [rec] = await db.select().from(recovery).where(eq(recovery.accountId, s.account.id));
     if (!rec) return reply.status(404).send({ error: 'not_found' });

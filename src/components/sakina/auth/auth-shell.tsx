@@ -41,7 +41,8 @@ function AsidePanels({ kind }: { kind: AuthAside }) {
       {chunks}
     </bdi>
   );
-  const demo = (
+  // The demo accounts exist only in development databases (`npm run db:seed` in backend/).
+  const demo = process.env.NODE_ENV === 'production' ? null : (
     <Card tint="sand" key="demo">
       <Tag className="bg-surface">{t('demoTitle')}</Tag>
       <p>{t.rich('demoBody', { x })}</p>

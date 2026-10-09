@@ -13,6 +13,7 @@ import type { Config } from './config.js';
 import type { Db } from './db/client.js';
 import { createMailer, type Mailer } from './lib/mailer.js';
 import { requireSameOrigin } from './lib/same-origin.js';
+import { accountRoutes } from './modules/account/routes.js';
 import { authRoutes } from './modules/auth/routes.js';
 
 /**
@@ -79,6 +80,7 @@ export async function buildServer(config: Config, db: Db, deps: { mailer?: Maile
   });
 
   await authRoutes(app, { db, config, mailer: deps.mailer ?? createMailer(config, app.log) });
+  await accountRoutes(app, { db, config });
 
   return app;
 }

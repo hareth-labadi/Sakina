@@ -11,8 +11,8 @@ services:
     build:
       context: .
       args:
-        # Empty = the UI still runs on mock data. Set to "/api" when the services layer switches over.
-        NEXT_PUBLIC_API_URL: ""
+        # Where the browser calls the API: /api on this same origin, forwarded to "api" below.
+        NEXT_PUBLIC_API_URL: /api
         API_INTERNAL_URL: http://api:4000
     ports:
       - "3000:3000"

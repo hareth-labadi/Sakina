@@ -1,15 +1,17 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useState, type FormEvent } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { buttonVariants, Button } from '@/components/ui/button';
-import { Card, ErrorState, Notice, Tag } from '@/components/ui/display';
+import { ErrorState, Notice, Skeleton } from '@/components/ui/display';
 import { Field, Input } from '@/components/ui/field';
 import { BackIcon } from '@/components/ui/icons';
 import { PasswordInput, PasswordStrength } from '@/components/ui/password-input';
 import { Link } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
 import { MIN_PASSWORD_LEVEL, passwordLevel } from '@/lib/password';
 import { isValidEmail, maskEmail, normalizeRecoveryCode } from '@/lib/recovery';
+import { refreshSession } from '@/lib/session';
 import { auth } from '@/services';
 import { RecoveryCodeBox } from '../account/recovery-code';
 
@@ -17,7 +19,8 @@ type Step =
   | { s: 'choose' }
   | { s: 'code' }
   | { s: 'email' }
-  | { s: 'sent'; email: string; devToken: string | null }
+  | { s: 'checking' }
+  | { s: 'sent'; email: string }
   | { s: 'badlink' }
   | { s: 'newpw'; token: string }
   | { s: 'done'; newCode: string | null };
@@ -25,6 +28,7 @@ type Step =
 /**
  * Account recovery: by recovery code, or by a link sent to the recovery email.
  * Both lead to choosing a new password. Using a code replaces it with a new one, shown once.
+ * The emailed link opens this page with ?token=…; the token is checked, then removed from the address bar.
  */
 export function ForgotForm() {
   const t = useTranslations('auth.forgot');
@@ -32,6 +36,7 @@ export function ForgotForm() {
   const tsu = useTranslations('auth.signup');
   const tc = useTranslations('auth.common');
   const tp = useTranslations('password');
+  const locale = useLocale() as Locale;
 
   const [step, setStep] = useState<Step>({ s: 'choose' });
   const [nickname, setNickname] = useState('');
@@ -42,6 +47,25 @@ export function ForgotForm() {
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [busy, setBusy] = useState(false);
+  // Checked once even if the effect runs twice (React dev mode); the URL no longer has it by then.
+  const linkCheck = useRef<{ token: string; valid: Promise<boolean> } | null>(null);
+
+  // Arrived from the emailed link: check its token, and drop it from the URL so it doesn't stay in history.
+  useEffect(() => {
+    if (!linkCheck.current) {
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) return;
+      window.history.replaceState(null, '', window.location.pathname);
+      linkCheck.current = { token, valid: auth.isResetTokenValid(token).catch(() => false) };
+    }
+    const { token, valid } = linkCheck.current;
+    let live = true;
+    setStep({ s: 'checking' });
+    void valid.then((ok) => live && setStep(ok ? { s: 'newpw', token } : { s: 'badlink' }));
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const restart = () => {
     setStep({ s: 'choose' });
@@ -70,7 +94,7 @@ export function ForgotForm() {
     void run(async () => {
       const res = await auth.verifyRecoveryCode(nickname, code);
       if (res.ok) setStep({ s: 'newpw', token: res.token });
-      else setErrors({ form: t('codeWrong') });
+      else setErrors({ form: res.locked ? t('codeLocked') : t('codeWrong') });
     });
   };
 
@@ -80,16 +104,10 @@ export function ForgotForm() {
     setErrors(errs);
     if (errs.nickname || errs.email) return;
     void run(async () => {
-      const res = await auth.requestEmailReset(nickname, email);
-      setStep({ s: 'sent', email, devToken: res.devToken });
+      await auth.requestEmailReset(nickname, email, locale);
+      setStep({ s: 'sent', email });
     });
   };
-
-  const openLink = (token: string | null) =>
-    run(async () => {
-      if (token && (await auth.isResetTokenValid(token))) setStep({ s: 'newpw', token });
-      else setStep({ s: 'badlink' });
-    });
 
   const submitNewPassword = (e: FormEvent, token: string) => {
     e.preventDefault();
@@ -101,7 +119,12 @@ export function ForgotForm() {
     if (errs.pw || errs.pw2) return;
     void run(async () => {
       const res = await auth.resetPassword(token, pw);
-      if (res.ok) setStep({ s: 'done', newCode: res.newRecoveryCode });
+      if (res.ok) {
+        setStep({ s: 'done', newCode: res.newRecoveryCode });
+        // A reset signs out every device, this one included.
+        void refreshSession();
+      }
+      else if (res.error === 'weak_password') setErrors({ pw: tsu('errors.passwordWeak') });
       else setStep({ s: 'badlink' });
     });
   };
@@ -182,14 +205,15 @@ export function ForgotForm() {
           <Notice tone="calm" role="status" title={t('sentTitle')}>
             {t('sentBody', { email: maskEmail(step.email) })}
           </Notice>
-          <Card flat className="gap-3 p-5">
-            <Tag>{tc('prototype')}</Tag>
-            <p className="text-ink-2">{t('simulateHint')}</p>
-            <div>
-              <Button size="sm" onClick={() => void openLink(step.devToken)} disabled={busy}>{t('openLink')}</Button>
-            </div>
-          </Card>
           <Button variant="ghost" className="w-fit" onClick={restart}>{t('tryOther')}</Button>
+        </div>
+      );
+
+    case 'checking':
+      return (
+        <div aria-busy="true" className="flex flex-col gap-3">
+          <Skeleton className="h-6 w-2/3" />
+          <Skeleton className="h-4 w-full" />
         </div>
       );
 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { IconButton, buttonVariants } from '@/components/ui/button';
 import { CloseIcon, GlobeIcon, MenuIcon } from '@/components/ui/icons';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
-import { setSession, useSession } from '@/lib/session';
+import { signOut, useSession } from '@/lib/session';
 import { useToast } from '@/components/ui/toast';
 import { cn } from '@/lib/cn';
 import { CrisisHelp } from './crisis-help';
@@ -27,8 +27,8 @@ export function SiteHeader({ user: userProp }: { user?: SessionUser | null } = {
   const user = userProp === undefined ? sessionUser : userProp;
   const router = useRouter();
   const { toast } = useToast();
-  const onSignOut = () => {
-    setSession(null);
+  const onSignOut = async () => {
+    await signOut();
     setMenuOpen(false);
     toast(t('signedOut'));
     router.push('/');

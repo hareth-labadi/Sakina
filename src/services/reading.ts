@@ -4,7 +4,7 @@
 import { SAMPLE_STORIES } from '@/data/stories';
 import { STORY_DETAILS } from '@/data/story-details';
 import type { Story, StorySummary } from '@/types/domain';
-import { delay, readDb, writeDb } from './mock-db';
+import { delay, memberOf, readDb, writeDb } from './mock-db';
 
 export const storyPages = {
   ids(): string[] {
@@ -27,25 +27,24 @@ export const storyPages = {
   }
 };
 
-/** Bookmarks. Private to the member. Browser only: reads the mock store. */
+/** Bookmarks. Private to the member. Kept in this browser until the stories API exists (see `./mock-db`). */
 export const savedStories = {
   async isSaved(nickname: string, storyId: string): Promise<boolean> {
-    return readDb().accounts[nickname.toLowerCase()]?.saved?.includes(storyId) ?? false;
+    return memberOf(readDb(), nickname).saved?.includes(storyId) ?? false;
   },
   async setSaved(nickname: string, storyId: string, saved: boolean): Promise<{ ok: boolean }> {
     await delay(250);
     const db = readDb();
-    const a = db.accounts[nickname.toLowerCase()];
-    if (!a) return { ok: false };
-    const list = a.saved ?? [];
-    a.saved = saved ? [storyId, ...list.filter((id) => id !== storyId)] : list.filter((id) => id !== storyId);
+    const m = memberOf(db, nickname);
+    const list = m.saved ?? [];
+    m.saved = saved ? [storyId, ...list.filter((id) => id !== storyId)] : list.filter((id) => id !== storyId);
     writeDb(db);
     return { ok: true };
   },
   /** Most recently saved first. */
   async list(nickname: string): Promise<StorySummary[]> {
     await delay();
-    const ids = readDb().accounts[nickname.toLowerCase()]?.saved ?? [];
+    const ids = memberOf(readDb(), nickname).saved ?? [];
     return ids.map((id) => SAMPLE_STORIES.find((s) => s.id === id)).filter((s): s is StorySummary => Boolean(s));
   }
 };

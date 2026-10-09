@@ -46,9 +46,9 @@ export function SignInForm() {
     setSubmitting(true);
     setProblem(null);
     try {
-      const res = await auth.signIn(nickname, password);
+      const res = await auth.signIn(nickname, password, remember);
       if (res.ok) {
-        setSession(res.user, remember);
+        setSession(res.user);
         toast(t('welcomeBack', { nickname: res.user.nickname }));
         router.push('/');
         return;

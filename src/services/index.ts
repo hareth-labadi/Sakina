@@ -1,34 +1,17 @@
 /**
  * Data access for the UI. Pages and components call these functions only, never fetch() directly.
  *
- * Today every function returns mock data. When the backend exists, set NEXT_PUBLIC_API_URL and
- * replace each body with a call through `api()` below; the signatures (and the UI) stay the same.
+ * Accounts, sessions, profiles and memberships go to the API (`./api`). Communities and stories
+ * are still static sample data, and saved stories and notifications are kept in this browser
+ * (`./mock-db`) until their API exists; each keeps its signature when it switches.
  */
 import { CONDITIONS } from '@/data/conditions';
 import { SAMPLE_STORIES } from '@/data/stories';
 import type { Community, StorySummary } from '@/types/domain';
+import { request } from './api';
 import * as auth from './auth';
-import { delay, readDb, writeDb } from './mock-db';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
-
-/** Shared fetch wrapper for the future API (JSON, credentials, typed errors). */
-export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is not set');
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init?.headers }
-  });
-  if (!res.ok) throw new ApiError(res.status, await res.text());
-  return (await res.json()) as T;
-}
-
-export class ApiError extends Error {
-  constructor(public status: number, body: string) {
-    super(`API ${status}: ${body}`);
-  }
-}
+export { api, ApiError, request } from './api';
 
 export const communities = {
   async list(): Promise<Community[]> {
@@ -39,26 +22,21 @@ export const communities = {
   }
 };
 
-/** Which communities the signed-in member belongs to (browser only: reads the mock store). */
+/** Which communities the signed-in member belongs to. */
 export const memberships = {
-  async isMember(nickname: string, communityId: string): Promise<boolean> {
-    return readDb().accounts[nickname.toLowerCase()]?.communities.includes(communityId) ?? false;
+  async isMember(communityId: string): Promise<boolean> {
+    const res = await request<{ communities: string[] }>('/me/communities');
+    return res.status === 200 && res.data.communities.includes(communityId);
   },
-  async setMember(nickname: string, communityId: string, member: boolean): Promise<{ ok: boolean }> {
-    await delay(300);
-    const db = readDb();
-    const a = db.accounts[nickname.toLowerCase()];
-    if (!a) return { ok: false };
-    a.communities = member ? [...new Set([...a.communities, communityId])] : a.communities.filter((id) => id !== communityId);
-    writeDb(db);
-    return { ok: true };
+  async setMember(communityId: string, member: boolean): Promise<{ ok: boolean }> {
+    const res = await request(`/me/communities/${encodeURIComponent(communityId)}`, { method: member ? 'PUT' : 'DELETE' });
+    return { ok: res.status === 204 };
   }
 };
 
 export const accounts = {
-  isNicknameAvailable: auth.isNicknameAvailable,
-  /** Suggestions shown when a nickname is taken. */
-  suggestNicknames: auth.suggestNicknames
+  /** Availability, plus up to 3 free suggestions when taken. */
+  checkNickname: auth.checkNickname
 };
 
 export { auth };

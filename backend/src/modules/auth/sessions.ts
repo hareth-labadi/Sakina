@@ -54,6 +54,13 @@ export async function currentAccount(db: Db, config: Config, req: FastifyRequest
   return { account: row.account, idHash };
 }
 
+/** The signed-in account, or null after answering 401. Handlers return `reply` when it's null. */
+export async function requireAccount(db: Db, config: Config, req: FastifyRequest, reply: FastifyReply) {
+  const s = await currentAccount(db, config, req);
+  if (!s) void reply.status(401).send({ error: 'unauthenticated' });
+  return s;
+}
+
 export async function endSession(db: Db, idHash: string) {
   await db.delete(sessions).where(eq(sessions.idHash, idHash));
 }
