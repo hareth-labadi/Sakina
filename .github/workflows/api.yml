@@ -1,0 +1,74 @@
+# Checks the API (backend/) on every pull request and every push to main.
+# Runs always, not only when backend/ changed, so it can be a required check on main.
+name: API
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 24 # keep in step with backend/Dockerfile
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  api:
+    name: API (lint, types, audit, migrate, test, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # A throwaway Postgres for this job only, same version as production.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: sakina
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: sakina
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sakina"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://sakina:ci-only@localhost:5432/sakina
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run audit
+      # Applying migrations to an empty database catches broken ones before they reach production.
+      - run: node --import tsx src/db/migrate.ts
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    name: API Docker image builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: false
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max

@@ -1,0 +1,25 @@
+# Local development services. Web and API run on the host (`npm run dev`) for fast reloads;
+# only what they need runs here.
+#
+#   Start: docker compose -f compose.dev.yaml up -d      Stop: docker compose -f compose.dev.yaml down
+#   Wipe the database: docker compose -f compose.dev.yaml down -v
+
+name: sakina-dev
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: sakina
+      POSTGRES_DB: sakina
+      POSTGRES_PASSWORD: sakina-dev # local only; matches backend/.env.example
+    ports:
+      - "127.0.0.1:15432:5432" # this machine only; 15432 so it never clashes with a locally installed Postgres
+    volumes:
+      - db-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sakina"]
+      interval: 5s
+
+volumes:
+  db-dev-data:
