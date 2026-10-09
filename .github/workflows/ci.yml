@@ -1,10 +1,8 @@
-# Checks every pull request into dev or main, and every push to them. Nothing is deployed from here yet.
-# Branch protection requires the job names below ("checks", "docker", "secrets"), so keep them stable.
+# Checks every pull request and every push to dev and main. Nothing is deployed from here.
 name: CI
 
 on:
   pull_request:
-    branches: [dev, main]
   push:
     branches: [dev, main]
 
@@ -12,18 +10,18 @@ on:
 permissions:
   contents: read
 
-# A new push to the same PR cancels the run that is still going (pushes to dev/main always finish).
+# A new push to the same branch cancels the run that is still going.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: 24 # keep in step with the Dockerfile
   NEXT_TELEMETRY_DISABLED: 1
 
 jobs:
-  checks:
-    name: checks
+  web:
+    name: Web (lint, types, i18n, audit, build)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -33,27 +31,20 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - name: Lint
-        run: npm run lint
-      - name: Translations in sync
-        run: npm run check:i18n
-      - name: Audit production dependencies
-        run: npm run audit
-      # next build also type-checks; it generates the route types tsc needs below.
-      - name: Build
-        run: npm run build
-      - name: Typecheck
-        run: npm run typecheck
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run check:i18n
+      - run: npm run audit
+      - run: npm run build
 
   docker:
-    name: docker
+    name: Docker image builds
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: docker/setup-buildx-action@v3
-      - name: Build production image (not pushed)
-        uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v6
         with:
           context: .
           push: false
@@ -61,17 +52,17 @@ jobs:
           cache-to: type=gha,mode=max
 
   secrets:
-    name: secrets
+    name: No secrets committed
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
-      pull-requests: read # gitleaks lists the PR's commits to know what to scan
+      pull-requests: read # the action lists the PR's commits to know what to scan
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # scan the whole history, not just the last commit
-      - name: No secrets committed
-        uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: false # findings show in the job log; the token can't write PR comments

@@ -19,7 +19,11 @@ docker compose up --build    # http://localhost:3000
 
 The image is the Next.js standalone server (`output: 'standalone'`), runs as a non-root user with a read-only filesystem. `NEXT_PUBLIC_API_URL` is a **build** argument (baked into the browser bundle), set in `compose.yaml`. Day-to-day development stays on `npm run dev`; Docker is for running the production build. The backend and database get their own services in `compose.yaml` (placeholders are already there).
 
-Living style guide: **/ar/design**, **/fr/design**, **/en/design**. Check every new component there in all three languages and both themes before using it in a screen.
+Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server only; it is not linked in the nav and returns 404 in production builds). Check every new component there in all three languages and both themes before using it in a screen.
+
+### CI
+
+`.github/workflows/ci.yml` runs on every pull request and every push to `dev` and `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev` for npm, the Docker base image and the Actions. Nothing deploys yet: that waits until hosting is chosen.
 
 ## Branches and releases
 
@@ -32,7 +36,7 @@ Living style guide: **/ar/design**, **/fr/design**, **/en/design**. Check every 
 - **New work:** branch from the latest `dev`, open a PR into `dev`, **squash merge** once CI passes and the other person has reviewed. Delete the branch.
 - **Release:** open a PR from `dev` into `main` and merge it with a **merge commit** (never squash: it makes `dev` and `main` disagree and the next release conflicts). Tag it (`v0.2.0`).
 - **Hotfix:** branch from `main`, PR into `main`, then merge `main` back into `dev`.
-- Nobody pushes to `dev` or `main` directly. CI (`.github/workflows/ci.yml`) runs on every PR into either: lint, translations, production audit, build, typecheck, a Docker image build (not pushed) and a gitleaks scan of the whole history for committed secrets. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev`. Nothing deploys yet: that waits until hosting is chosen.
+- Nobody pushes to `dev` or `main` directly; every change goes through a PR that passes CI (above).
 - Working on two things at once? Use a separate folder per branch (`git worktree add ../sakina-<topic> -b feat/<topic> origin/dev`) instead of switching branches in one folder.
 
 ## Stack

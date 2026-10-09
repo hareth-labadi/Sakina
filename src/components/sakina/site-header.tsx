@@ -17,8 +17,7 @@ import type { SessionUser } from '@/types/domain';
 
 const NAV = [
   { href: '/', key: 'home' },
-  { href: '/communities', key: 'communities' },
-  { href: '/design', key: 'design' }
+  { href: '/communities', key: 'communities' }
 ] as const;
 
 /** Reads the session itself; pass `user` only to force a state (e.g. in the style guide). */
