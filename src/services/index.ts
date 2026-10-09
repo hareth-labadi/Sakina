@@ -8,6 +8,7 @@ import { CONDITIONS } from '@/data/conditions';
 import { SAMPLE_STORIES } from '@/data/stories';
 import type { Community, StorySummary } from '@/types/domain';
 import * as auth from './auth';
+import { delay, readDb, writeDb } from './mock-db';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
@@ -34,7 +35,23 @@ export const communities = {
     return CONDITIONS.filter((c) => c.status === 'active');
   },
   async get(id: string): Promise<Community | null> {
-    return CONDITIONS.find((c) => c.id === id) ?? null;
+    return CONDITIONS.find((c) => c.id === id && c.status === 'active') ?? null;
+  }
+};
+
+/** Which communities the signed-in member belongs to (browser only: reads the mock store). */
+export const memberships = {
+  async isMember(nickname: string, communityId: string): Promise<boolean> {
+    return readDb().accounts[nickname.toLowerCase()]?.communities.includes(communityId) ?? false;
+  },
+  async setMember(nickname: string, communityId: string, member: boolean): Promise<{ ok: boolean }> {
+    await delay(300);
+    const db = readDb();
+    const a = db.accounts[nickname.toLowerCase()];
+    if (!a) return { ok: false };
+    a.communities = member ? [...new Set([...a.communities, communityId])] : a.communities.filter((id) => id !== communityId);
+    writeDb(db);
+    return { ok: true };
   }
 };
 
@@ -49,6 +66,10 @@ export { savedStories, storyPages } from './reading';
 
 export const stories = {
   async featured(): Promise<StorySummary[]> {
-    return SAMPLE_STORIES;
+    return SAMPLE_STORIES.slice(0, 3);
+  },
+  /** Newest first. */
+  async byCommunity(communityId: string): Promise<StorySummary[]> {
+    return SAMPLE_STORIES.filter((s) => s.communityId === communityId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 };
