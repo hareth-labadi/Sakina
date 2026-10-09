@@ -43,7 +43,7 @@ Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server o
 
 ### CI
 
-`.github/workflows/ci.yml` runs on every pull request and every push to `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs for npm, the Docker base image and the Actions. Nothing deploys yet: that waits until hosting is chosen.
+`.github/workflows/ci.yml` runs on every pull request and every push to `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. `.github/workflows/api.yml` does the same for `backend/`: lint, typecheck, audit, migrations applied to an empty Postgres, tests, build and image build. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs for npm and the Docker base images (web and API) and the Actions. Nothing deploys yet: that waits until hosting is chosen.
 
 ## Stack
 
