@@ -40,6 +40,26 @@ export type StorySummary = {
   createdAt: string; // ISO 8601
 };
 
+export type Reply = {
+  id: string;
+  authorNickname: string;
+  authorAvatar: number;
+  text: string;
+  createdAt: string; // ISO 8601
+  /** Set when a verified therapist wrote it. */
+  therapist?: TherapistKind;
+  relateCount: number;
+  /** One level of nesting only. */
+  replies?: Reply[];
+};
+
+/** A story as shown on its own page. */
+export type Story = StorySummary & {
+  body: string;
+  reactions: Record<Reaction, number>;
+  replies: Reply[];
+};
+
 export type Role = 'member' | 'therapist' | 'moderator' | 'admin';
 
 /** What the UI knows about the signed-in person. Never contains email or password. */
@@ -52,3 +72,19 @@ export type SessionUser = {
 
 export type RiskLevel = 'high' | 'medium' | 'low';
 export type TherapistKind = 'psychologist' | 'psychiatrist';
+
+export type NotificationKind = 'reply' | 'reaction' | 'therapist' | 'held' | 'approved';
+
+/** Something that happened to the member's own posts. Always about content, never about who is online. */
+export type AppNotification = {
+  id: string;
+  kind: NotificationKind;
+  storyId: string;
+  storyTitle: string;
+  /** Who replied (kind "reply"). */
+  actor?: string;
+  /** How many people reacted (kind "reaction"). */
+  count?: number;
+  createdAt: string; // ISO 8601
+  read: boolean;
+};

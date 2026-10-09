@@ -111,6 +111,20 @@
       "copied": "Lien copié",
       "copyFailed": "Impossible de copier le lien.",
       "report": "Signaler"
+    },
+    "page": {
+      "back": "Retour à {community}",
+      "backAll": "Toutes les communautés",
+      "mood": "Humeur : {mood}",
+      "lockedTitle": "Cette histoire est réservée aux membres",
+      "lockedBody": "L'auteur a choisi de la partager avec les membres seulement. L'inscription est anonyme : juste un pseudo et un mot de passe.",
+      "join": "Rejoindre anonymement",
+      "signIn": "Se connecter",
+      "repliesTitle": "{count, plural, =0 {Réponses} one {# réponse} other {# réponses}}",
+      "joinToReply": "Rejoindre pour répondre",
+      "replied": "Réponse publiée",
+      "reported": "Merci. Un modérateur va examiner ce signalement.",
+      "failed": "Ça n'a pas marché. Réessayez."
     }
   },
   "community": {
@@ -121,7 +135,32 @@
     },
     "meta": "{count, plural, =0 {000 membres · pas encore d'histoire} one {000 membres · # histoire} other {000 membres · # histoires}}",
     "open": "Ouvrir",
-    "openNamed": "Ouvrir {name}"
+    "openNamed": "Ouvrir {name}",
+    "page": {
+      "back": "Toutes les communautés",
+      "join": "Rejoindre cette communauté",
+      "joined": "Membre",
+      "leaveNamed": "Vous êtes membre de {name}. Sélectionnez pour quitter.",
+      "joinedToast": "Vous avez rejoint {name}",
+      "leftToast": "Vous avez quitté {name}",
+      "failed": "Ça n'a pas marché. Réessayez.",
+      "postsTitle": "Partagé ici",
+      "filterLabel": "Afficher",
+      "all": "Tout",
+      "emptyTitle": "Rien n'a encore été partagé ici",
+      "emptyBody": "Les histoires, nouvelles et petites victoires des membres apparaîtront ici.",
+      "emptyFiltered": "Rien de ce type pour le moment",
+      "aboutTitle": "À propos de cet espace",
+      "sensitivityNote": {
+        "sensitive": "Certains messages évoquent des expériences douloureuses. Les détails difficiles restent derrière un avertissement jusqu'à ce que vous choisissiez de les lire.",
+        "high": "Cet espace aborde des sujets lourds. Les détails difficiles restent derrière un avertissement jusqu'à ce que vous choisissiez de les lire, et vous pouvez arrêter à tout moment."
+      },
+      "rule1": "Parlez de votre propre expérience.",
+      "rule2": "Pas de diagnostic ni de conseil sur les médicaments pour les autres.",
+      "rule3": "Pas de noms, de lieux ni de coordonnées.",
+      "crisisTitle": "Si vous n'êtes pas en sécurité maintenant",
+      "crisisBody": "Pas besoin de compte pour obtenir de l'aide."
+    }
   },
   "home": {
     "badge": "Entraide anonyme · Algérie",
@@ -797,5 +836,26 @@
     "privacyTitle": "Votre confidentialité",
     "privacy1": "Les autres membres ne voient que votre pseudo et votre avatar.",
     "privacy2": "Votre tranche d'âge et votre pays restent privés."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "sub": "Réponses, réactions et vérifications de sécurité sur vos messages. Vous seul·e les voyez.",
+    "loading": "Chargement des notifications…",
+    "unread": "Non lue",
+    "unreadCount": "{count, plural, =0 {Tout est lu} one {# non lue} other {# non lues}}",
+    "markAll": "Tout marquer comme lu",
+    "allRead": "Toutes les notifications sont marquées comme lues",
+    "emptyTitle": "Rien de nouveau",
+    "emptyBody": "Quand quelqu'un répond à vos messages ou y réagit, vous le verrez ici.",
+    "guestTitle": "Connectez-vous pour voir vos notifications",
+    "guestBody": "Les notifications sont privées et liées à votre compte.",
+    "signIn": "Se connecter",
+    "kinds": {
+      "reply": "<who>{actor}</who> a répondu à <story>{title}</story>",
+      "reaction": "{count, plural, one {# personne a réagi} other {# personnes ont réagi}} à <story>{title}</story>",
+      "therapist": "Un·e thérapeute a répondu à <story>{title}</story>",
+      "held": "<story>{title}</story> attend la vérification d'un·e thérapeute. Vous seul·e le voyez pour l'instant.",
+      "approved": "<story>{title}</story> a été vérifié et est maintenant visible."
+    }
   }
 }

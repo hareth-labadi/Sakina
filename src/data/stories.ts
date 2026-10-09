@@ -19,5 +19,23 @@ export const SAMPLE_STORIES: StorySummary[] = [
     title: 'Le premier Aïd sans ma mère',
     excerpt: "Tout le monde répétait qu'elle aurait voulu me voir sourire.",
     reactionTotal: 65, createdAt: '2026-10-07T20:00:00Z'
+  },
+  {
+    id: 's4', communityId: 'depression', authorNickname: 'amal_dawn', authorAvatar: 2, type: 'checkin', visibility: 'public', veil: null, mood: 'low',
+    title: 'Got out of bed, opened the curtains',
+    excerpt: "That's it, that's the check-in. Some days the list is short and that has to be enough.",
+    reactionTotal: 21, createdAt: '2026-10-08T09:30:00Z'
+  },
+  {
+    id: 's5', communityId: 'anxiety', authorNickname: 'blue_hour', authorAvatar: 5, type: 'win', visibility: 'public', veil: null,
+    title: "J'ai passé l'appel que je repoussais depuis un mois",
+    excerpt: "Trois minutes au téléphone. J'avais écrit ce que je voulais dire sur un papier, et ça a suffi.",
+    reactionTotal: 18, createdAt: '2026-10-06T11:00:00Z'
+  },
+  {
+    id: 's6', communityId: 'anxiety', authorNickname: 'soft_morning', authorAvatar: 4, type: 'checkin', visibility: 'members', veil: null, mood: 'okay',
+    title: 'Slept better this week',
+    excerpt: 'Phone out of the bedroom at ten. Still waking at four sometimes, but falling back asleep now.',
+    reactionTotal: 9, createdAt: '2026-10-05T07:15:00Z'
   }
 ];

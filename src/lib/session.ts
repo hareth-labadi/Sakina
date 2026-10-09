@@ -44,6 +44,19 @@ export function setSession(user: SessionUser | null, remember = true) {
   emit();
 }
 
+/** Change fields of the current session (e.g. the unread count), keeping how it is stored. */
+export function updateSession(patch: Partial<SessionUser>) {
+  const current = read();
+  if (!current) return;
+  const next = { ...current, ...patch };
+  if (memory !== undefined) {
+    memory = next;
+    emit();
+  } else {
+    setSession(next);
+  }
+}
+
 function subscribe(l: () => void) {
   listeners.add(l);
   const onStorage = (e: StorageEvent) => e.key === KEY && l();
