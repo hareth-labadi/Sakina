@@ -1,11 +1,11 @@
-# Checks the API (backend/) on every pull request and every push to main.
-# Runs always, not only when backend/ changed, so it can be a required check on main.
+# Checks the API (backend/) on every pull request and every push to dev and main.
+# Runs always, not only when backend/ changed, so it can be a required check on dev and main.
 name: API
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [dev, main]
 
 permissions:
   contents: read

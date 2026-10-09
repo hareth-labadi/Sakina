@@ -5,6 +5,7 @@ version: 2
 updates:
   - package-ecosystem: npm
     directories: [/, /backend]
+    target-branch: dev
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -14,11 +15,13 @@ updates:
 
   - package-ecosystem: docker
     directories: [/, /backend]
+    target-branch: dev
     schedule:
       interval: weekly
 
   - package-ecosystem: github-actions
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     groups:
