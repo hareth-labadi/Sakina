@@ -774,5 +774,28 @@
       "codeTitle": "Your recovery code",
       "codeBody": "Your account now uses this code instead of an email."
     }
+  },
+  "profile": {
+    "title": "Your profile",
+    "sub": "Only you can see this page.",
+    "loading": "Loading your profile…",
+    "guestTitle": "Sign in to see your profile",
+    "guestBody": "Your profile is private to your account.",
+    "missingTitle": "We couldn't load your profile",
+    "missingBody": "Try signing out and in again.",
+    "since": "Member since {date}",
+    "anonymous": "Anonymous account",
+    "communitiesTitle": "Your communities",
+    "noCommunities": "You haven't joined a community yet.",
+    "browse": "Browse communities",
+    "recoveryTitle": "Getting back in",
+    "recoveryCode": "You use a recovery code. Keep it somewhere safe: it is the only way back in if you forget your password.",
+    "recoveryEmail": "Recovery email:",
+    "confirmed": "Confirmed",
+    "notConfirmed": "Not confirmed yet",
+    "confirmNow": "Confirm now",
+    "privacyTitle": "Your privacy",
+    "privacy1": "Other members only see your nickname and avatar.",
+    "privacy2": "Your age range and country stay private."
   }
 }
