@@ -1,65 +1,94 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import * as auth from '@/services/auth';
 import type { SessionUser } from '@/types/domain';
 
 /**
- * MOCK session for front-end development.
- * The real app will read the session from an httpOnly cookie on the server; this store is only
- * a stand-in so screens can react to "signed in" now. It never holds secrets.
+ * Who is signed in, for the UI. The session itself is an httpOnly cookie owned by the API;
+ * this store only mirrors `GET /api/auth/me` so screens can react to it.
+ *
+ * - `loading` until the first answer. Meanwhile `user` is the last known member (a hint kept in
+ *   localStorage: nickname and avatar only, never a secret) so the header doesn't flash "Sign in".
+ *   Pages that must not guess (profile, notifications) wait for `ready`.
+ * - Server render and hydration always see a guest that is loading.
  */
-const KEY = 'sakina-mock-session';
-const listeners = new Set<() => void>();
-let memory: SessionUser | null | undefined;
-let cachedRaw: string | null = null;
-let cachedUser: SessionUser | null = null;
+export type SessionState = { status: 'loading' | 'ready'; user: SessionUser | null };
 
-function read(): SessionUser | null {
-  if (memory !== undefined) return memory;
+const HINT_KEY = 'sakina-session-hint';
+const SERVER: SessionState = { status: 'loading', user: null };
+const listeners = new Set<() => void>();
+let state: SessionState | null = null;
+let loading: Promise<void> | null = null;
+
+function readHint(): SessionUser | null {
   try {
-    const raw = window.localStorage.getItem(KEY);
-    if (raw !== cachedRaw) {
-      cachedRaw = raw;
-      cachedUser = raw ? (JSON.parse(raw) as SessionUser) : null;
-    }
-    return cachedUser; // stable reference while unchanged (required by useSyncExternalStore)
+    const raw = window.localStorage.getItem(HINT_KEY);
+    return raw ? (JSON.parse(raw) as SessionUser) : null;
   } catch {
     return null;
   }
 }
 
-function emit() {
+function writeHint(user: SessionUser | null) {
+  try {
+    if (user) window.localStorage.setItem(HINT_KEY, JSON.stringify({ ...user, unreadNotifications: 0 }));
+    else window.localStorage.removeItem(HINT_KEY);
+  } catch {
+    /* storage blocked: no hint, the header just waits for the API */
+  }
+}
+
+function current(): SessionState {
+  return (state ??= { status: 'loading', user: readHint() });
+}
+
+function set(next: SessionState) {
+  state = next;
+  writeHint(next.user);
   listeners.forEach((l) => l());
 }
 
-export function setSession(user: SessionUser | null, remember = true) {
-  memory = undefined;
-  try {
-    if (user && remember) window.localStorage.setItem(KEY, JSON.stringify(user));
-    else window.localStorage.removeItem(KEY);
-    if (user && !remember) memory = user; // this visit only
-  } catch {
-    memory = user; // storage blocked: keep for this visit
-  }
-  emit();
+/** Asks the API who is signed in. Runs once per page load (and again via `refreshSession`). */
+function load() {
+  loading ??= auth
+    .me()
+    .then((user) => set({ status: 'ready', user }))
+    // API unreachable: show a guest rather than a stale member, and let the next action retry.
+    .catch(() => set({ status: 'ready', user: null }))
+    .finally(() => {
+      loading = null;
+    });
+  return loading;
 }
 
-/** Change fields of the current session (e.g. the unread count), keeping how it is stored. */
-export function updateSession(patch: Partial<SessionUser>) {
-  const current = read();
-  if (!current) return;
-  const next = { ...current, ...patch };
-  if (memory !== undefined) {
-    memory = next;
-    emit();
-  } else {
-    setSession(next);
+export const refreshSession = load;
+
+/** After sign-in or sign-up: the API already set the cookie; this updates the screens. */
+export function setSession(user: SessionUser | null) {
+  set({ status: 'ready', user });
+}
+
+/** Ends the session on the server, then everywhere on screen. */
+export async function signOut() {
+  try {
+    await auth.signOut();
+  } finally {
+    setSession(null);
   }
+}
+
+/** Change fields of the current user (e.g. the unread count) without asking the API. */
+export function updateSession(patch: Partial<SessionUser>) {
+  const s = current();
+  if (s.user) set({ ...s, user: { ...s.user, ...patch } });
 }
 
 function subscribe(l: () => void) {
   listeners.add(l);
-  const onStorage = (e: StorageEvent) => e.key === KEY && l();
+  if (current().status === 'loading') void load();
+  // Signing in or out in another tab changes the hint: check with the API again.
+  const onStorage = (e: StorageEvent) => e.key === HINT_KEY && void load();
   window.addEventListener('storage', onStorage);
   return () => {
     listeners.delete(l);
@@ -67,7 +96,11 @@ function subscribe(l: () => void) {
   };
 }
 
-/** Current user, or null for guests. Server render and hydration always see a guest. */
+export function useSessionState(): SessionState {
+  return useSyncExternalStore(subscribe, current, () => SERVER);
+}
+
+/** Current user, or null for guests (and while loading without a hint). */
 export function useSession(): SessionUser | null {
-  return useSyncExternalStore(subscribe, read, () => null);
+  return useSessionState().user;
 }

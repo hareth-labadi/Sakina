@@ -109,7 +109,8 @@ export function SignUpForm() {
         communities,
         ageRange: ageRange || null,
         country: country || null,
-        recovery: recovery === 'code' ? { type: 'code', code: code! } : { type: 'email', email }
+        recovery: recovery === 'code' ? { type: 'code', code: code! } : { type: 'email', email },
+        locale
       });
       if (!res.ok) {
         if (res.error === 'nickname_taken') {

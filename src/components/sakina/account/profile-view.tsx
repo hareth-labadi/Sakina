@@ -11,7 +11,7 @@ import { CONDITIONS } from '@/data/conditions';
 import { Link, useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { cn } from '@/lib/cn';
-import { setSession, useSession } from '@/lib/session';
+import { refreshSession, signOut, useSessionState } from '@/lib/session';
 import { profile as service, type OwnProfile } from '@/services/profile';
 
 /** The member's own account: identity, communities, recovery method. Nothing here is public. */
@@ -22,18 +22,25 @@ export function ProfileView() {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const { toast } = useToast();
-  const user = useSession();
+  const { status, user } = useSessionState();
   const nickname = user?.nickname;
   const [data, setData] = useState<OwnProfile | null | undefined>(undefined);
 
   useEffect(() => {
     let live = true;
-    if (nickname) service.get(nickname).then((p) => live && setData(p));
+    if (nickname)
+      service.get().then((p) => {
+        if (!live) return;
+        setData(p);
+        // Signed out elsewhere or expired: let the session catch up (shows the guest view).
+        if (!p) void refreshSession();
+      });
     return () => {
       live = false;
     };
   }, [nickname]);
 
+  if (!user && status === 'loading') return <LoadingState caption={t('loading')} count={2} />;
   if (!user) {
     return (
       <EmptyState
@@ -52,8 +59,8 @@ export function ProfileView() {
   if (data === null) return <EmptyState as="h2" title={t('missingTitle')} body={t('missingBody')} />;
 
   const joined = CONDITIONS.filter((c) => data.communities.includes(c.id));
-  const signOut = () => {
-    setSession(null);
+  const onSignOut = async () => {
+    await signOut();
     toast(tn('signedOut'));
     router.push('/');
   };
@@ -132,7 +139,7 @@ export function ProfileView() {
       </Card>
 
       <div>
-        <Button variant="secondary" onClick={signOut}>
+        <Button variant="secondary" onClick={onSignOut}>
           {tn('signOut')}
         </Button>
       </div>

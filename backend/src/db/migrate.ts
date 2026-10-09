@@ -5,13 +5,13 @@
  */
 import { fileURLToPath } from 'node:url';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { loadConfig } from '../config.js';
+import { loadDatabaseUrl } from '../config.js';
 import { createDb } from './client.js';
 
 // ./drizzle sits next to src/ (dev) and dist/ (image), two levels up from this file in both.
 const migrationsFolder = fileURLToPath(new URL('../../drizzle', import.meta.url));
 
-const { db, pool } = createDb(loadConfig().DATABASE_URL);
+const { db, pool } = createDb(loadDatabaseUrl());
 try {
   await migrate(db, { migrationsFolder });
   console.log('Migrations applied');

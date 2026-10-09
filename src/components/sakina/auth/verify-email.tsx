@@ -1,25 +1,33 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 import { buttonVariants, Button } from '@/components/ui/button';
-import { Card, Notice, Skeleton, Tag } from '@/components/ui/display';
+import { ErrorState, Notice, Skeleton } from '@/components/ui/display';
 import { useToast } from '@/components/ui/toast';
 import { Link, useRouter } from '@/i18n/navigation';
-import { maskEmail } from '@/lib/recovery';
-import { useSession } from '@/lib/session';
+import type { Locale } from '@/i18n/routing';
+import { useSessionState } from '@/lib/session';
 import { useCountdown } from '@/lib/use-countdown';
 import { auth } from '@/services';
 import { RecoveryCodeBox } from '../account/recovery-code';
 
 type Info = Awaited<ReturnType<typeof auth.getRecoveryInfo>>;
 
-/** After choosing email recovery: confirm the address, resend, or switch to a recovery code. */
+/**
+ * After choosing email recovery: confirm the address, resend, or switch to a recovery code.
+ * The emailed link opens this page with ?token=…, which confirms the address even when signed out
+ * (e.g. opened on a phone); the token is then removed from the address bar.
+ */
 export function VerifyEmail() {
   const t = useTranslations('auth.verify');
-  const tc = useTranslations('auth.common');
   const tsu = useTranslations('auth.signup');
-  const user = useSession();
+  const { status, user } = useSessionState();
+  const nickname = user?.nickname;
+  const locale = useLocale() as Locale;
+  const [link, setLink] = useState<'checking' | 'ok' | 'bad' | null>(null);
+  // The token works once, so it is checked once even if the effect runs twice (React dev mode).
+  const linkCheck = useRef<Promise<boolean> | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -32,13 +40,59 @@ export function VerifyEmail() {
   const resendLeft = useCountdown(resendAt);
 
   useEffect(() => {
-    if (!user) return;
+    if (!linkCheck.current) {
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) return;
+      window.history.replaceState(null, '', window.location.pathname);
+      linkCheck.current = auth.verifyEmail(token).catch(() => false);
+    }
     let alive = true;
-    auth.getRecoveryInfo(user.nickname).then((i) => alive && setInfo(i));
+    setLink('checking');
+    void linkCheck.current.then((ok) => alive && setLink(ok ? 'ok' : 'bad'));
     return () => {
       alive = false;
     };
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    if (!nickname || link) return;
+    let alive = true;
+    auth.getRecoveryInfo().then((i) => alive && setInfo(i));
+    return () => {
+      alive = false;
+    };
+  }, [nickname, link]);
+
+  if (link === 'ok')
+    return (
+      <div className="flex flex-col gap-4">
+        <Notice tone="calm" role="status" title={t('doneTitle')}>{t('doneBody')}</Notice>
+        <div>
+          <Link href="/" className={buttonVariants()}>{t('goHome')}</Link>
+        </div>
+      </div>
+    );
+
+  if (link === 'bad')
+    return (
+      <ErrorState
+        title={t('badLinkTitle')}
+        body={t('badLinkBody')}
+        action={
+          <Button variant="secondary" onClick={() => setLink(null)}>
+            {t('badLinkAction')}
+          </Button>
+        }
+      />
+    );
+
+  if (link === 'checking' || (!user && status === 'loading'))
+    return (
+      <div aria-busy="true" className="flex flex-col gap-3">
+        <Skeleton className="h-6 w-2/3" />
+        <Skeleton className="h-4 w-full" />
+      </div>
+    );
 
   if (!user)
     return (
@@ -104,21 +158,12 @@ export function VerifyEmail() {
 
   return (
     <div className="flex flex-col gap-5">
-      <p className="text-ink-2">{t('body', { email: maskEmail(info.email) })}</p>
-      <Card flat className="gap-3 p-5">
-        <Tag>{tc('prototype')}</Tag>
-        <p className="text-ink-2">{t('simulateHint')}</p>
-        <div>
-          <Button size="sm" disabled={busy} onClick={() => run(async () => { await auth.verifyEmail(user.nickname); setInfo({ ...info, verified: true }); })}>
-            {t('openLink')}
-          </Button>
-        </div>
-      </Card>
+      <p className="text-ink-2">{t('body', { email: info.email })}</p>
       <div className="flex flex-wrap gap-3">
-        <Button variant="secondary" disabled={busy || resendLeft > 0} onClick={() => run(async () => { await auth.resendVerification(); setResendAt(Date.now() + 30_000); toast(t('resent')); })}>
+        <Button variant="secondary" disabled={busy || resendLeft > 0} onClick={() => run(async () => { await auth.resendVerification(locale); setResendAt(Date.now() + 30_000); toast(t('resent')); })}>
           {resendLeft > 0 ? t('resendIn', { seconds: Math.ceil(resendLeft / 1000) }) : t('resend')}
         </Button>
-        <Button variant="secondary" disabled={busy} onClick={() => run(async () => { setNewCode(await auth.switchToRecoveryCode(user.nickname)); })}>
+        <Button variant="secondary" disabled={busy} onClick={() => run(async () => { setNewCode(await auth.switchToRecoveryCode()); })}>
           {t('useCode')}
         </Button>
         <Link href="/" className={buttonVariants({ variant: 'ghost' })}>{t('later')}</Link>

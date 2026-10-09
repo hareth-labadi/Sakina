@@ -1,24 +1,25 @@
 /**
- * Auth API (mock implementation). Screens call only these functions.
- * Each returns plain result objects, never throws for expected cases, and never says
- * whether a nickname exists when credentials are wrong (no account enumeration).
+ * Auth, through the API (backend/src/modules/auth). Screens call only these functions.
+ * Each returns plain result objects and never throws for expected cases (wrong password,
+ * locked, taken nickname); only network or server failures throw.
  *
- * Swap each body for `api('/auth/…')` when the backend exists. The real API will set
- * an httpOnly session cookie; no token is ever stored by the front end.
+ * The session lives in an httpOnly cookie set by the API; nothing here stores a token.
+ * The API never says whether a nickname exists when credentials are wrong.
  */
-import { generateRecoveryCode, normalizeRecoveryCode } from '@/lib/recovery';
+import type { Locale } from '@/i18n/routing';
 import type { SessionUser } from '@/types/domain';
-import { delay, notificationsOf, readDb, RESERVED_NICKNAMES, writeDb, type MockAccount } from './mock-db';
+import { api, ApiError, request } from './api';
 
-export const MAX_ATTEMPTS = 5;
-export const LOCK_MINUTES = 15;
+/* ---------- session ---------- */
 
-const toUser = (a: MockAccount): SessionUser => ({
-  nickname: a.nickname,
-  avatar: a.avatar,
-  role: a.role,
-  unreadNotifications: notificationsOf(a).filter((n) => !n.read).length
-});
+/** The signed-in member, or null. */
+export async function me(): Promise<SessionUser | null> {
+  return (await api<{ user: SessionUser | null }>('/auth/me')).user;
+}
+
+export async function signOut(): Promise<void> {
+  await request('/auth/signout', { body: {} });
+}
 
 /* ---------- sign up ---------- */
 
@@ -30,32 +31,17 @@ export type SignUpInput = {
   ageRange: string | null;
   country: string | null;
   recovery: { type: 'code'; code: string } | { type: 'email'; email: string };
+  /** Language of the verification email. */
+  locale: Locale;
 };
 
+/** `emailToVerify` is masked (a***@g***.com): the full address never comes back from the server. */
 export type SignUpResult = { ok: true; user: SessionUser; emailToVerify: string | null } | { ok: false; error: 'nickname_taken' | 'invalid' };
 
 export async function signUp(input: SignUpInput): Promise<SignUpResult> {
-  await delay(700);
-  const db = readDb();
-  const key = input.nickname.trim().toLowerCase();
-  if (db.accounts[key] || RESERVED_NICKNAMES.includes(key)) return { ok: false, error: 'nickname_taken' };
-  const account: MockAccount = {
-    nickname: input.nickname.trim(),
-    password: input.password,
-    avatar: input.avatar,
-    role: 'member',
-    communities: input.communities,
-    ageRange: input.ageRange,
-    country: input.country,
-    recovery: input.recovery.type === 'code' ? input.recovery : { type: 'email', email: input.recovery.email.trim(), verified: false },
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    failedAttempts: 0,
-    lockedUntil: null
-  };
-  db.accounts[key] = account;
-  writeDb(db);
-  return { ok: true, user: toUser(account), emailToVerify: account.recovery.type === 'email' ? account.recovery.email : null };
+  const res = await request<{ user: SessionUser; emailToVerify: string | null; error?: string }>('/auth/signup', { body: input });
+  if (res.status === 201) return { ok: true, user: res.data.user, emailToVerify: res.data.emailToVerify };
+  return { ok: false, error: res.data?.error === 'nickname_taken' ? 'nickname_taken' : 'invalid' };
 }
 
 /* ---------- sign in ---------- */
@@ -66,146 +52,72 @@ export type SignInResult =
   | { ok: false; error: 'locked'; until: number }
   | { ok: false; error: 'suspended'; reason: string | null };
 
-const ghostAttempts: Record<string, { failed: number; lockedUntil: number | null }> = {};
-
-export async function signIn(nickname: string, password: string): Promise<SignInResult> {
-  await delay();
-  const db = readDb();
-  const key = nickname.trim().toLowerCase();
-  const a = db.accounts[key];
-  // Unknown nicknames count down and lock exactly like real ones, so responses never reveal which accounts exist.
-  if (!a) {
-    const g = (ghostAttempts[key] ??= { failed: 0, lockedUntil: null });
-    if (g.lockedUntil && g.lockedUntil > Date.now()) return { ok: false, error: 'locked', until: g.lockedUntil };
-    g.failed += 1;
-    if (g.failed >= MAX_ATTEMPTS) {
-      g.failed = 0;
-      g.lockedUntil = Date.now() + LOCK_MINUTES * 60_000;
-      return { ok: false, error: 'locked', until: g.lockedUntil };
-    }
-    return { ok: false, error: 'invalid', attemptsLeft: MAX_ATTEMPTS - g.failed };
-  }
-  if (a.lockedUntil && a.lockedUntil > Date.now()) return { ok: false, error: 'locked', until: a.lockedUntil };
-  if (a.password !== password) {
-    a.failedAttempts += 1;
-    if (a.failedAttempts >= MAX_ATTEMPTS) {
-      a.lockedUntil = Date.now() + LOCK_MINUTES * 60_000;
-      a.failedAttempts = 0;
-      writeDb(db);
-      return { ok: false, error: 'locked', until: a.lockedUntil };
-    }
-    writeDb(db);
-    return { ok: false, error: 'invalid', attemptsLeft: MAX_ATTEMPTS - a.failedAttempts };
-  }
-  a.failedAttempts = 0;
-  a.lockedUntil = null;
-  writeDb(db);
-  if (a.status !== 'active') return { ok: false, error: 'suspended', reason: a.suspendedReason ?? null };
-  return { ok: true, user: toUser(a) };
+/** `remember`: a 30-day session; otherwise it ends with the browser (and after 12 hours at most). */
+export async function signIn(nickname: string, password: string, remember: boolean): Promise<SignInResult> {
+  const res = await request<{ user: SessionUser; error?: string; attemptsLeft?: number; until?: number; reason?: string | null }>('/auth/signin', {
+    body: { nickname, password, remember }
+  });
+  const d = res.data;
+  if (res.status === 200) return { ok: true, user: d.user };
+  if (res.status === 423) return { ok: false, error: 'locked', until: d.until ?? Date.now() };
+  if (res.status === 403 && d?.error === 'suspended') return { ok: false, error: 'suspended', reason: d.reason ?? null };
+  // Too many requests from this connection: not a wrong password, so the form shows its generic error.
+  if (res.status === 429) throw new ApiError(429);
+  return { ok: false, error: 'invalid', attemptsLeft: d?.attemptsLeft ?? 0 };
 }
 
 /* ---------- recovery ---------- */
 
-/** Step 1 (code path): returns a short-lived reset token if nickname + code match. */
-export async function verifyRecoveryCode(nickname: string, code: string): Promise<{ ok: true; token: string } | { ok: false }> {
-  await delay();
-  const db = readDb();
-  const a = db.accounts[nickname.trim().toLowerCase()];
-  if (!a || a.recovery.type !== 'code' || normalizeRecoveryCode(a.recovery.code) !== normalizeRecoveryCode(code)) return { ok: false };
-  const token = crypto.randomUUID();
-  db.resetTokens[token] = a.nickname.toLowerCase();
-  writeDb(db);
-  return { ok: true, token };
+/** Step 1 (code path): a short-lived reset token if nickname + code match. Wrong codes lock like passwords. */
+export async function verifyRecoveryCode(nickname: string, code: string): Promise<{ ok: true; token: string } | { ok: false; locked: boolean }> {
+  const res = await request<{ token: string }>('/auth/recovery/code', { body: { nickname, code } });
+  return res.status === 200 ? { ok: true, token: res.data.token } : { ok: false, locked: res.status === 423 };
 }
 
-/**
- * Step 1 (email path): always answers the same way so nobody can probe which emails exist.
- * The mock returns `devToken` to simulate clicking the emailed link; the real API sends an email instead.
- */
-export async function requestEmailReset(nickname: string, email: string): Promise<{ devToken: string | null }> {
-  await delay(600);
-  const db = readDb();
-  const a = db.accounts[nickname.trim().toLowerCase()];
-  if (a && a.recovery.type === 'email' && a.recovery.email.toLowerCase() === email.trim().toLowerCase()) {
-    const token = crypto.randomUUID();
-    db.resetTokens[token] = a.nickname.toLowerCase();
-    writeDb(db);
-    return { devToken: token };
-  }
-  return { devToken: null };
+/** Step 1 (email path): always answers the same way; a matching address receives a link to /forgot?token=… */
+export async function requestEmailReset(nickname: string, email: string, locale: Locale): Promise<void> {
+  await request('/auth/recovery/email', { body: { nickname, email, locale } });
 }
 
 export async function isResetTokenValid(token: string): Promise<boolean> {
-  await delay(200);
-  return Boolean(readDb().resetTokens[token]);
+  const res = await request<{ valid: boolean }>('/auth/reset/check', { body: { token } });
+  return res.status === 200 && res.data.valid;
 }
 
-/** Step 2: set the new password. Using a recovery code replaces it with a new one (shown once). */
-export async function resetPassword(token: string, newPassword: string): Promise<{ ok: true; newRecoveryCode: string | null } | { ok: false }> {
-  await delay();
-  const db = readDb();
-  const key = db.resetTokens[token];
-  const a = key ? db.accounts[key] : undefined;
-  if (!a) return { ok: false };
-  delete db.resetTokens[token];
-  a.password = newPassword;
-  a.failedAttempts = 0;
-  a.lockedUntil = null;
-  let newRecoveryCode: string | null = null;
-  if (a.recovery.type === 'code') {
-    newRecoveryCode = generateRecoveryCode();
-    a.recovery = { type: 'code', code: newRecoveryCode };
-  } else {
-    a.recovery.verified = true; // the emailed link proved the address
-  }
-  writeDb(db);
-  return { ok: true, newRecoveryCode };
+/** Step 2: set the new password. Using a recovery code replaces it with a new one (shown once). Signs out every device. */
+export async function resetPassword(token: string, newPassword: string): Promise<{ ok: true; newRecoveryCode: string | null } | { ok: false; error: 'invalid' | 'weak_password' }> {
+  const res = await request<{ newRecoveryCode: string | null; error?: string }>('/auth/reset', { body: { token, password: newPassword } });
+  if (res.status === 200) return { ok: true, newRecoveryCode: res.data.newRecoveryCode };
+  return { ok: false, error: res.data?.error === 'weak_password' ? 'weak_password' : 'invalid' };
 }
 
 /* ---------- email verification ---------- */
 
-export async function verifyEmail(nickname: string): Promise<boolean> {
-  await delay();
-  const db = readDb();
-  const a = db.accounts[nickname.toLowerCase()];
-  if (!a || a.recovery.type !== 'email') return false;
-  a.recovery.verified = true;
-  writeDb(db);
-  return true;
+/** The token from the emailed link (/verify-email?token=…). Works without being signed in. */
+export async function verifyEmail(token: string): Promise<boolean> {
+  return (await request('/auth/email/verify', { body: { token } })).status === 204;
 }
 
-export async function resendVerification(): Promise<void> {
-  await delay();
+export async function resendVerification(locale: Locale): Promise<void> {
+  await request('/auth/email/resend', { body: { locale } });
 }
 
-/** Switch an unverified email account to a recovery code. Returns the code to show once. */
-export async function switchToRecoveryCode(nickname: string): Promise<string | null> {
-  await delay();
-  const db = readDb();
-  const a = db.accounts[nickname.toLowerCase()];
-  if (!a) return null;
-  const code = generateRecoveryCode();
-  a.recovery = { type: 'code', code };
-  writeDb(db);
-  return code;
+/** Switch the signed-in member to a recovery code (drops the email). Returns the code to show once. */
+export async function switchToRecoveryCode(): Promise<string> {
+  return (await api<{ code: string }>('/auth/recovery/switch-to-code', { body: {} })).code;
 }
 
-export async function getRecoveryInfo(nickname: string): Promise<{ type: 'code' } | { type: 'email'; email: string; verified: boolean } | null> {
-  const a = readDb().accounts[nickname.toLowerCase()];
-  if (!a) return null;
-  return a.recovery.type === 'code' ? { type: 'code' } : { type: 'email', email: a.recovery.email, verified: a.recovery.verified };
+/** How the signed-in member can recover their account. `email` is already masked. */
+export async function getRecoveryInfo(): Promise<{ type: 'code' } | { type: 'email'; email: string; verified: boolean } | null> {
+  const res = await request<{ type: 'code' } | { type: 'email'; email: string; verified: boolean }>('/auth/recovery');
+  return res.status === 200 ? res.data : null;
 }
 
 /* ---------- nickname availability ---------- */
 
-export async function isNicknameAvailable(nickname: string): Promise<boolean> {
-  await delay(350);
-  const key = nickname.trim().toLowerCase();
-  return !RESERVED_NICKNAMES.includes(key) && !readDb().accounts[key];
-}
+export type NicknameCheck = { available: boolean; reason?: 'taken' | 'invalid'; suggestions: string[] };
 
-export function suggestNicknames(base: string): string[] {
-  const db = readDb();
-  const b = (base.replace(/[^\p{L}\p{N}_.]/gu, '') || 'calm').slice(0, 14).toLowerCase();
-  return [`${b}_2`, `${b}.light`, `still_${b}`, 'soft_morning', 'blue_hour'].filter((n) => !db.accounts[n]).slice(0, 3);
+/** Whether a nickname is free; when taken, up to 3 free alternatives. */
+export async function checkNickname(nickname: string): Promise<NicknameCheck> {
+  return api<NicknameCheck>(`/accounts/nickname-availability?nickname=${encodeURIComponent(nickname)}`);
 }
