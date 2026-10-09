@@ -7,6 +7,7 @@
 import { CONDITIONS } from '@/data/conditions';
 import { SAMPLE_STORIES } from '@/data/stories';
 import type { Community, StorySummary } from '@/types/domain';
+import * as auth from './auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
@@ -37,20 +38,13 @@ export const communities = {
   }
 };
 
-/** Mock: nicknames already in use. The API will answer this (rate-limited, without revealing more). */
-const TAKEN = new Set(['sea_glass', 'quiet_river', 'amal_dawn', 'admin', 'sakina', 'therapist', 'moderator']);
-
 export const accounts = {
-  async isNicknameAvailable(nickname: string): Promise<boolean> {
-    await new Promise((r) => setTimeout(r, 350)); // simulate network
-    return !TAKEN.has(nickname.trim().toLowerCase());
-  },
+  isNicknameAvailable: auth.isNicknameAvailable,
   /** Suggestions shown when a nickname is taken. */
-  suggestNicknames(base: string): string[] {
-    const b = (base.replace(/[^\p{L}\p{N}_.]/gu, '') || 'calm').slice(0, 14).toLowerCase();
-    return [`${b}_2`, `${b}.light`, `still_${b}`, 'soft_morning', 'blue_hour'].filter((n) => !TAKEN.has(n)).slice(0, 3);
-  }
+  suggestNicknames: auth.suggestNicknames
 };
+
+export { auth };
 
 export const stories = {
   async featured(): Promise<StorySummary[]> {

@@ -19,7 +19,8 @@ export function NicknameField({
   onChange,
   onStatusChange,
   error,
-  current
+  current,
+  id
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -27,6 +28,8 @@ export function NicknameField({
   error?: string;
   /** The member's own nickname (profile edit): unchanged counts as fine. */
   current?: string;
+  /** Lets an error summary link to this field. */
+  id?: string;
 }) {
   const t = useTranslations('account.nickname');
   const [status, setStatus] = useState<NicknameStatus>('idle');
@@ -60,7 +63,7 @@ export function NicknameField({
   const liveError = status === 'taken' ? t('taken') : status === 'invalid' ? t('invalid') : undefined;
 
   return (
-    <Field label={t('label')} hint={t('hint')} error={error ?? liveError}>
+    <Field id={id} label={t('label')} hint={t('hint')} error={error ?? liveError}>
       <Input value={value} onChange={(e) => onChange(e.target.value)} autoComplete="username" spellCheck={false} autoCapitalize="none" maxLength={20} />
       <p aria-live="polite" className="min-h-6 text-caption">
         {status === 'checking' ? <span className="text-mute">{t('checking')}</span> : null}

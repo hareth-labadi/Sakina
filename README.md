@@ -49,17 +49,32 @@ src/
 All of these are live on `/[locale]/design` (sections 01 to 15).
 
 **`components/ui`** (generic, no product text inside)
-button (+ IconButton) · icons · field (Field, Input, Textarea, Select) · password-input (+ PasswordStrength) · choice (Checkbox, RadioCard, Switch) · chip · segmented · tabs · display (Badge, LiveDot, Tag, Avatar, Card, Notice, EmptyState, ErrorState, Skeleton, LoadingState) · dialog · confirm-dialog (optional required reason) · toast (`useToast`) · menu (dropdown) · tooltip · search-input · steps · table · stat-tile · load-more · container
+button (+ IconButton) · icons · field (Field, Input, Textarea, Select) · password-input (+ PasswordStrength) · choice (Checkbox, RadioCard, Switch) · chip · segmented · tabs · display (Badge, LiveDot, Tag, Avatar, Card, Notice, EmptyState, ErrorState, Skeleton, LoadingState) · dialog · confirm-dialog (optional required reason) · error-summary · toast (`useToast`) · menu (dropdown) · tooltip · search-input · steps · table · stat-tile · load-more · container
 
 **`components/sakina`** (product widgets)
 - shell: site-header (guest or member), site-footer, logo, crisis-help, preferences (language, theme), story-card, community-card
+- `auth/`: AuthShell, SignUpForm, SignInForm, ForgotForm, VerifyEmail
 - `account/`: nickname-field (live availability check), recovery-code (shown once, "I saved it"), join-gate, lockout-notice, user-widgets (NotificationBell, UserMenu)
 - `story/`: content-veil, reaction-bar, story-actions (save, copy link, report), report-dialog, reply-thread (+ ReplyComposer)
 - `composer/`: MoodPicker, PromptChips, VeilPicker, PiiWarning, DraftStatus, HeldForReview
 - `chat/`: MessageBubble, MessageList, RoomHeader, MessageComposer, TypingIndicator, DmRequestDialog, GuidedMinute
 - `panel/`: PanelLayout, RiskPill, QueueRow, AvailabilityGrid, AuditTable
 
-Helpers: `lib/safety.ts` (identifying-details hints; the real safety check belongs on the server), `lib/use-countdown.ts`, `lib/password.ts`, `lib/avatar.ts`, `lib/theme.tsx`.
+Helpers: `lib/safety.ts` (identifying-details hints; the real safety check belongs on the server), `lib/use-countdown.ts`, `lib/password.ts`, `lib/recovery.ts` (codes, email masking), `lib/session.ts` (mock session), `lib/avatar.ts`, `lib/theme.tsx`.
+
+## Account screens (mock)
+
+`/[locale]/signup` (3 steps: communities, identity, security) · `/signin` (lockout after 5 tries, suspended accounts) · `/forgot` (recovery code or email link, then a new password) · `/verify-email`.
+
+These run on `services/auth.ts` with a fake database in the browser's localStorage (`sakina-mock-db-v1`; clear it to reset). Test accounts, password `calm-river-22` for all:
+
+| Nickname | Case |
+| --- | --- |
+| `amal_dawn` | regular member, recovery code `K7QM-4XPT-9HDA` |
+| `leaf_demo` | recovers by email (`leaf.demo@example.com`) |
+| `still_water` | suspended |
+
+The mock answers the same way for unknown nicknames and wrong emails, as the real API must, so nobody can learn which accounts exist.
 
 ## Rules of the design system
 
