@@ -14,6 +14,8 @@ export type MockAccount = {
   avatar: number;
   role: Role;
   communities: string[];
+  /** Saved story ids. Optional so stores written before this field existed still load. */
+  saved?: string[];
   ageRange: string | null;
   country: string | null;
   recovery: { type: 'code'; code: string } | { type: 'email'; email: string; verified: boolean };

@@ -111,6 +111,20 @@
       "copied": "Link copied",
       "copyFailed": "Couldn't copy the link.",
       "report": "Report"
+    },
+    "page": {
+      "back": "Back to {community}",
+      "backAll": "All communities",
+      "mood": "Feeling: {mood}",
+      "lockedTitle": "This story is for members",
+      "lockedBody": "The author chose to share it with members only. Joining is anonymous: just a nickname and a password.",
+      "join": "Join anonymously",
+      "signIn": "Sign in",
+      "repliesTitle": "{count, plural, =0 {Replies} one {# reply} other {# replies}}",
+      "joinToReply": "Join to reply",
+      "replied": "Reply posted",
+      "reported": "Thank you. A moderator will look at this.",
+      "failed": "That didn't work. Please try again."
     }
   },
   "community": {
@@ -121,7 +135,32 @@
     },
     "meta": "{count, plural, =0 {000 members · no stories yet} one {000 members · # story} other {000 members · # stories}}",
     "open": "Open",
-    "openNamed": "Open {name}"
+    "openNamed": "Open {name}",
+    "page": {
+      "back": "All communities",
+      "join": "Join this community",
+      "joined": "Joined",
+      "leaveNamed": "Joined {name}. Select to leave.",
+      "joinedToast": "You joined {name}",
+      "leftToast": "You left {name}",
+      "failed": "That didn't work. Please try again.",
+      "postsTitle": "Shared here",
+      "filterLabel": "Show",
+      "all": "All",
+      "emptyTitle": "Nothing shared here yet",
+      "emptyBody": "Stories, check-ins and small wins from members will appear here.",
+      "emptyFiltered": "Nothing of this type yet",
+      "aboutTitle": "About this space",
+      "sensitivityNote": {
+        "sensitive": "Some posts here touch on painful experiences. Difficult details sit behind a content note until you choose to read them.",
+        "high": "This space talks about heavy topics. Difficult details sit behind a content note until you choose to read them, and you can stop at any time."
+      },
+      "rule1": "Speak from your own experience.",
+      "rule2": "No diagnoses or medication advice for others.",
+      "rule3": "Keep names, places and contact details out.",
+      "crisisTitle": "If you are not safe right now",
+      "crisisBody": "You don't need an account to get help."
+    }
   },
   "home": {
     "badge": "Anonymous peer support · Algeria",

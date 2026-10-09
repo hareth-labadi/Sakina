@@ -49,12 +49,12 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} dir={isRtl(locale) ? 'rtl' : 'ltr'} className={fontVariables} suppressHydrationWarning>
-      <head>
-        {/* Applies light/dark before first paint (no flash). Must be a plain inline script:
-            next/script "beforeInteractive" is deferred in the App Router and causes a flash. */}
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
       <body>
+        {/* Applies light/dark before first paint (no flash). Must be a plain inline script:
+            next/script "beforeInteractive" is deferred in the App Router and causes a flash.
+            Keep it at the top of <body>, not in <head>: React sometimes fails to hydrate an inline
+            <head> script on a cold first visit and re-renders the whole page (error #418). */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <NextIntlClientProvider now={now}>
           <DirectionProvider dir={isRtl(locale) ? 'rtl' : 'ltr'}>
           <ThemeProvider>

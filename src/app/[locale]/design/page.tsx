@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { toLocale } from '@/i18n/routing';
+import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { CommunityCard } from '@/components/sakina/community-card';
@@ -17,7 +18,11 @@ import { AccountDemo, ChatDemo, ComposerDemo, GeneralDemo, PanelsDemo, ReadingDe
 
 type Props = { params: Promise<{ locale: string }> };
 
+/** Internal style guide: reachable on `npm run dev` only, a 404 in production builds. */
+const STYLE_GUIDE_ENABLED = process.env.NODE_ENV === 'development';
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  if (!STYLE_GUIDE_ENABLED) return {};
   const locale = toLocale((await params).locale);
   const t = await getTranslations({ locale, namespace: 'design' });
   return { title: t('title') };
@@ -36,6 +41,7 @@ const BRAND = [
 const TOKENS = ['bg', 'surface', 'surface-2', 'ink', 'ink-2', 'mute', 'line', 'primary', 'blue-soft', 'green-soft', 'lav-soft', 'sand-soft', 'warm-soft', 'warm-ink'] as const;
 
 export default async function DesignPage({ params }: Props) {
+  if (!STYLE_GUIDE_ENABLED) notFound();
   const locale = toLocale((await params).locale);
   setRequestLocale(locale);
   const t = await getTranslations('design');

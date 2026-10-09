@@ -9,7 +9,7 @@ const STORAGE_KEY = 'sakina-theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
- * Inline script for <head>: applies the theme before first paint, so there is no flash.
+ * Inline script for the top of <body>: applies the theme before first paint, so there is no flash.
  * Kept tiny and dependency-free. Storage access is wrapped because it can throw.
  */
 export const themeInitScript = `(function(){try{var p=null;try{p=localStorage.getItem('${STORAGE_KEY}')}catch(e){}var d=p==='dark'||(p!=='light'&&window.matchMedia('${DARK_QUERY}').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}catch(e){}})();`;
