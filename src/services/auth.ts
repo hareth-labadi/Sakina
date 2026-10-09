@@ -8,12 +8,17 @@
  */
 import { generateRecoveryCode, normalizeRecoveryCode } from '@/lib/recovery';
 import type { SessionUser } from '@/types/domain';
-import { delay, readDb, RESERVED_NICKNAMES, writeDb, type MockAccount } from './mock-db';
+import { delay, notificationsOf, readDb, RESERVED_NICKNAMES, writeDb, type MockAccount } from './mock-db';
 
 export const MAX_ATTEMPTS = 5;
 export const LOCK_MINUTES = 15;
 
-const toUser = (a: MockAccount): SessionUser => ({ nickname: a.nickname, avatar: a.avatar, role: a.role, unreadNotifications: 0 });
+const toUser = (a: MockAccount): SessionUser => ({
+  nickname: a.nickname,
+  avatar: a.avatar,
+  role: a.role,
+  unreadNotifications: notificationsOf(a).filter((n) => !n.read).length
+});
 
 /* ---------- sign up ---------- */
 

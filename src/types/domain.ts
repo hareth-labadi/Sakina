@@ -52,3 +52,19 @@ export type SessionUser = {
 
 export type RiskLevel = 'high' | 'medium' | 'low';
 export type TherapistKind = 'psychologist' | 'psychiatrist';
+
+export type NotificationKind = 'reply' | 'reaction' | 'therapist' | 'held' | 'approved';
+
+/** Something that happened to the member's own posts. Always about content, never about who is online. */
+export type AppNotification = {
+  id: string;
+  kind: NotificationKind;
+  storyId: string;
+  storyTitle: string;
+  /** Who replied (kind "reply"). */
+  actor?: string;
+  /** How many people reacted (kind "reaction"). */
+  count?: number;
+  createdAt: string; // ISO 8601
+  read: boolean;
+};

@@ -6,7 +6,7 @@
  * The real backend must hash passwords (e.g. Argon2id), encrypt recovery emails,
  * rate-limit sign-in server-side and never send secrets to the client.
  */
-import type { Role } from '@/types/domain';
+import type { AppNotification, Role } from '@/types/domain';
 
 export type MockAccount = {
   nickname: string;
@@ -22,6 +22,8 @@ export type MockAccount = {
   createdAt: string;
   failedAttempts: number;
   lockedUntil: number | null;
+  /** Missing on stores written before notifications existed; see `notificationsOf`. */
+  notifications?: AppNotification[];
 };
 
 type Db = { accounts: Record<string, MockAccount>; resetTokens: Record<string, string> };
@@ -53,6 +55,21 @@ function seed(): Db {
     base('quiet_river', 0)
   ];
   return { accounts: Object.fromEntries(list.map((a) => [a.nickname.toLowerCase(), a])), resetTokens: {} };
+}
+
+/** Demo notifications for `amal_dawn`, all about their check-in s4. */
+const SEED_NOTIFICATIONS: Record<string, AppNotification[]> = {
+  amal_dawn: [
+    { id: 'n1', kind: 'reply', storyId: 's4', storyTitle: 'Got out of bed, opened the curtains', actor: 'sea_glass', createdAt: '2026-10-08T14:20:00Z', read: false },
+    { id: 'n2', kind: 'reaction', storyId: 's4', storyTitle: 'Got out of bed, opened the curtains', count: 21, createdAt: '2026-10-08T12:00:00Z', read: false },
+    { id: 'n3', kind: 'therapist', storyId: 's4', storyTitle: 'Got out of bed, opened the curtains', createdAt: '2026-10-08T11:05:00Z', read: true },
+    { id: 'n4', kind: 'approved', storyId: 's4', storyTitle: 'Got out of bed, opened the curtains', createdAt: '2026-10-08T09:40:00Z', read: true }
+  ]
+};
+
+/** An account's notifications, falling back to the demo seed for stores saved before the field existed. */
+export function notificationsOf(a: MockAccount): AppNotification[] {
+  return (a.notifications ??= structuredClone(SEED_NOTIFICATIONS[a.nickname.toLowerCase()] ?? []));
 }
 
 let memory: Db | null = null;
