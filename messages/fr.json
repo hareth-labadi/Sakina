@@ -814,6 +814,29 @@
       "codeBody": "Votre compte utilise désormais ce code au lieu d'un e-mail."
     }
   },
+  "profile": {
+    "title": "Votre profil",
+    "sub": "Vous seul·e voyez cette page.",
+    "loading": "Chargement de votre profil…",
+    "guestTitle": "Connectez-vous pour voir votre profil",
+    "guestBody": "Votre profil est privé et lié à votre compte.",
+    "missingTitle": "Impossible de charger votre profil",
+    "missingBody": "Essayez de vous déconnecter puis de vous reconnecter.",
+    "since": "Membre depuis {date}",
+    "anonymous": "Compte anonyme",
+    "communitiesTitle": "Vos communautés",
+    "noCommunities": "Vous n'avez encore rejoint aucune communauté.",
+    "browse": "Parcourir les communautés",
+    "recoveryTitle": "Récupérer votre compte",
+    "recoveryCode": "Vous utilisez un code de récupération. Gardez-le en lieu sûr : c'est le seul moyen de revenir si vous oubliez votre mot de passe.",
+    "recoveryEmail": "E-mail de récupération :",
+    "confirmed": "Confirmé",
+    "notConfirmed": "Pas encore confirmé",
+    "confirmNow": "Confirmer maintenant",
+    "privacyTitle": "Votre confidentialité",
+    "privacy1": "Les autres membres ne voient que votre pseudo et votre avatar.",
+    "privacy2": "Votre tranche d'âge et votre pays restent privés."
+  },
   "notifications": {
     "title": "Notifications",
     "sub": "Réponses, réactions et vérifications de sécurité sur vos messages. Vous seul·e les voyez.",
