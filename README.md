@@ -73,6 +73,8 @@ Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server o
 
 Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Radix primitives (`radix-ui`) · next-intl 4 · class-variance-authority.
 
+Fonts are self-hosted (`src/lib/fonts.ts`, files from the Fontsource npm packages, OFL-1.1): Bricolage Grotesque, Instrument Sans and JetBrains Mono for Latin; Cairo, IBM Plex Sans Arabic and Reem Kufi for Arabic. Builds never download fonts and visitors' browsers never contact Google.
+
 ## Structure
 
 ```
