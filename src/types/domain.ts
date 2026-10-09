@@ -40,6 +40,26 @@ export type StorySummary = {
   createdAt: string; // ISO 8601
 };
 
+export type Reply = {
+  id: string;
+  authorNickname: string;
+  authorAvatar: number;
+  text: string;
+  createdAt: string; // ISO 8601
+  /** Set when a verified therapist wrote it. */
+  therapist?: TherapistKind;
+  relateCount: number;
+  /** One level of nesting only. */
+  replies?: Reply[];
+};
+
+/** A story as shown on its own page. */
+export type Story = StorySummary & {
+  body: string;
+  reactions: Record<Reaction, number>;
+  replies: Reply[];
+};
+
 export type Role = 'member' | 'therapist' | 'moderator' | 'admin';
 
 /** What the UI knows about the signed-in person. Never contains email or password. */

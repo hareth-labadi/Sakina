@@ -111,6 +111,20 @@
       "copied": "Lien copié",
       "copyFailed": "Impossible de copier le lien.",
       "report": "Signaler"
+    },
+    "page": {
+      "back": "Retour à {community}",
+      "backAll": "Toutes les communautés",
+      "mood": "Humeur : {mood}",
+      "lockedTitle": "Cette histoire est réservée aux membres",
+      "lockedBody": "L'auteur a choisi de la partager avec les membres seulement. L'inscription est anonyme : juste un pseudo et un mot de passe.",
+      "join": "Rejoindre anonymement",
+      "signIn": "Se connecter",
+      "repliesTitle": "{count, plural, =0 {Réponses} one {# réponse} other {# réponses}}",
+      "joinToReply": "Rejoindre pour répondre",
+      "replied": "Réponse publiée",
+      "reported": "Merci. Un modérateur va examiner ce signalement.",
+      "failed": "Ça n'a pas marché. Réessayez."
     }
   },
   "community": {
