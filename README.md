@@ -21,6 +21,10 @@ The image is the Next.js standalone server (`output: 'standalone'`), runs as a n
 
 Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server only; it is not linked in the nav and returns 404 in production builds). Check every new component there in all three languages and both themes before using it in a screen.
 
+### CI
+
+`.github/workflows/ci.yml` runs on every pull request and every push to `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs for npm, the Docker base image and the Actions. Nothing deploys yet: that waits until hosting is chosen.
+
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Radix primitives (`radix-ui`) · next-intl 4 · class-variance-authority.
