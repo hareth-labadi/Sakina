@@ -1,6 +1,8 @@
-# Sakina (سكينة) · web front end
+# Sakina (سكينة)
 
 Anonymous mental-health peer support. Website only. Arabic (RTL), French, English. Light and dark.
+
+The web front end (Next.js) is at the repo root; the API (Fastify + Postgres) is in [`backend/`](backend).
 
 ## Run it
 
@@ -11,19 +13,51 @@ npm run dev          # http://localhost:3000 (redirects to /ar, /fr or /en)
 
 Other scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run check:i18n`.
 
-### With Docker
+### The API, for local development
+
+The screens still run on mock data; the API serves `/health` only until the auth work lands.
 
 ```bash
-docker compose up --build    # http://localhost:3000
+docker compose -f compose.dev.yaml up -d     # Postgres on 127.0.0.1:15432
+cd backend
+cp .env.example .env
+npm install
+npm run db:migrate
+npm run dev                                  # http://localhost:4000/health
 ```
 
-The image is the Next.js standalone server (`output: 'standalone'`), runs as a non-root user with a read-only filesystem. `NEXT_PUBLIC_API_URL` is a **build** argument (baked into the browser bundle), set in `compose.yaml`. Day-to-day development stays on `npm run dev`; Docker is for running the production build. The backend and database get their own services in `compose.yaml` (placeholders are already there).
+With `API_INTERNAL_URL=http://localhost:4000` in the root `.env.local`, the web dev server forwards `/api/*` to it (http://localhost:3000/api/health). API scripts: `npm run lint`, `typecheck`, `test` (needs the dev database), `build`, `db:generate` (new migration after a schema change).
+
+### With Docker (full stack, production builds)
+
+```bash
+cp .env.compose.example .env     # then set POSTGRES_PASSWORD
+docker compose up --build        # http://localhost:3000
+```
+
+Four services: `db` (Postgres 17), `migrate` (applies migrations, then exits), `api` (starts only if migrations succeeded) and `web`. Only `web` publishes a port; it forwards `/api/*` to `api` over the internal network, so the browser sees one origin (first-party cookies, no CORS). The API and database are unreachable from outside. Both images run as a non-root user with a read-only filesystem.
+
+`NEXT_PUBLIC_API_URL` and `API_INTERNAL_URL` are **build** arguments of the web image (baked in by `next build`), set in `compose.yaml`. Day-to-day development stays on `npm run dev`.
 
 Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server only; it is not linked in the nav and returns 404 in production builds). Check every new component there in all three languages and both themes before using it in a screen.
 
 ### CI
 
-`.github/workflows/ci.yml` runs on every pull request and every push to `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs for npm, the Docker base image and the Actions. Nothing deploys yet: that waits until hosting is chosen.
+`.github/workflows/ci.yml` runs on every pull request and every push to `dev` and `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. `.github/workflows/api.yml` does the same for `backend/`: lint, typecheck, audit, migrations applied to an empty Postgres, tests, build and image build. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev` for npm and the Docker base images (web and API) and the Actions. Nothing deploys yet: that waits until hosting is chosen.
+
+## Branches and releases
+
+| Branch | What it is | Gets changes from |
+| --- | --- | --- |
+| `main` | Exactly what is live in production | Release PRs from `dev`, hotfixes |
+| `dev` | Integration and staging (default branch) | Feature PRs |
+| `feat/…` `fix/…` `chore/…` | One topic each, short-lived | You |
+
+- **New work:** branch from the latest `dev`, open a PR into `dev`, **squash merge** once CI passes and the other person has reviewed. Delete the branch.
+- **Release:** open a PR from `dev` into `main` and merge it with a **merge commit** (never squash: it makes `dev` and `main` disagree and the next release conflicts). Tag it (`v0.2.0`).
+- **Hotfix:** branch from `main`, PR into `main`, then merge `main` back into `dev`.
+- Nobody pushes to `dev` or `main` directly; every change goes through a PR that passes CI (above).
+- Working on two things at once? Use a separate folder per branch (`git worktree add ../sakina-<topic> -b feat/<topic> origin/dev`) instead of switching branches in one folder.
 
 ## Stack
 
@@ -89,9 +123,11 @@ The mock answers the same way for unknown nicknames and wrong emails, as the rea
 - Every string goes in `messages/*.json`. Keys are type-checked against `en.json`; `npm run check:i18n` keeps ar/fr in sync.
 - No emoji, no invented statistics (use `000`), no emergency numbers until verified with local partners.
 
-## Connecting the backend later
+## Connecting the front end to the API
 
-Pages call `src/services` only. Set `NEXT_PUBLIC_API_URL` and replace each mock function body with `api<T>('/path')`; types in `src/types/domain.ts` become the API contract. Auth will use an httpOnly session cookie set by the API (no tokens in localStorage).
+Pages call `src/services` only. Set `NEXT_PUBLIC_API_URL=/api` and replace each mock function body with `api<T>('/path')`; types in `src/types/domain.ts` become the API contract. Auth will use an httpOnly session cookie set by the API (no tokens in localStorage).
+
+API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, error handling, routes), `db/` (Drizzle schema, client, migration runner), migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
 
 ## Content to review
 

@@ -23,7 +23,7 @@ export function StoryCard({ story, community, signedIn = false, headingLevel: H 
       <div className="flex items-center gap-3">
         <Avatar index={story.authorAvatar} size="sm" />
         <div className="flex min-w-0 flex-1 flex-col leading-tight">
-          <b className="text-[1.0625rem]" dir="auto">{story.authorNickname}</b>
+          <b className="self-start text-[1.0625rem]" dir="auto">{story.authorNickname}</b>
           <span className="text-caption text-mute">
             {community ? `${community.name[locale]} · ` : ''}
             <RelativeTime date={story.createdAt} />

@@ -111,6 +111,20 @@
       "copied": "Link copied",
       "copyFailed": "Couldn't copy the link.",
       "report": "Report"
+    },
+    "page": {
+      "back": "Back to {community}",
+      "backAll": "All communities",
+      "mood": "Feeling: {mood}",
+      "lockedTitle": "This story is for members",
+      "lockedBody": "The author chose to share it with members only. Joining is anonymous: just a nickname and a password.",
+      "join": "Join anonymously",
+      "signIn": "Sign in",
+      "repliesTitle": "{count, plural, =0 {Replies} one {# reply} other {# replies}}",
+      "joinToReply": "Join to reply",
+      "replied": "Reply posted",
+      "reported": "Thank you. A moderator will look at this.",
+      "failed": "That didn't work. Please try again."
     }
   },
   "community": {
@@ -798,6 +812,50 @@
       "signIn": "Sign in",
       "codeTitle": "Your recovery code",
       "codeBody": "Your account now uses this code instead of an email."
+    }
+  },
+  "profile": {
+    "title": "Your profile",
+    "sub": "Only you can see this page.",
+    "loading": "Loading your profile…",
+    "guestTitle": "Sign in to see your profile",
+    "guestBody": "Your profile is private to your account.",
+    "missingTitle": "We couldn't load your profile",
+    "missingBody": "Try signing out and in again.",
+    "since": "Member since {date}",
+    "anonymous": "Anonymous account",
+    "communitiesTitle": "Your communities",
+    "noCommunities": "You haven't joined a community yet.",
+    "browse": "Browse communities",
+    "recoveryTitle": "Getting back in",
+    "recoveryCode": "You use a recovery code. Keep it somewhere safe: it is the only way back in if you forget your password.",
+    "recoveryEmail": "Recovery email:",
+    "confirmed": "Confirmed",
+    "notConfirmed": "Not confirmed yet",
+    "confirmNow": "Confirm now",
+    "privacyTitle": "Your privacy",
+    "privacy1": "Other members only see your nickname and avatar.",
+    "privacy2": "Your age range and country stay private."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "sub": "Replies, reactions and safety checks on your posts. Only you can see these.",
+    "loading": "Loading notifications…",
+    "unread": "Unread",
+    "unreadCount": "{count, plural, =0 {All read} one {# unread} other {# unread}}",
+    "markAll": "Mark all as read",
+    "allRead": "All notifications marked as read",
+    "emptyTitle": "You're all caught up",
+    "emptyBody": "When someone replies to or reacts to your posts, you'll see it here.",
+    "guestTitle": "Sign in to see your notifications",
+    "guestBody": "Notifications are private to your account.",
+    "signIn": "Sign in",
+    "kinds": {
+      "reply": "<who>{actor}</who> replied to <story>{title}</story>",
+      "reaction": "{count, plural, one {# person} other {# people}} reacted to <story>{title}</story>",
+      "therapist": "A therapist replied to <story>{title}</story>",
+      "held": "<story>{title}</story> is waiting for a therapist check. Only you can see it for now.",
+      "approved": "<story>{title}</story> was checked and is now visible."
     }
   }
 }

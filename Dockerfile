@@ -17,6 +17,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # NEXT_PUBLIC_* values are baked into the browser bundle at build time, not read at runtime.
 ARG NEXT_PUBLIC_API_URL=""
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+# Where the server forwards /api/* (see rewrites in next.config.ts). Also fixed at build time.
+ARG API_INTERNAL_URL=""
+ENV API_INTERNAL_URL=${API_INTERNAL_URL}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

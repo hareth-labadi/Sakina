@@ -1,0 +1,11 @@
+# Keep the build context small and free of secrets.
+node_modules
+dist
+test
+*.tsbuildinfo
+.env
+.env*
+
+Dockerfile
+.dockerignore
+README.md
