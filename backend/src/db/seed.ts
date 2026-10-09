@@ -5,7 +5,8 @@
  *
  *   npm run db:seed
  *
- * Password for all: calm-river-22. Refuses to run with NODE_ENV=production.
+ * Password for all: calm-river-22. Refuses to run with NODE_ENV=production, except on staging,
+ * which runs the production image and opts in with SEED_DEMO_ACCOUNTS=yes. Never set that in production.
  */
 import { inArray } from 'drizzle-orm';
 import { loadConfig } from '../config.js';
@@ -17,8 +18,8 @@ import { createDb } from './client.js';
 import { accountCommunities, accounts, recovery } from './schema.js';
 
 const config = loadConfig();
-if (config.NODE_ENV === 'production') {
-  console.error('db:seed is for development only.');
+if (config.NODE_ENV === 'production' && process.env.SEED_DEMO_ACCOUNTS !== 'yes') {
+  console.error('db:seed is for development (and staging, with SEED_DEMO_ACCOUNTS=yes) only.');
   process.exit(2);
 }
 
