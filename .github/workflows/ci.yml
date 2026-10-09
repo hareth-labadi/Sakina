@@ -1,5 +1,5 @@
-# Checks every pull request into dev or main, and every push to them.
-# Branch protection requires the two job names below ("checks" and "docker"), so keep them stable.
+# Checks every pull request into dev or main, and every push to them. Nothing is deployed from here yet.
+# Branch protection requires the job names below ("checks", "docker", "secrets"), so keep them stable.
 name: CI
 
 on:
@@ -8,38 +8,42 @@ on:
   push:
     branches: [dev, main]
 
+# Read-only token by default; jobs ask for more only if they need it.
 permissions:
   contents: read
 
+# A new push to the same PR cancels the run that is still going (pushes to dev/main always finish).
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NODE_VERSION: 24 # keep in step with the Dockerfile
+  NEXT_TELEMETRY_DISABLED: 1
 
 jobs:
   checks:
     name: checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      NEXT_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - name: Lint
         run: npm run lint
       - name: Translations in sync
         run: npm run check:i18n
+      - name: Audit production dependencies
+        run: npm run audit
       # next build also type-checks; it generates the route types tsc needs below.
       - name: Build
         run: npm run build
       - name: Typecheck
         run: npm run typecheck
-      - name: Audit production dependencies
-        run: npm run audit
 
   docker:
     name: docker
@@ -47,5 +51,24 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
-      - name: Build production image
-        run: docker build -t sakina-web:ci .
+      - uses: docker/setup-buildx-action@v3
+      - name: Build production image (not pushed)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # scan the whole history, not just the last commit
+      - name: No secrets committed
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

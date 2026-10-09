@@ -32,7 +32,7 @@ Living style guide: **/ar/design**, **/fr/design**, **/en/design**. Check every 
 - **New work:** branch from the latest `dev`, open a PR into `dev`, **squash merge** once CI passes and the other person has reviewed. Delete the branch.
 - **Release:** open a PR from `dev` into `main` and merge it with a **merge commit** (never squash: it makes `dev` and `main` disagree and the next release conflicts). Tag it (`v0.2.0`).
 - **Hotfix:** branch from `main`, PR into `main`, then merge `main` back into `dev`.
-- Nobody pushes to `dev` or `main` directly. CI (`.github/workflows/ci.yml`: lint, translations, build, typecheck, audit, Docker image) runs on every PR into either.
+- Nobody pushes to `dev` or `main` directly. CI (`.github/workflows/ci.yml`) runs on every PR into either: lint, translations, production audit, build, typecheck, a Docker image build (not pushed) and a gitleaks scan of the whole history for committed secrets. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev`. Nothing deploys yet: that waits until hosting is chosen.
 - Working on two things at once? Use a separate folder per branch (`git worktree add ../sakina-<topic> -b feat/<topic> origin/dev`) instead of switching branches in one folder.
 
 ## Stack
