@@ -41,10 +41,11 @@ const nextConfig: NextConfig = {
   /**
    * The browser reaches the API at /api on this same origin (first-party cookies, no CORS);
    * Next forwards it to the API server, which is never exposed itself. Read at build time, so
-   * the Docker image takes API_INTERNAL_URL as a build argument.
+   * the Docker image takes API_INTERNAL_URL as a build argument. In development it defaults to
+   * the API's own dev server (`cd backend && npm run dev`).
    */
   async rewrites() {
-    const target = process.env.API_INTERNAL_URL;
+    const target = process.env.API_INTERNAL_URL || (isDev ? 'http://localhost:4000' : '');
     return target ? [{ source: '/api/:path*', destination: `${target}/:path*` }] : [];
   },
   async headers() {

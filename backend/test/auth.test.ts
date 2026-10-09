@@ -130,7 +130,7 @@ describe('sign in', () => {
     const { c } = await signUp();
     await db.update(accounts).set({ status: 'suspended', suspendedReason: 'spam' });
     // Their open session stops working at once.
-    expect((await c.get('/auth/me')).statusCode).toBe(401);
+    expect((await c.get('/auth/me')).json()).toEqual({ user: null });
     expect((await client(app).post('/auth/signin', { nickname: 'amal_dawn', password: 'wrong-pass-1' })).statusCode).toBe(401);
     const res = await client(app).post('/auth/signin', { nickname: 'amal_dawn', password: PASSWORD });
     expect(res.statusCode).toBe(403);
@@ -141,9 +141,9 @@ describe('sign in', () => {
     const { c } = await signUp();
     const stolen = c.cookie;
     expect((await c.post('/auth/signout')).statusCode).toBe(204);
-    expect((await c.get('/auth/me')).statusCode).toBe(401);
+    expect((await c.get('/auth/me')).json()).toEqual({ user: null });
     c.cookie = stolen;
-    expect((await c.get('/auth/me')).statusCode).toBe(401);
+    expect((await c.get('/auth/me')).json()).toEqual({ user: null });
   });
 });
 
@@ -165,7 +165,7 @@ describe('recovery with a code', () => {
     expect(newRecoveryCode).toMatch(/^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/);
 
     expect((await c.post('/auth/reset', { token, password: 'another-one-77' })).json()).toEqual({ error: 'invalid' });
-    expect((await oldDevice.get('/auth/me')).statusCode).toBe(401);
+    expect((await oldDevice.get('/auth/me')).json()).toEqual({ user: null });
     expect((await c.post('/auth/signin', { nickname: 'amal_dawn', password: PASSWORD })).statusCode).toBe(401);
     expect((await c.post('/auth/signin', { nickname: 'amal_dawn', password: 'new-quiet-sea-9' })).statusCode).toBe(200);
     expect((await c.post('/auth/recovery/code', { nickname: 'amal_dawn', code: CODE })).statusCode).toBe(400);

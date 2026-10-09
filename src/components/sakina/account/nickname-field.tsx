@@ -33,6 +33,7 @@ export function NicknameField({
 }) {
   const t = useTranslations('account.nickname');
   const [status, setStatus] = useState<NicknameStatus>('idle');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const trimmed = value.trim();
 
   useEffect(() => {
@@ -52,8 +53,15 @@ export function NicknameField({
     }
     const id = window.setTimeout(async () => {
       report('checking');
-      const ok = await accounts.isNicknameAvailable(trimmed);
-      report(ok ? 'available' : 'taken');
+      try {
+        const res = await accounts.checkNickname(trimmed);
+        if (cancelled) return;
+        setSuggestions(res.suggestions);
+        report(res.available ? 'available' : res.reason === 'invalid' ? 'invalid' : 'taken');
+      } catch {
+        // Couldn't check (offline, server down): say nothing; sign-up still refuses a taken name.
+        report('idle');
+      }
     }, 450);
     return () => { cancelled = true; window.clearTimeout(id); };
     // onStatusChange is a callback prop; re-running on its identity would re-check needlessly.
@@ -78,7 +86,7 @@ export function NicknameField({
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-caption text-mute">{t('tryOne')}</span>
           <ChipGroup>
-            {accounts.suggestNicknames(trimmed).map((s) => (
+            {suggestions.map((s) => (
               <Chip key={s} onClick={() => onChange(s)} dir="ltr">
                 {s}
               </Chip>

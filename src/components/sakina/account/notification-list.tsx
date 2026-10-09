@@ -8,7 +8,7 @@ import { RelativeTime } from '@/components/ui/relative-time';
 import { useToast } from '@/components/ui/toast';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
-import { updateSession, useSession } from '@/lib/session';
+import { updateSession, useSessionState } from '@/lib/session';
 import { notifications as service } from '@/services/notifications';
 import type { AppNotification } from '@/types/domain';
 
@@ -21,7 +21,7 @@ const tags = {
 /** The member's notifications. Opening one marks it read; the header bell follows the unread count. */
 export function NotificationList() {
   const t = useTranslations('notifications');
-  const user = useSession();
+  const { status, user } = useSessionState();
   const { toast } = useToast();
   const [items, setItems] = useState<AppNotification[] | null>(null);
   const nickname = user?.nickname;
@@ -40,6 +40,7 @@ export function NotificationList() {
     };
   }, [nickname]);
 
+  if (!user && status === 'loading') return <LoadingState caption={t('loading')} />;
   if (!user) {
     return (
       <EmptyState

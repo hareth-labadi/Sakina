@@ -13,6 +13,7 @@ import { memberships } from '@/services';
 export function JoinButton({ communityId, name }: { communityId: string; name: string }) {
   const t = useTranslations('community.page');
   const user = useSession();
+  const nickname = user?.nickname;
   const { toast } = useToast();
   const [gateOpen, setGateOpen] = useState(false);
   const [member, setMember] = useState<boolean | null>(null);
@@ -20,11 +21,11 @@ export function JoinButton({ communityId, name }: { communityId: string; name: s
 
   useEffect(() => {
     let live = true;
-    if (user) memberships.isMember(user.nickname, communityId).then((m) => live && setMember(m));
+    if (nickname) memberships.isMember(communityId).then((m) => live && setMember(m));
     return () => {
       live = false;
     };
-  }, [user, communityId]);
+  }, [nickname, communityId]);
 
   if (!user) {
     return (
@@ -38,7 +39,7 @@ export function JoinButton({ communityId, name }: { communityId: string; name: s
   const toggle = async () => {
     const next = !member;
     setBusy(true);
-    const res = await memberships.setMember(user.nickname, communityId, next);
+    const res = await memberships.setMember(communityId, next);
     setBusy(false);
     if (!res.ok) return toast(t('failed'));
     setMember(next);
