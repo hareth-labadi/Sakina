@@ -55,6 +55,9 @@ jobs:
     name: No secrets committed
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read # the action lists the PR's commits to know what to scan
     steps:
       - uses: actions/checkout@v5
         with:
@@ -62,3 +65,4 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: false # findings show in the job log; the token can't write PR comments
