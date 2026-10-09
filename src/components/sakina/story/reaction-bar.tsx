@@ -27,7 +27,7 @@ export function ReactionBar({ counts, mine, onToggle }: { counts: Record<Reactio
               className="inline-flex min-h-12 items-center gap-2.5 rounded-full border border-line bg-surface px-4.5 font-semibold transition-colors hover:bg-surface-2 aria-pressed:border-lav-ink aria-pressed:bg-lav-soft aria-pressed:text-lav-ink"
             >
               {t(r)}
-              <span className="font-mono text-sm opacity-75">{counts[r]}</span>
+              <span className="font-mono text-sm">{counts[r]}</span>
             </button>
           );
         })}

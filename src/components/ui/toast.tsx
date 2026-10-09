@@ -10,7 +10,8 @@ type ToastApi = { toast: (message: ReactNode) => void };
 const ToastContext = createContext<ToastApi | null>(null);
 
 /** Calm, short confirmations ("Saved", "Reply posted"). Never use toasts for errors that need action. */
-export function ToastProvider({ closeLabel, children }: { closeLabel: string; children: ReactNode }) {
+/** `regionLabel` names the toast region for screen readers; `{hotkey}` is replaced by Radix (F8). */
+export function ToastProvider({ closeLabel, regionLabel, children }: { closeLabel: string; regionLabel: string; children: ReactNode }) {
   const [items, setItems] = useState<ToastItem[]>([]);
 
   const toast = useCallback((message: ReactNode) => {
@@ -35,7 +36,7 @@ export function ToastProvider({ closeLabel, children }: { closeLabel: string; ch
             </T.Close>
           </T.Root>
         ))}
-        <T.Viewport className="fixed bottom-5 start-1/2 z-90 flex w-[min(560px,calc(100%-32px))] flex-col gap-2 outline-none ltr:-translate-x-1/2 rtl:translate-x-1/2" />
+        <T.Viewport label={regionLabel} className="fixed bottom-5 start-1/2 z-90 flex w-[min(560px,calc(100%-32px))] flex-col gap-2 outline-none ltr:-translate-x-1/2 rtl:translate-x-1/2" />
       </T.Provider>
     </ToastContext.Provider>
   );

@@ -107,7 +107,8 @@ export function RoomHeader({
   onToggleMute,
   onReport,
   onLeave,
-  onBlock
+  onBlock,
+  titleAs: Title = 'h1'
 }: {
   kind: RoomKind;
   title: string;
@@ -120,6 +121,8 @@ export function RoomHeader({
   onReport: () => void;
   onLeave: () => void;
   onBlock?: () => void;
+  /** h1 on the room page itself; lower when embedded (e.g. the style guide). */
+  titleAs?: 'h1' | 'h2' | 'h3';
 }) {
   const t = useTranslations('chat.room');
   return (
@@ -131,7 +134,7 @@ export function RoomHeader({
             {live ? <Badge tone="live"><LiveDot />{t('live')}</Badge> : null}
             {community ? <span className="text-caption text-mute">{community}</span> : null}
           </div>
-          <h1 className="text-2xl" dir="auto">{title}</h1>
+          <Title className="text-2xl" dir="auto">{title}</Title>
           {hostLine ? <span className="text-caption text-mute">{hostLine}</span> : null}
         </div>
         <div className="flex flex-wrap gap-1.5">

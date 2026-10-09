@@ -270,6 +270,7 @@ export function ChatDemo() {
     <div className="overflow-hidden rounded-card border border-line bg-surface">
       <RoomHeader
         kind="guided"
+        titleAs="h3"
         title="Grounding when your mind races"
         community="Anxiety"
         live

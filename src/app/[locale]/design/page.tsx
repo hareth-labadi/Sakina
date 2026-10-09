@@ -59,7 +59,7 @@ export default async function DesignPage({ params }: Props) {
           {BRAND.map((b) => (
             <div key={b.key} className="flex h-36 flex-col justify-end gap-0.5 rounded-tile border border-line p-4" style={{ background: b.hex, color: b.fg }}>
               <b>{t(`brand.${b.key}`)}</b>
-              <span className="font-mono text-sm opacity-85" dir="ltr">{b.hex}</span>
+              <span className="font-mono text-sm" dir="ltr">{b.hex}</span>
             </div>
           ))}
         </div>

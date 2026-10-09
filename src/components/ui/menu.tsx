@@ -5,7 +5,13 @@ import type { ComponentProps } from 'react';
 import { cn } from '@/lib/cn';
 
 /** Dropdown menu (account menu, row actions). Arrow keys, typeahead and Escape come from Radix. */
-export const Menu = M.Root;
+/**
+ * Non-modal by default: a dropdown doesn't need to hide the rest of the page from screen readers
+ * (Radix's modal mode does, which also traps assistive-tech users). Focus and Escape still work.
+ */
+export function Menu({ modal = false, ...props }: ComponentProps<typeof M.Root>) {
+  return <M.Root modal={modal} {...props} />;
+}
 export const MenuTrigger = M.Trigger;
 
 export function MenuContent({ className, align = 'end', sideOffset = 10, ...props }: ComponentProps<typeof M.Content>) {

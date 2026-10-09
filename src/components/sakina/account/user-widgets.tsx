@@ -18,7 +18,7 @@ export function NotificationBell({ unread }: { unread: number }) {
     >
       <BellIcon />
       {unread > 0 ? (
-        <span aria-hidden className="absolute -end-1.5 -top-1.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-warm-ink px-1.5 text-[0.8125rem] font-bold text-white">
+        <span aria-hidden className="absolute -end-1.5 -top-1.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-warm-ink px-1.5 text-[0.8125rem] font-bold text-danger-fg">
           {unread > 99 ? '99+' : unread}
         </span>
       ) : null}

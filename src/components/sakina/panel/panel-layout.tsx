@@ -51,7 +51,7 @@ export function PanelLayout({
           >
             <span className="flex-1">{item.label}</span>
             {item.count ? (
-              <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-warm-ink px-1.5 text-[0.8125rem] font-bold text-white">
+              <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-warm-ink px-1.5 text-[0.8125rem] font-bold text-danger-fg">
                 <span className="sr-only">{t('count', { count: item.count })}</span>
                 <span aria-hidden>{item.count}</span>
               </span>

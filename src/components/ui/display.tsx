@@ -105,24 +105,27 @@ export function EmptyArt() {
   );
 }
 
-export function EmptyState({ title, body, action }: { title: ReactNode; body?: ReactNode; action?: ReactNode }) {
+type HeadingTag = 'h1' | 'h2' | 'h3';
+
+/** `as` sets the heading level so pages keep a correct outline (h1 on full-page states like 404). */
+export function EmptyState({ title, body, action, as: H = 'h3' }: { title: ReactNode; body?: ReactNode; action?: ReactNode; as?: HeadingTag }) {
   return (
     <div className="flex flex-col items-center gap-3.5 rounded-card border border-dashed border-line bg-bg px-6 py-11 text-center">
       <EmptyArt />
-      <h3 className="text-2xl">{title}</h3>
+      <H className="text-2xl">{title}</H>
       {body ? <p className="max-w-prose text-ink-2">{body}</p> : null}
       {action}
     </div>
   );
 }
 
-export function ErrorState({ title, body, action }: { title: ReactNode; body?: ReactNode; action?: ReactNode }) {
+export function ErrorState({ title, body, action, as: H = 'h3' }: { title: ReactNode; body?: ReactNode; action?: ReactNode; as?: HeadingTag }) {
   return (
     <div role="alert" className="flex flex-col items-center gap-3.5 rounded-card border border-warm-ink bg-bg px-6 py-11 text-center">
       <span className="flex size-15 items-center justify-center rounded-full bg-warm-soft text-warm-ink">
         <AlertIcon size={28} />
       </span>
-      <h3 className="text-2xl">{title}</h3>
+      <H className="text-2xl">{title}</H>
       {body ? <p className="max-w-prose text-ink-2">{body}</p> : null}
       {action}
     </div>

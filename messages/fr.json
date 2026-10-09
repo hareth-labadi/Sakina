@@ -8,7 +8,8 @@
     "close": "Fermer",
     "cancel": "Annuler",
     "skip": "Aller au contenu",
-    "optional": "(facultatif)"
+    "optional": "(facultatif)",
+    "notificationsRegion": "Notifications ('{'hotkey'}')"
   },
   "notFound": {
     "title": "Cette page n'existe pas encore",

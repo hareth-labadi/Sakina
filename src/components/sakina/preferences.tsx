@@ -1,9 +1,8 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useTransition } from 'react';
 import { Segmented } from '@/components/ui/segmented';
-import { usePathname, useRouter } from '@/i18n/navigation';
+import { getPathname, usePathname } from '@/i18n/navigation';
 import { localeLabels, locales, type Locale } from '@/i18n/routing';
 import { useTheme, type ThemePreference } from '@/lib/theme';
 
@@ -25,20 +24,26 @@ export function ThemeSwitch({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Switching language does a full page load on purpose: the <html> lang/dir, fonts and the
+ * no-flash theme script are set server-side, and re-rendering the root layout in the browser
+ * would re-create that script (React warns about it).
+ */
 export function LanguageSwitch({ className }: { className?: string }) {
   const t = useTranslations('locale');
   const locale = useLocale() as Locale;
-  const router = useRouter();
   const pathname = usePathname();
-  const [pending, startTransition] = useTransition();
 
   return (
     <Segmented<Locale>
       label={t('label')}
       value={locale}
       className={className}
-      onValueChange={(next) => startTransition(() => router.replace(pathname, { locale: next }))}
-      options={locales.map((l) => ({ value: l, label: <span lang={l} aria-busy={pending || undefined}>{localeLabels[l]}</span> }))}
+      onValueChange={(next) => {
+        const href = getPathname({ href: pathname, locale: next });
+        window.location.assign(href + window.location.search + window.location.hash);
+      }}
+      options={locales.map((l) => ({ value: l, label: <span lang={l}>{localeLabels[l]}</span> }))}
     />
   );
 }

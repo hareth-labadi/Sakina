@@ -8,7 +8,8 @@
     "close": "إغلاق",
     "cancel": "إلغاء",
     "skip": "انتقل إلى المحتوى",
-    "optional": "(اختياري)"
+    "optional": "(اختياري)",
+    "notificationsRegion": "الإشعارات ('{'hotkey'}')"
   },
   "notFound": {
     "title": "هذه الصفحة ليست هنا بعد",

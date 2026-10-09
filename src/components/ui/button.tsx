@@ -21,7 +21,7 @@ export const buttonVariants = cva(
         /** Crisis help. Terracotta, never alarm red. */
         crisis: 'border border-warm-ink bg-warm-soft text-warm-ink hover:opacity-90',
         /** Destructive confirm (delete, ban). */
-        danger: 'bg-warm-ink text-white hover:opacity-90'
+        danger: 'bg-warm-ink text-danger-fg hover:opacity-90'
       },
       size: {
         sm: 'min-h-11 px-4.5 text-base',

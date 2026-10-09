@@ -1,10 +1,11 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, Badge } from '@/components/ui/display';
 import { Field, Textarea } from '@/components/ui/field';
+import { RelativeTime } from '@/components/ui/relative-time';
 import { detectPii } from '@/lib/safety';
 import { cn } from '@/lib/cn';
 import type { TherapistKind } from '@/types/domain';
@@ -95,7 +96,6 @@ function ReplyItem({ reply, level, canInteract, onRelate, onReply, onReport }: {
   const t = useTranslations('replies');
   const tb = useTranslations('badges');
   const tk = useTranslations('therapistKind');
-  const format = useFormatter();
   const [replying, setReplying] = useState(false);
   const mini = 'inline-flex min-h-10 items-center rounded-[10px] px-2 text-[0.9375rem] font-semibold text-mute hover:bg-surface-2 hover:text-ink';
 
@@ -107,7 +107,7 @@ function ReplyItem({ reply, level, canInteract, onRelate, onReply, onReport }: {
           <div className="flex flex-wrap items-center gap-2">
             <b dir="auto">{reply.author}</b>
             {reply.therapist ? <Badge tone="therapist">{tb('therapist', { kind: tk(reply.therapist) })}</Badge> : null}
-            <time dateTime={reply.createdAt} className="text-caption text-mute">{format.relativeTime(new Date(reply.createdAt))}</time>
+            <RelativeTime date={reply.createdAt} className="text-caption text-mute" />
             {reply.held ? <Badge tone="warm">{t('heldOnlyYou')}</Badge> : null}
           </div>
           <p dir="auto" className="whitespace-pre-line text-ink">{reply.text}</p>

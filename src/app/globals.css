@@ -38,7 +38,8 @@
   --green-ink: #2f6b4e;
   --lav-ink: #5b43b8;
   --sand-ink: #7a5a1e;
-  --warm-ink: #b4553f;
+  --warm-ink: #a64b36;
+  --danger-fg: #ffffff;
 
   --primary: #0f1a2e;
   --primary-fg: #ffffff;
@@ -79,6 +80,7 @@
   --lav-ink: #c8b6ff;
   --sand-ink: #e8c98f;
   --warm-ink: #f0a38e;
+  --danger-fg: #0b1224;
 
   --primary: #8bb8e8;
   --primary-fg: #0b1224;
@@ -120,6 +122,7 @@
   --color-lav-ink: var(--lav-ink);
   --color-sand-ink: var(--sand-ink);
   --color-warm-ink: var(--warm-ink);
+  --color-danger-fg: var(--danger-fg);
 
   --color-primary: var(--primary);
   --color-primary-fg: var(--primary-fg);

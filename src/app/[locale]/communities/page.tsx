@@ -28,7 +28,7 @@ export default async function CommunitiesPage({ params }: Props) {
       </div>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-5">
         {list.map((c) => (
-          <CommunityCard key={c.id} community={c} storyCount={SAMPLE_STORIES.filter((s) => s.communityId === c.id).length} />
+          <CommunityCard key={c.id} community={c} headingLevel="h2" storyCount={SAMPLE_STORIES.filter((s) => s.communityId === c.id).length} />
         ))}
       </div>
     </Container>

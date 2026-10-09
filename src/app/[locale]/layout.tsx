@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getNow, getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import Script from 'next/script';
 import type { ReactNode } from 'react';
 import { SiteFooter } from '@/components/sakina/site-footer';
 import { SiteHeader } from '@/components/sakina/site-header';
+import { DirectionProvider } from '@/components/ui/direction';
 import { ToastProvider } from '@/components/ui/toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { isRtl, routing, toLocale } from '@/i18n/routing';
@@ -44,24 +44,22 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations('common');
+  // Share the server's reference time with the browser so relative dates hydrate identically.
+  const now = await getNow();
 
   return (
     <html lang={locale} dir={isRtl(locale) ? 'rtl' : 'ltr'} className={fontVariables} suppressHydrationWarning>
+      <head>
+        {/* Applies light/dark before first paint (no flash). Must be a plain inline script:
+            next/script "beforeInteractive" is deferred in the App Router and causes a flash. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
-        {/* Applies light/dark before first paint (no flash). */}
-        <Script id="theme-init" strategy="beforeInteractive">
-          {themeInitScript}
-        </Script>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider now={now}>
+          <DirectionProvider dir={isRtl(locale) ? 'rtl' : 'ltr'}>
           <ThemeProvider>
-            <ToastProvider closeLabel={t('close')}>
+            <ToastProvider closeLabel={t('close')} regionLabel={t('notificationsRegion')}>
               <TooltipProvider>
-              <a
-                href="#main"
-                className="absolute start-4 -top-20 z-100 rounded-full bg-primary px-5 py-3 font-semibold text-primary-fg focus:top-3"
-              >
-                {t('skip')}
-              </a>
               <SiteHeader />
               <main id="main" tabIndex={-1} className="outline-none">
                 {children}
@@ -70,6 +68,7 @@ export default async function LocaleLayout({ children, params }: Props) {
               </TooltipProvider>
             </ToastProvider>
           </ThemeProvider>
+          </DirectionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

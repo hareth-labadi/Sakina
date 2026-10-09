@@ -1,6 +1,7 @@
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Avatar, Badge } from '@/components/ui/display';
 import { ArrowIcon, EyeOffIcon, LockIcon } from '@/components/ui/icons';
+import { RelativeTime } from '@/components/ui/relative-time';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import type { Community, StorySummary } from '@/types/domain';
@@ -11,9 +12,8 @@ const typeTone = { story: 'story', checkin: 'checkin', win: 'win' } as const;
  * Story preview. Member text keeps its own direction (`dir="auto"`): an Arabic story
  * reads right-to-left even inside the French or English interface.
  */
-export function StoryCard({ story, community, signedIn = false }: { story: StorySummary; community?: Community; signedIn?: boolean }) {
+export function StoryCard({ story, community, signedIn = false, headingLevel: H = 'h3' }: { story: StorySummary; community?: Community; signedIn?: boolean; headingLevel?: 'h2' | 'h3' }) {
   const t = useTranslations('story');
-  const format = useFormatter();
   const locale = useLocale() as Locale;
   const locked = !signedIn && story.visibility === 'members';
   const veiled = Boolean(story.veil?.length);
@@ -26,7 +26,7 @@ export function StoryCard({ story, community, signedIn = false }: { story: Story
           <b className="text-[1.0625rem]" dir="auto">{story.authorNickname}</b>
           <span className="text-caption text-mute">
             {community ? `${community.name[locale]} · ` : ''}
-            <time dateTime={story.createdAt}>{format.relativeTime(new Date(story.createdAt))}</time>
+            <RelativeTime date={story.createdAt} />
           </span>
         </div>
         <Badge tone={typeTone[story.type]}>{t(`types.${story.type}`)}</Badge>
@@ -39,7 +39,7 @@ export function StoryCard({ story, community, signedIn = false }: { story: Story
         </span>
       ) : null}
 
-      <h3 className="text-2xl leading-tight" dir="auto">{story.title}</h3>
+      <H className="text-2xl leading-tight" dir="auto">{story.title}</H>
       {!veiled ? (
         <p className="line-clamp-3 text-ink-2" dir="auto">
           {story.excerpt}

@@ -9,6 +9,7 @@ export default function NotFound() {
   return (
     <Container className="py-20">
       <EmptyState
+        as="h1"
         title={t('title')}
         body={t('body')}
         action={

@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { buttonVariants } from '@/components/ui/button';
 import { Table, TBody, TD, TH, THead, TR } from '@/components/ui/table';
 import { Link } from '@/i18n/navigation';
+import { RelativeTime } from '@/components/ui/relative-time';
 import { cn } from '@/lib/cn';
 import type { RiskLevel } from '@/types/domain';
 
@@ -33,14 +34,13 @@ export type QueueItemView = {
 /** One item in the therapist's priority queue. The whole row is the link. */
 export function QueueRow({ item, href }: { item: QueueItemView; href: string }) {
   const t = useTranslations('panel.queue');
-  const format = useFormatter();
   const urgent = item.risk === 'high' && item.status !== 'resolved';
   return (
     <li className={cn('relative flex flex-wrap items-start gap-4 rounded-tile border bg-surface px-5 py-4.5', urgent ? 'border-warm-ink' : 'border-line')}>
       <RiskPill level={item.risk} />
       <div className="flex min-w-0 flex-[1_1_240px] flex-col gap-0.5">
         <span className="text-caption text-mute">
-          {t(`kind.${item.kind}`)} · {item.community} · <time dateTime={item.createdAt}>{format.relativeTime(new Date(item.createdAt))}</time>
+          {t(`kind.${item.kind}`)} · {item.community} · <RelativeTime date={item.createdAt} />
         </span>
         <b dir="auto" className="line-clamp-2">{item.excerpt}</b>
         <span className="text-caption text-mute">

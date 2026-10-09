@@ -22,12 +22,17 @@ const NAV = [
 /** `user` comes from the session once auth exists; null/undefined = guest. */
 export function SiteHeader({ user, onSignOut = () => {} }: { user?: SessionUser | null; onSignOut?: () => void }) {
   const t = useTranslations('nav');
+  const tc = useTranslations('common');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const isCurrent = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-glass backdrop-blur-lg">
+      {/* First focusable element on every page; inside the banner landmark. */}
+      <a href="#main" className="absolute start-4 -top-20 z-100 rounded-full bg-primary px-5 py-3 font-semibold text-primary-fg focus:top-3">
+        {tc('skip')}
+      </a>
       <div className="mx-auto flex min-h-19 max-w-310 items-center gap-5 px-4 sm:px-8">
         <Link href="/" aria-label={t('logoLabel')} className="rounded-xl">
           <Logo compact />
