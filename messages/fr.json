@@ -813,5 +813,26 @@
       "codeTitle": "Votre code de récupération",
       "codeBody": "Votre compte utilise désormais ce code au lieu d'un e-mail."
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "sub": "Réponses, réactions et vérifications de sécurité sur vos messages. Vous seul·e les voyez.",
+    "loading": "Chargement des notifications…",
+    "unread": "Non lue",
+    "unreadCount": "{count, plural, =0 {Tout est lu} one {# non lue} other {# non lues}}",
+    "markAll": "Tout marquer comme lu",
+    "allRead": "Toutes les notifications sont marquées comme lues",
+    "emptyTitle": "Rien de nouveau",
+    "emptyBody": "Quand quelqu'un répond à vos messages ou y réagit, vous le verrez ici.",
+    "guestTitle": "Connectez-vous pour voir vos notifications",
+    "guestBody": "Les notifications sont privées et liées à votre compte.",
+    "signIn": "Se connecter",
+    "kinds": {
+      "reply": "<who>{actor}</who> a répondu à <story>{title}</story>",
+      "reaction": "{count, plural, one {# personne a réagi} other {# personnes ont réagi}} à <story>{title}</story>",
+      "therapist": "Un·e thérapeute a répondu à <story>{title}</story>",
+      "held": "<story>{title}</story> attend la vérification d'un·e thérapeute. Vous seul·e le voyez pour l'instant.",
+      "approved": "<story>{title}</story> a été vérifié et est maintenant visible."
+    }
   }
 }
