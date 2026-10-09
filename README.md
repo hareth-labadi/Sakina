@@ -15,27 +15,35 @@ Other scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run ch
 
 ### The API, for local development
 
-The screens still run on mock data; the API serves `/health` only until the auth work lands.
+The screens still run on mock data; the auth API exists but the screens switch to it in a later PR.
 
 ```bash
-docker compose -f compose.dev.yaml up -d     # Postgres on 127.0.0.1:15432
+docker compose -f compose.dev.yaml up -d     # Postgres on 127.0.0.1:15432, Mailpit inbox on http://localhost:8025
 cd backend
-cp .env.example .env
+cp .env.example .env                         # then set DATA_ENCRYPTION_KEY (openssl rand -base64 32)
 npm install
 npm run db:migrate
 npm run dev                                  # http://localhost:4000/health
 ```
 
-With `API_INTERNAL_URL=http://localhost:4000` in the root `.env.local`, the web dev server forwards `/api/*` to it (http://localhost:3000/api/health). API scripts: `npm run lint`, `typecheck`, `test` (needs the dev database), `build`, `db:generate` (new migration after a schema change).
+With `API_INTERNAL_URL=http://localhost:4000` in the root `.env.local`, the web dev server forwards `/api/*` to it (http://localhost:3000/api/health). Every email the API sends lands in Mailpit, nothing leaves the machine. API scripts: `npm run lint`, `typecheck`, `test` (uses its own `sakina_test` database, created automatically), `build`, `db:generate` (new migration after a schema change).
+
+Staff accounts (therapist, moderator, admin) never sign up on the site. Create them with the CLI; it prints a password and recovery code once:
+
+```bash
+npx tsx --env-file=.env src/cli/create-staff.ts <nickname> <therapist|moderator|admin>
+```
 
 ### With Docker (full stack, production builds)
 
 ```bash
-cp .env.compose.example .env     # then set POSTGRES_PASSWORD
+cp .env.compose.example .env     # then set POSTGRES_PASSWORD and DATA_ENCRYPTION_KEY
 docker compose up --build        # http://localhost:3000
 ```
 
-Four services: `db` (Postgres 17), `migrate` (applies migrations, then exits), `api` (starts only if migrations succeeded) and `web`. Only `web` publishes a port; it forwards `/api/*` to `api` over the internal network, so the browser sees one origin (first-party cookies, no CORS). The API and database are unreachable from outside. Both images run as a non-root user with a read-only filesystem.
+Four services: `db` (Postgres 17), `migrate` (applies migrations, then exits), `api` (starts only if migrations succeeded) and `web`. Only `web` publishes a port; it forwards `/api/*` to `api` over the internal network, so the browser sees one origin (first-party cookies, no CORS). The API and database are unreachable from outside. Both images run as a non-root user with a read-only filesystem. Staff CLI in the image: `docker compose run --rm api node dist/cli/create-staff.js <nickname> <role>`.
+
+**Deployment requirement:** put a reverse proxy or load balancer in front of `web` that sets or appends the real client IP in `X-Forwarded-For` (Caddy, nginx, any cloud load balancer does). Rate limits use that IP; without such a proxy a client can fake it. HTTPS is required too: in production the session cookie is `__Host-` and `Secure`.
 
 `NEXT_PUBLIC_API_URL` and `API_INTERNAL_URL` are **build** arguments of the web image (baked in by `next build`), set in `compose.yaml`. Day-to-day development stays on `npm run dev`.
 
@@ -127,7 +135,26 @@ The mock answers the same way for unknown nicknames and wrong emails, as the rea
 
 Pages call `src/services` only. Set `NEXT_PUBLIC_API_URL=/api` and replace each mock function body with `api<T>('/path')`; types in `src/types/domain.ts` become the API contract. Auth will use an httpOnly session cookie set by the API (no tokens in localStorage).
 
-API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, error handling, routes), `db/` (Drizzle schema, client, migration runner), migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
+API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, rate limits, same-origin check, error handling), `db/` (Drizzle schema, client, migration runner), `modules/auth/` (routes, sessions, lockout, emails, cleanup), `lib/` (hashing, encryption, recovery codes, mailer), `cli/` (staff accounts). Migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
+
+### Auth API
+
+All under `/api` in the browser. Requests that change something must come from the site's own origin (`Origin` header), or they get `403`.
+
+| Route | Mock function | Answers |
+| --- | --- | --- |
+| `POST /auth/signup` | `signUp` | `201 {user, emailToVerify}` (masked) + session cookie · `409 nickname_taken` · `400 invalid` / `weak_password` |
+| `POST /auth/signin` `{nickname, password, remember}` | `signIn` | `200 {user}` + cookie · `401 {error:'invalid', attemptsLeft}` · `423 {error:'locked', until}` · `403 {error:'suspended', reason}` |
+| `POST /auth/signout` · `GET /auth/me` | (session) | `204` · `200 {user}` / `401` |
+| `POST /auth/recovery/code` `{nickname, code}` | `verifyRecoveryCode` | `200 {token}` · `400` · `423` |
+| `POST /auth/recovery/email` `{nickname, email, locale}` | `requestEmailReset` | always `202 {}`; a matching address gets a link to `/<locale>/forgot?token=…` |
+| `POST /auth/reset/check` `{token}` | `isResetTokenValid` | `{valid}` |
+| `POST /auth/reset` `{token, password}` | `resetPassword` | `{newRecoveryCode}` (code accounts) or `{newRecoveryCode: null}`; signs out every device |
+| `POST /auth/email/verify` `{token}` | `verifyEmail` | `204` · `400`; link goes to `/<locale>/verify-email?token=…` |
+| `POST /auth/email/resend` · `POST /auth/recovery/switch-to-code` · `GET /auth/recovery` | `resendVerification` · `switchToRecoveryCode` · `getRecoveryInfo` | need a session; the email only leaves masked |
+| `GET /accounts/nickname-availability?nickname=` | `isNicknameAvailable` + `suggestNicknames` | `{available, reason?, suggestions}` |
+
+Rules: 5 failed tries lock a nickname for 15 minutes, for unknown nicknames too, with the same answers and timing (no account enumeration). Sessions: 30 days with "remember me", otherwise a browser-session cookie limited to 12 hours on the server. Passwords and recovery codes are argon2id hashes; session and reset tokens are stored as SHA-256; the recovery email is AES-256-GCM encrypted. Expired sessions, tokens and old attempt counters are deleted hourly.
 
 ## Content to review
 

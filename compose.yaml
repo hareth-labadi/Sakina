@@ -33,6 +33,10 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: postgres://sakina:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/sakina
+      PUBLIC_WEB_URL: ${PUBLIC_WEB_URL:-http://localhost:3000}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?set DATA_ENCRYPTION_KEY in .env}
+      SMTP_URL: ${SMTP_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-Sakina <no-reply@sakina.invalid>}
     depends_on:
       migrate:
         condition: service_completed_successfully
