@@ -1,5 +1,5 @@
-# Local development services. Web and API run on the host (`npm run dev`) for fast reloads;
-# only what they need runs here.
+# Local development services: Postgres and a mail catcher. Web and API run on the host
+# (`npm run dev`) for fast reloads.
 #
 #   Start: docker compose -f compose.dev.yaml up -d      Stop: docker compose -f compose.dev.yaml down
 #   Wipe the database: docker compose -f compose.dev.yaml down -v
@@ -20,6 +20,13 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sakina"]
       interval: 5s
+
+  # Catches every email the API sends (nothing leaves this machine). Inbox: http://localhost:8025
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:1025:1025" # SMTP, for the API
+      - "127.0.0.1:8025:8025" # web inbox
 
 volumes:
   db-dev-data:
