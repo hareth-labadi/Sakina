@@ -1,0 +1,142 @@
+# Deploys dev to the staging server after every merge. Setup: docs/staging.md.
+#
+# Switched OFF until the repository variable STAGING_HOST exists (Settings > Secrets and
+# variables > Actions > Variables): every job is skipped, nothing is built or published.
+name: Staging
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time; a newer merge waits instead of cancelling a deploy halfway.
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io/hareth-labadi
+
+jobs:
+  images:
+    name: Build and publish images
+    if: vars.STAGING_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write # push to GitHub's container registry (private)
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/sakina-web:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=/api
+            API_INTERNAL_URL=http://api:4000
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+      - uses: docker/build-push-action@v7
+        with:
+          context: backend
+          push: true
+          tags: ${{ env.REGISTRY }}/sakina-api:${{ github.sha }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+  deploy:
+    name: Deploy to staging
+    needs: images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Secrets live in the "staging" environment (Settings > Environments), not in the repo.
+    environment:
+      name: staging
+      url: https://${{ vars.STAGING_DOMAIN }}
+    permissions:
+      contents: read
+      packages: read # lets the server pull the private images during this job
+    env:
+      HOST: ${{ vars.STAGING_HOST }}
+      DOMAIN: ${{ vars.STAGING_DOMAIN }}
+      SSH_USER: ${{ vars.STAGING_SSH_USER || 'deploy' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: SSH key and known host
+        env:
+          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/staging && chmod 600 ~/.ssh/staging
+          # Pinned host key: the deploy refuses to talk to a server it doesn't recognise.
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Write the server's .env
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_PASSWORD }}
+          DATA_ENCRYPTION_KEY: ${{ secrets.STAGING_DATA_ENCRYPTION_KEY }}
+          BASIC_AUTH_USER: ${{ vars.STAGING_BASIC_AUTH_USER || 'team' }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          # The site password is stored hashed (bcrypt), never in clear on the server.
+          HASH=$(docker run --rm caddy:2.11-alpine caddy hash-password --plaintext "$BASIC_AUTH_PASSWORD")
+          umask 077
+          # Single quotes: compose reads these values literally (the hash contains "$").
+          {
+            echo "IMAGE_TAG='${GITHUB_SHA}'"
+            echo "STAGING_DOMAIN='${DOMAIN}'"
+            echo "POSTGRES_PASSWORD='${POSTGRES_PASSWORD}'"
+            echo "DATA_ENCRYPTION_KEY='${DATA_ENCRYPTION_KEY}'"
+            echo "BASIC_AUTH_USER='${BASIC_AUTH_USER}'"
+            echo "BASIC_AUTH_HASH='${HASH}'"
+          } > deploy/staging/.env
+
+      - name: Copy the stack to the server
+        run: |
+          ssh -i ~/.ssh/staging -o BatchMode=yes "$SSH_USER@$HOST" 'mkdir -p ~/sakina-staging'
+          scp -i ~/.ssh/staging -o BatchMode=yes deploy/staging/compose.yaml deploy/staging/Caddyfile deploy/staging/.env "$SSH_USER@$HOST:sakina-staging/"
+
+      - name: Pull, migrate, start, seed
+        env:
+          # This job's own token: it can only read packages and expires when the job ends.
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: |
+          ssh -i ~/.ssh/staging -o BatchMode=yes "$SSH_USER@$HOST" \
+            "GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' bash -s" <<'EOF'
+          set -euo pipefail
+          cd ~/sakina-staging
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          docker compose pull --quiet
+          # Waits for every health check; the old containers keep serving if this fails.
+          docker compose up -d --remove-orphans --wait
+          docker compose run --rm --no-deps seed
+          docker logout ghcr.io
+          docker image prune -f --filter "until=168h"
+          EOF
+
+      - name: Check the live site
+        env:
+          BASIC_AUTH_USER: ${{ vars.STAGING_BASIC_AUTH_USER || 'team' }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          curl -fsS --retry 5 --retry-delay 5 --retry-all-errors -u "$BASIC_AUTH_USER:$BASIC_AUTH_PASSWORD" "https://$DOMAIN/api/health"
+          # Without the password the site must stay closed.
+          test "$(curl -s -o /dev/null -w '%{http_code}' "https://$DOMAIN/")" = 401
+
+      - name: Forget the key
+        if: always()
+        run: rm -f ~/.ssh/staging deploy/staging/.env

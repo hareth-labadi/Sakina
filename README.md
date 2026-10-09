@@ -55,6 +55,10 @@ Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server o
 
 `.github/workflows/ci.yml` runs on every pull request and every push to `dev` and `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. `.github/workflows/api.yml` does the same for `backend/`: lint, typecheck, audit, migrations applied to an empty Postgres, tests, build and image build. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev` for npm and the Docker base images (web and API) and the Actions. Nothing deploys yet: that waits until hosting is chosen.
 
+### Staging
+
+`.github/workflows/staging.yml` deploys `dev` to a private staging site after every merge (password-protected, not indexed, demo accounts only, emails caught by Mailpit). It is **prepared but switched off** until a server exists: setup in [docs/staging.md](docs/staging.md). The stack it runs is `deploy/staging/` (Caddy in front, which also gives the API the real visitor IP).
+
 ## Branches and releases
 
 | Branch | What it is | Gets changes from |

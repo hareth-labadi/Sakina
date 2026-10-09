@@ -8,6 +8,7 @@ build
 .claude
 *.tsbuildinfo
 backend
+deploy
 npm-debug.log*
 
 # env files: secrets never go into an image (pass them at runtime instead)

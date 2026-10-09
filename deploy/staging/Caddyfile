@@ -1,0 +1,34 @@
+# Staging front door. Caddy gets and renews the HTTPS certificate by itself.
+#
+# - The whole site (and the Mailpit inbox) sits behind one password: staging is for the team only.
+# - Search engines are told not to index anything.
+# - Caddy sets X-Forwarded-For to the real visitor IP (it ignores what the client sent), which is
+#   what the API's per-IP rate limits rely on.
+
+{$STAGING_DOMAIN} {
+	encode zstd gzip
+
+	basic_auth {
+		{$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
+	}
+
+	header {
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+
+	# Every email the staging API sends lands here instead of a real inbox.
+	handle /mail* {
+		reverse_proxy mail:8025
+	}
+
+	handle /robots.txt {
+		respond "User-agent: *
+Disallow: /
+" 200
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

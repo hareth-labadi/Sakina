@@ -1,0 +1,116 @@
+# Staging stack: runs on the staging server, from images built by .github/workflows/staging.yml.
+# The deploy workflow copies this folder to the server and writes .env next to it (see
+# docs/staging.md for every variable). Nothing here is used in development.
+#
+# Only Caddy publishes ports (80/443). Everything else talks over the internal network.
+
+name: sakina-staging
+
+x-hardening: &hardening
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  caddy:
+    image: caddy:2.11-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      STAGING_DOMAIN: ${STAGING_DOMAIN:?}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:?}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH:?}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data # certificates
+      - caddy-config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    # Built with NEXT_PUBLIC_API_URL=/api and API_INTERNAL_URL=http://api:4000, like compose.yaml.
+    image: ghcr.io/hareth-labadi/sakina-web:${IMAGE_TAG:?}
+    <<: *hardening
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api:
+    image: ghcr.io/hareth-labadi/sakina-api:${IMAGE_TAG:?}
+    <<: *hardening
+    tmpfs:
+      - /tmp
+    environment: &api-env
+      DATABASE_URL: postgres://sakina:${POSTGRES_PASSWORD:?}@db:5432/sakina
+      PUBLIC_WEB_URL: https://${STAGING_DOMAIN:?}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?}
+      SMTP_URL: smtp://mail:1025
+      MAIL_FROM: Sakina staging <no-reply@${STAGING_DOMAIN:?}>
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  migrate:
+    image: ghcr.io/hareth-labadi/sakina-api:${IMAGE_TAG:?}
+    <<: *hardening
+    command: ["node", "dist/db/migrate.js"]
+    healthcheck:
+      disable: true # one-off job: the image's /health check is for the API server
+    environment:
+      DATABASE_URL: postgres://sakina:${POSTGRES_PASSWORD:?}@db:5432/sakina
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # Run by the deploy after `up` (so after migrations), with --no-deps: resets the demo accounts
+  # (amal_dawn…). Staging only.
+  seed:
+    image: ghcr.io/hareth-labadi/sakina-api:${IMAGE_TAG:?}
+    <<: *hardening
+    command: ["node", "dist/db/seed.js"]
+    healthcheck:
+      disable: true
+    environment:
+      <<: *api-env
+      SEED_DEMO_ACCOUNTS: "yes"
+    profiles: [tools]
+    restart: "no"
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: sakina
+      POSTGRES_DB: sakina
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sakina"]
+      interval: 5s
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  # Catches all staging email (nothing reaches real inboxes). Inbox: https://<domain>/mail
+  mail:
+    image: axllent/mailpit:v1.27
+    environment:
+      MP_WEBROOT: /mail
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:
