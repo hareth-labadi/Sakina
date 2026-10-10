@@ -27,6 +27,9 @@ RUN npm run build
 # ---------- 3. runtime: only the standalone server, no source or dev tools ----------
 FROM node:${NODE_VERSION} AS runtime
 WORKDIR /app
+# Pages call the API while rendering, so the server needs its address at run time too.
+ARG API_INTERNAL_URL=""
+ENV API_INTERNAL_URL=${API_INTERNAL_URL}
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \

@@ -43,6 +43,8 @@ export function ReplyComposer({ onSubmit, onCancel, autoFocus, label }: { onSubm
       await onSubmit(x);
       setText('');
       setError(null);
+    } catch {
+      // Not sent: the caller already said why. Keep the text so nothing is lost.
     } finally {
       setBusy(false);
     }

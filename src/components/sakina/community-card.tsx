@@ -8,7 +8,18 @@ import { cn } from '@/lib/cn';
 import type { Community } from '@/types/domain';
 
 /** `headingLevel` keeps the page outline valid: h3 under a section heading (default), h2 directly under the page h1. */
-export function CommunityCard({ community, storyCount, headingLevel: H = 'h3' }: { community: Community; storyCount?: number; headingLevel?: 'h2' | 'h3' }) {
+export function CommunityCard({
+  community,
+  storyCount,
+  memberCount,
+  headingLevel: H = 'h3'
+}: {
+  community: Community;
+  /** Live numbers from the API; nothing is shown when they're unknown. */
+  storyCount?: number;
+  memberCount?: number;
+  headingLevel?: 'h2' | 'h3';
+}) {
   const t = useTranslations('community');
   const locale = useLocale() as Locale;
   const name = community.name[locale];
@@ -18,7 +29,7 @@ export function CommunityCard({ community, storyCount, headingLevel: H = 'h3' }:
       {community.sensitivity !== 'standard' ? <Badge className="bg-surface">{t(`sensitivity.${community.sensitivity}`)}</Badge> : null}
       <H className="text-[1.75rem]">{name}</H>
       <p className="text-ink-2">{community.description[locale]}</p>
-      {storyCount !== undefined ? <p className="text-caption text-ink-2">{t('meta', { count: storyCount })}</p> : null}
+      <CommunityMeta storyCount={storyCount} memberCount={memberCount} />
       <div className="mt-auto pt-2">
         <Link href={`/communities/${community.id}`} aria-label={t('openNamed', { name })} className={buttonVariants({ size: 'sm' })}>
           {t('open')}
@@ -26,4 +37,11 @@ export function CommunityCard({ community, storyCount, headingLevel: H = 'h3' }:
       </div>
     </article>
   );
+}
+
+/** "4 members · 3 stories", from live numbers. Parts that aren't known are left out (no placeholder numbers). */
+export function CommunityMeta({ storyCount, memberCount }: { storyCount?: number; memberCount?: number }) {
+  const t = useTranslations('community');
+  const parts = [memberCount !== undefined && t('members', { count: memberCount }), storyCount !== undefined && t('meta', { count: storyCount })].filter(Boolean);
+  return parts.length ? <p className="text-caption text-ink-2">{parts.join(' · ')}</p> : null;
 }

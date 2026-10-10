@@ -12,11 +12,8 @@ import { communities, storyPages } from '@/services';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return storyPages.ids().map((id) => ({ id }));
-}
+// Member content: rendered on each request (as a guest), never at build time.
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const story = await storyPages.get((await params).id);

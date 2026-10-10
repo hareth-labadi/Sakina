@@ -1,6 +1,9 @@
 import type { StorySummary } from '@/types/domain';
 
-/** Mock stories for the front end. Member content is stored as written (one language), not translated. */
+/**
+ * Example story cards for the style guide (/design) only. The site's stories come from the API;
+ * the same sample stories are in the database through backend/drizzle/0003_sample_content.sql.
+ */
 export const SAMPLE_STORIES: StorySummary[] = [
   {
     id: 's1', communityId: 'anxiety', authorNickname: 'quiet_river', authorAvatar: 0, type: 'story', visibility: 'public', veil: null,

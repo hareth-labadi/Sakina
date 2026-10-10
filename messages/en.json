@@ -123,8 +123,11 @@
       "repliesTitle": "{count, plural, =0 {Replies} one {# reply} other {# replies}}",
       "joinToReply": "Join to reply",
       "replied": "Reply posted",
+      "replyHeld": "Reply saved. Only you can see it until a moderator checks it.",
       "reported": "Thank you. A moderator will look at this.",
-      "failed": "That didn't work. Please try again."
+      "reportedBlocked": "Thank you. A moderator will look at this, and you won't see {nickname} any more.",
+      "failed": "That didn't work. Please try again.",
+      "postLimit": "You've written a lot in a short time. Please take a pause and try again later."
     }
   },
   "community": {
@@ -133,7 +136,8 @@
       "sensitive": "Sensitive",
       "high": "High sensitivity"
     },
-    "meta": "{count, plural, =0 {000 members · no stories yet} one {000 members · # story} other {000 members · # stories}}",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "meta": "{count, plural, =0 {no stories yet} one {# story} other {# stories}}",
     "open": "Open",
     "openNamed": "Open {name}",
     "page": {
@@ -144,6 +148,9 @@
       "joinedToast": "You joined {name}",
       "leftToast": "You left {name}",
       "failed": "That didn't work. Please try again.",
+      "loadMore": "Show older posts",
+      "loadingMore": "Loading…",
+      "allLoaded": "You've reached the first post.",
       "postsTitle": "Shared here",
       "filterLabel": "Show",
       "all": "All",
@@ -841,6 +848,7 @@
     "title": "Notifications",
     "sub": "Replies, reactions and safety checks on your posts. Only you can see these.",
     "loading": "Loading notifications…",
+    "failed": "That didn't work. Please try again.",
     "unread": "Unread",
     "unreadCount": "{count, plural, =0 {All read} one {# unread} other {# unread}}",
     "markAll": "Mark all as read",
