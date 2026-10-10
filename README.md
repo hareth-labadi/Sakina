@@ -28,7 +28,7 @@ npm run dev                                  # site on http://localhost:3000 (re
 
 The web dev server forwards `/api/*` to the API on port 4000 (override with `API_INTERNAL_URL` in `.env.local`). Every email the API sends lands in Mailpit (http://localhost:8025): open sign-up verification and password-reset links from there. Nothing leaves the machine.
 
-Web scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm run check:i18n`. API scripts: `npm run lint`, `typecheck`, `test` (uses its own `sakina_test` database, created automatically), `build`, `db:generate` (new migration after a schema change), `db:migrate`, `db:seed` (resets the demo accounts, development only).
+Web scripts: `npm run build`, `npm run lint`, `npm run typecheck`, `npm test` (unit tests, vitest), `npm run check:i18n`. API scripts: `npm run lint`, `typecheck`, `test` (uses its own `sakina_test` database, created automatically), `build`, `db:generate` (new migration after a schema change), `db:migrate`, `db:seed` (resets the demo accounts, development and staging only).
 
 Staff accounts (therapist, moderator, admin) never sign up on the site. Create them with the CLI; it prints a password and recovery code once:
 
@@ -53,7 +53,7 @@ Living style guide: **/ar/design**, **/fr/design**, **/en/design** (dev server o
 
 ### CI
 
-`.github/workflows/ci.yml` runs on every pull request and every push to `dev` and `main`: lint, typecheck, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. `.github/workflows/api.yml` does the same for `backend/`: lint, typecheck, audit, migrations applied to an empty Postgres, tests, build and image build. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev` for npm and the Docker base images (web and API) and the Actions. Nothing deploys yet: that waits until hosting is chosen.
+`.github/workflows/ci.yml` runs on every pull request and every push to `dev` and `main`: lint, typecheck, unit tests, i18n check, production audit and build (Node 24, like the image), a Docker image build (not pushed), and a gitleaks scan of the full history for committed secrets. `.github/workflows/api.yml` does the same for `backend/`: lint, typecheck, audit, migrations applied to an empty Postgres, tests, build and image build. Run the same checks locally before pushing. Dependabot (`.github/dependabot.yml`) opens weekly update PRs into `dev` for npm and the Docker base images (web and API) and the Actions. Nothing deploys yet: that waits until hosting is chosen.
 
 ### Staging
 
@@ -145,11 +145,13 @@ Pages call `src/services` only, which call the API through `services/api.ts` at 
 
 | Data | Where it comes from |
 | --- | --- |
-| Accounts, sessions, recovery, profile, community memberships | The API |
-| Communities, stories, story pages | Static sample data in `src/data` |
-| Saved stories, notifications | This browser's localStorage (`sakina-local-v2`, `services/mock-db.ts`) until their API exists |
+| Accounts, sessions, profile, memberships, stories, replies, reactions, saved, notifications, reports, blocks, live community numbers | The API |
+| Community names, descriptions, tints | UI copy in `src/data/conditions.ts` (a unit test checks the ids and sensitivity match the API's) |
+| `src/data/stories.ts` | Example cards for the style guide (`/design`) only |
 
-To switch one of the remaining services: add the route in `backend/`, then replace the function body with `api<T>('/path')`; the signature stays, so the screens don't change. Types in `src/types/domain.ts` are the contract.
+**Rendering.** Pages with member content (home, communities, a community, a story) render on each request, as a guest, by calling the API directly (`API_INTERNAL_URL`, `http://localhost:4000` in development). Once a member is signed in, the story or feed is fetched again in the browser for what depends on them: members-only text, their reactions and saved state, their held posts. So builds never need the API, and nothing member-specific is ever cached on the server.
+
+Types in `src/types/domain.ts` are the contract with the API.
 
 API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, rate limits, same-origin check, error handling), `db/` (Drizzle schema, client, migration runner), `modules/auth/` (routes, sessions, lockout, emails, cleanup), `modules/account/` (profile, memberships), `modules/content/` (communities, stories, replies, reactions, saved, notifications, reports, blocks, moderation), `lib/` (hashing, encryption, recovery codes, mailer, safety check, ids and excerpts), `cli/` (staff accounts); `db/seed.ts` (demo accounts, development and staging only). Migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
 
