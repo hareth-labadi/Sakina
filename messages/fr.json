@@ -865,5 +865,20 @@
       "held": "<story>{title}</story> attend la vérification d'un·e thérapeute. Vous seul·e le voyez pour l'instant.",
       "approved": "<story>{title}</story> a été vérifié et est maintenant visible."
     }
+  },
+  "saved": {
+    "title": "Histoires enregistrées",
+    "sub": "Les histoires que vous avez gardées pour y revenir. Vous seul voyez cette liste.",
+    "loading": "Chargement de vos histoires enregistrées…",
+    "failed": "Ça n'a pas fonctionné. Veuillez réessayer.",
+    "emptyTitle": "Rien d’enregistré pour l’instant",
+    "emptyBody": "Utilisez Enregistrer sur une histoire pour la retrouver ici.",
+    "browse": "Parcourir les communautés",
+    "guestTitle": "Connectez-vous pour voir vos histoires enregistrées",
+    "guestBody": "Les histoires enregistrées sont privées.",
+    "signIn": "Se connecter",
+    "remove": "Retirer des enregistrées",
+    "removeNamed": "Retirer « {title} » des enregistrées",
+    "removed": "Retirée des enregistrées"
   }
 }
