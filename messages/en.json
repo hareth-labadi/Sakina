@@ -31,7 +31,9 @@
     "join": "Join anonymously",
     "profile": "Profile",
     "signOut": "Sign out",
-    "signedOut": "You are signed out"
+    "signedOut": "You are signed out",
+    "discussions": "Discussions",
+    "about": "About"
   },
   "theme": {
     "label": "Theme",
@@ -68,7 +70,20 @@
     }
   },
   "footer": {
-    "note": "Sakina is anonymous peer support. It is not medical care, therapy, diagnosis or an emergency service. If you are in danger, use Get help now."
+    "note": "Sakina is anonymous peer support. It is not medical care, therapy, diagnosis or an emergency service. If you are in danger, use Get help now.",
+    "tagline": "Anonymous peer support in Arabic, French and English. Read, share and sit with people who understand.",
+    "explore": {
+      "title": "Explore",
+      "communities": "Communities",
+      "discussions": "Discussions",
+      "join": "Join anonymously"
+    },
+    "sakina": {
+      "title": "Sakina",
+      "about": "About Sakina",
+      "guidelines": "Community guidelines",
+      "privacy": "Privacy in plain words"
+    }
   },
   "story": {
     "types": {
@@ -187,7 +202,43 @@
     "safe2b": "Verified psychologists and psychiatrists guide some rooms and read flagged posts. They listen and guide; they never diagnose or prescribe here.",
     "therapistExample": "Therapist · Psychologist",
     "safe3": "Help is one tap away",
-    "safe3b": "If you are in danger, you don't need an account. Help options are on every page."
+    "safe3b": "If you are in danger, you don't need an account. Help options are on every page.",
+    "allCommunities": "All communities",
+    "how": {
+      "title": "How it works",
+      "s1": "Choose what you are going through",
+      "s1b": "Pick one or more communities. Nobody else sees which ones you follow.",
+      "s2": "Read before you share",
+      "s2b": "Stories are open to read without an account. Take your time, there is no pressure to write.",
+      "s3": "Share when you are ready",
+      "s3b": "Join with just a nickname and a password. Post a story, reply, or sit in a live room."
+    },
+    "rooms": {
+      "title": "Live rooms right now",
+      "sub": "Sit with others in real time. Some rooms are guided by a therapist, others are open peer rooms watched by moderators.",
+      "all": "All discussions"
+    },
+    "faq": {
+      "title": "Questions people ask",
+      "q1": "Is Sakina really anonymous?",
+      "a1": "Yes. You choose a nickname, and your avatar is an abstract gradient. We never ask for your real name, phone number or a photo. If you add a recovery email, it is encrypted and nobody on the site sees it.",
+      "q2": "Is this therapy?",
+      "a2": "No. Sakina is peer support: people sharing what helped them. Therapists guide some rooms and read flagged posts, but they never diagnose or prescribe here.",
+      "q3": "Do I need an account to read?",
+      "a3": "No. Reading stories and looking around is open to everyone. You only need an anonymous account to post, reply, react or chat.",
+      "q4": "What if someone posts something worrying?",
+      "a4": "Every post passes a safety check. Risky messages are held for a therapist before anyone else sees them, and you can report anything that worries you.",
+      "q5": "Which languages can I use?",
+      "a5": "Arabic, French and English, in any mix. Write in the language that feels most natural to you.",
+      "q6": "Is it free?",
+      "a6": "Yes. Sakina is free to read and free to join."
+    },
+    "final": {
+      "title": "You don't have to carry it alone.",
+      "body": "Join with a nickname, read at your own pace, and share when you are ready.",
+      "join": "Join anonymously",
+      "about": "Learn about Sakina"
+    }
   },
   "communities": {
     "title": "Communities",
@@ -968,5 +1019,147 @@
     "remove": "Remove from saved",
     "removeNamed": "Remove \"{title}\" from saved",
     "removed": "Removed from saved"
+  },
+  "discussions": {
+    "title": "Discussions",
+    "sub": "Live rooms where you can sit with others. Some are guided by a therapist, others are open peer rooms watched by moderators.",
+    "preview": "Rooms are in preview: messages you send stay in this tab, and nobody else sees them yet.",
+    "guidelines": "Read the community guidelines",
+    "guidedTitle": "Guided by therapists",
+    "guidedSub": "Weekly sessions with a verified psychologist or psychiatrist. Listening without writing is welcome.",
+    "peerTitle": "Peer rooms",
+    "peerSub": "Open all day, watched by moderators.",
+    "here": "{count, plural, =0 {Nobody here yet} one {# person here now} other {# people here now}}",
+    "weekly": "Every {day} at {time}",
+    "host": "{name} · {kind}",
+    "enter": "Enter room",
+    "look": "Look inside",
+    "enterNamed": "Open {title}",
+    "closedShort": "Closed right now",
+    "closed": "This room opens every {day} at {time}. Until then you can read the last session.",
+    "back": "All discussions",
+    "aboutTitle": "About this room",
+    "community": "Stories in {name}",
+    "rulesTitle": "Room rules",
+    "rule1": "Keep everyone anonymous: no names, numbers or places.",
+    "rule2": "Share your experience, not medical advice.",
+    "rule3": "If something worries you, report it instead of arguing.",
+    "crisisTitle": "Need help now?",
+    "crisisBody": "A room is not an emergency service. If you are in danger, help is one tap away, no account needed.",
+    "blocked": "You won't see messages from {nickname} anymore.",
+    "dmSent": "Request sent to {nickname}.",
+    "left": "You left the room.",
+    "muted": "Room muted.",
+    "unmuted": "Room unmuted.",
+    "reportPreview": "Thank you. Rooms are in preview, so reports from here aren't sent yet. If someone is in danger, use Get help now."
+  },
+  "about": {
+    "tag": "About Sakina",
+    "title": "A calm place to be heard, without giving your name.",
+    "lead": "Sakina (سكينة) means calm, tranquillity. It is an anonymous peer-support community for people living with mental-health struggles, and for those who care about them.",
+    "whyTitle": "Why we built it",
+    "why1": "Talking about mental health is still hard. Many people stay silent because they are afraid of being recognised by family, colleagues or neighbours.",
+    "why2": "Sakina removes that fear: no real name, no phone number, no photo. Just people who understand, sharing what helped them get through.",
+    "believeTitle": "What we believe",
+    "principles": {
+      "anon": {
+        "title": "Anonymous by default",
+        "body": "You are a nickname and an abstract avatar. What you share is never tied to who you are."
+      },
+      "safe": {
+        "title": "Safety comes first",
+        "body": "Every post passes a safety check, and risky messages go to a therapist before anyone else sees them."
+      },
+      "peer": {
+        "title": "Peers, not prescriptions",
+        "body": "Lived experience helps in a way advice cannot. Here, people share what worked for them, not diagnoses."
+      },
+      "lang": {
+        "title": "In your language",
+        "body": "Arabic, French and English, written the way people really speak, in any mix."
+      }
+    },
+    "whoTitle": "Who's in the room",
+    "roles": {
+      "members": {
+        "badge": "Members",
+        "title": "People who understand",
+        "body": "Adults who live with something similar, or care for someone who does. They read, share, react and sit in rooms together."
+      },
+      "therapists": {
+        "badge": "Therapists",
+        "title": "Verified professionals",
+        "body": "Psychologists and psychiatrists guide some rooms and read flagged posts. They listen and guide; they never diagnose or prescribe here."
+      },
+      "moderators": {
+        "badge": "Moderators",
+        "title": "Keeping it kind",
+        "body": "Moderators read reports, hide what breaks the guidelines and keep rooms safe. Every action they take is logged."
+      }
+    },
+    "privacyTitle": "Privacy in plain words",
+    "privacySub": "Anonymity protects you. Here is exactly what we ask for, and what we never do.",
+    "neverTitle": "What we never ask for",
+    "never1": "Your real name",
+    "never2": "Your phone number",
+    "never3": "A photo of you",
+    "never4": "An ID card or any document",
+    "privateTitle": "What stays private",
+    "private1": "Your recovery email is encrypted. Members and therapists never see it; admins only see it masked.",
+    "private2": "Your age range and country are private by default. You decide whether to show them.",
+    "private3": "Which communities you follow is visible only to you.",
+    "private4": "Admins only see what they need for safety, and every admin action is logged.",
+    "notTitle": "What Sakina is not",
+    "notBody": "Sakina is not medical care, therapy, diagnosis or an emergency service. If you are in danger, use Get help now on any page.",
+    "ctaTitle": "Come in, at your own pace",
+    "ctaBody": "Start by reading. When you feel ready, join with just a nickname.",
+    "ctaCommunities": "Find your community",
+    "ctaGuidelines": "Read the guidelines"
+  },
+  "guidelines": {
+    "tag": "Community guidelines",
+    "title": "How we take care of each other",
+    "lead": "Sakina works because people feel safe here. These guidelines apply to stories, replies, rooms and 1:1 chats.",
+    "rulesTitle": "The guidelines",
+    "rules": {
+      "anon": {
+        "title": "Keep everyone anonymous",
+        "body": "Don't share your real name, phone number, address or social accounts, or anyone else's. Not even in a private chat."
+      },
+      "kind": {
+        "title": "Be kind, even when you disagree",
+        "body": "No insults, mocking, judging or pressure. Everyone here is carrying something."
+      },
+      "experience": {
+        "title": "Share experience, not prescriptions",
+        "body": "Talk about what helped you. Don't tell others which medication to take or stop, and don't diagnose anyone."
+      },
+      "veil": {
+        "title": "Warn before heavy topics",
+        "body": "Use a content warning when you write about self-harm, loss, violence, abuse, food or substances, so others can choose to read."
+      },
+      "noContact": {
+        "title": "No selling, no recruiting",
+        "body": "No ads, links to sell something, fundraising or moving people to other apps. Sakina is not a marketplace."
+      },
+      "report": {
+        "title": "Report, don't argue",
+        "body": "If something feels wrong, report it privately. A moderator will look. You can also block someone at any time."
+      },
+      "danger": {
+        "title": "If someone is in danger, act",
+        "body": "If a member seems at risk, report it: the report goes to a therapist first. If it is you, use Get help now."
+      }
+    },
+    "modsTitle": "What happens when something breaks the guidelines",
+    "modsSub": "We prefer guiding to punishing. Moderators and therapists step in like this:",
+    "step1": "A safety check reads every post. Risky ones are held for a therapist before anyone sees them.",
+    "step2": "Reports go to a moderator, or to a therapist first when someone may be in danger.",
+    "step3": "Content that breaks the guidelines is hidden or removed.",
+    "step4": "Repeated or serious harm can pause an account. You can still read and get help while it is paused.",
+    "dangerTitle": "If you are in danger right now",
+    "dangerBody": "You don't need an account to get help. Choose your country to see who you can call, and try a short grounding exercise.",
+    "ctaCommunities": "Find your community",
+    "ctaAbout": "About Sakina"
   }
 }
