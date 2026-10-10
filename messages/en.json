@@ -865,5 +865,20 @@
       "held": "<story>{title}</story> is waiting for a therapist check. Only you can see it for now.",
       "approved": "<story>{title}</story> was checked and is now visible."
     }
+  },
+  "saved": {
+    "title": "Saved stories",
+    "sub": "Stories you saved to come back to. Only you can see this list.",
+    "loading": "Loading your saved stories…",
+    "failed": "That didn't work. Please try again.",
+    "emptyTitle": "Nothing saved yet",
+    "emptyBody": "Use Save on a story to keep it here for later.",
+    "browse": "Browse communities",
+    "guestTitle": "Sign in to see your saved stories",
+    "guestBody": "Saved stories are private to your account.",
+    "signIn": "Sign in",
+    "remove": "Remove from saved",
+    "removeNamed": "Remove \"{title}\" from saved",
+    "removed": "Removed from saved"
   }
 }
