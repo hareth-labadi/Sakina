@@ -31,7 +31,9 @@
     "join": "Rejoindre anonymement",
     "profile": "Profil",
     "signOut": "Se déconnecter",
-    "signedOut": "Vous êtes déconnecté·e"
+    "signedOut": "Vous êtes déconnecté·e",
+    "discussions": "Discussions",
+    "about": "À propos"
   },
   "theme": {
     "label": "Thème",
@@ -68,7 +70,20 @@
     }
   },
   "footer": {
-    "note": "Sakina est une entraide anonyme entre pairs. Ce n'est ni un soin médical, ni une thérapie, ni un diagnostic, ni un service d'urgence. Si vous êtes en danger, utilisez Obtenir de l'aide."
+    "note": "Sakina est une entraide anonyme entre pairs. Ce n'est ni un soin médical, ni une thérapie, ni un diagnostic, ni un service d'urgence. Si vous êtes en danger, utilisez Obtenir de l'aide.",
+    "tagline": "Un soutien entre pairs anonyme en arabe, en français et en anglais. Lire, partager et être avec des gens qui comprennent.",
+    "explore": {
+      "title": "Explorer",
+      "communities": "Communautés",
+      "discussions": "Discussions",
+      "join": "Rejoindre anonymement"
+    },
+    "sakina": {
+      "title": "Sakina",
+      "about": "À propos de Sakina",
+      "guidelines": "Règles de la communauté",
+      "privacy": "La confidentialité, simplement"
+    }
   },
   "story": {
     "types": {
@@ -187,7 +202,43 @@
     "safe2b": "Des psychologues et psychiatres vérifié·es animent certains salons et lisent les publications signalées. Ils écoutent et orientent ; ils ne diagnostiquent ni ne prescrivent ici.",
     "therapistExample": "Thérapeute · Psychologue",
     "safe3": "L'aide à portée de main",
-    "safe3b": "Si vous êtes en danger, pas besoin de compte. Les options d'aide sont sur chaque page."
+    "safe3b": "Si vous êtes en danger, pas besoin de compte. Les options d'aide sont sur chaque page.",
+    "allCommunities": "Toutes les communautés",
+    "how": {
+      "title": "Comment ça marche",
+      "s1": "Choisissez ce que vous traversez",
+      "s1b": "Choisissez une ou plusieurs communautés. Personne d’autre ne voit lesquelles vous suivez.",
+      "s2": "Lisez avant de partager",
+      "s2b": "Les récits se lisent sans compte. Prenez votre temps, rien ne vous oblige à écrire.",
+      "s3": "Partagez quand vous êtes prêt·e",
+      "s3b": "Rejoignez avec un simple pseudo et un mot de passe. Publiez un récit, répondez ou entrez dans un salon en direct."
+    },
+    "rooms": {
+      "title": "Salons en direct maintenant",
+      "sub": "Soyez avec d’autres en temps réel. Certains salons sont guidés par un thérapeute, d’autres sont des salons entre pairs surveillés par des modérateurs.",
+      "all": "Toutes les discussions"
+    },
+    "faq": {
+      "title": "Les questions qu’on nous pose",
+      "q1": "Sakina est-il vraiment anonyme ?",
+      "a1": "Oui. Vous choisissez un pseudo, et votre avatar est un dégradé abstrait. Nous ne demandons jamais votre vrai nom, votre numéro de téléphone ni une photo. Si vous ajoutez un e-mail de récupération, il est chiffré et personne sur le site ne le voit.",
+      "q2": "Est-ce une thérapie ?",
+      "a2": "Non. Sakina est un soutien entre pairs : des personnes qui partagent ce qui les a aidées. Des thérapeutes guident certains salons et lisent les messages signalés, mais ils ne posent jamais de diagnostic et ne prescrivent rien ici.",
+      "q3": "Faut-il un compte pour lire ?",
+      "a3": "Non. Lire les récits et explorer est ouvert à tous. Un compte anonyme n’est nécessaire que pour publier, répondre, réagir ou discuter.",
+      "q4": "Et si quelqu’un publie quelque chose d’inquiétant ?",
+      "a4": "Chaque message passe un contrôle de sécurité. Les messages à risque sont retenus pour un thérapeute avant que quiconque les voie, et vous pouvez signaler tout ce qui vous inquiète.",
+      "q5": "Quelles langues puis-je utiliser ?",
+      "a5": "L’arabe, le français et l’anglais, mélangés comme vous voulez. Écrivez dans la langue qui vous vient naturellement.",
+      "q6": "Est-ce gratuit ?",
+      "a6": "Oui. Sakina est gratuit, pour lire comme pour rejoindre."
+    },
+    "final": {
+      "title": "Vous n’avez pas à porter ça seul·e.",
+      "body": "Rejoignez avec un pseudo, lisez à votre rythme et partagez quand vous êtes prêt·e.",
+      "join": "Rejoindre anonymement",
+      "about": "Découvrir Sakina"
+    }
   },
   "communities": {
     "title": "Communautés",
@@ -880,5 +931,147 @@
     "remove": "Retirer des enregistrées",
     "removeNamed": "Retirer « {title} » des enregistrées",
     "removed": "Retirée des enregistrées"
+  },
+  "discussions": {
+    "title": "Discussions",
+    "sub": "Des salons en direct pour être avec d’autres. Certains sont guidés par un thérapeute, d’autres sont des salons entre pairs surveillés par des modérateurs.",
+    "preview": "Les salons sont en avant-première : les messages que vous envoyez restent dans cet onglet, et personne d’autre ne les voit pour l’instant.",
+    "guidelines": "Lire les règles de la communauté",
+    "guidedTitle": "Guidés par des thérapeutes",
+    "guidedSub": "Des séances hebdomadaires avec un psychologue ou un psychiatre vérifié. Écouter sans écrire, c’est bienvenu.",
+    "peerTitle": "Salons entre pairs",
+    "peerSub": "Ouverts toute la journée, surveillés par des modérateurs.",
+    "here": "{count, plural, =0 {Personne pour l’instant} one {# personne présente} other {# personnes présentes}}",
+    "weekly": "Chaque {day} à {time}",
+    "host": "{name} · {kind}",
+    "enter": "Entrer",
+    "look": "Jeter un œil",
+    "enterNamed": "Ouvrir {title}",
+    "closedShort": "Fermé pour le moment",
+    "closed": "Ce salon ouvre chaque {day} à {time}. D’ici là, vous pouvez lire la dernière séance.",
+    "back": "Toutes les discussions",
+    "aboutTitle": "À propos de ce salon",
+    "community": "Récits dans {name}",
+    "rulesTitle": "Règles du salon",
+    "rule1": "Gardez tout le monde anonyme : pas de noms, de numéros ni de lieux.",
+    "rule2": "Partagez votre expérience, pas de conseils médicaux.",
+    "rule3": "Si quelque chose vous inquiète, signalez-le plutôt que de vous disputer.",
+    "crisisTitle": "Besoin d’aide maintenant ?",
+    "crisisBody": "Un salon n’est pas un service d’urgence. Si vous êtes en danger, l’aide est à portée de main, sans compte.",
+    "blocked": "Vous ne verrez plus les messages de {nickname}.",
+    "dmSent": "Demande envoyée à {nickname}.",
+    "left": "Vous avez quitté le salon.",
+    "muted": "Salon en sourdine.",
+    "unmuted": "Sourdine désactivée.",
+    "reportPreview": "Merci. Les salons sont en avant-première, les signalements faits ici ne sont pas encore envoyés. Si quelqu’un est en danger, utilisez Obtenir de l'aide."
+  },
+  "about": {
+    "tag": "À propos de Sakina",
+    "title": "Un endroit calme pour être entendu, sans donner son nom.",
+    "lead": "Sakina (سكينة) signifie calme, sérénité. C’est une communauté anonyme de soutien entre pairs pour les personnes qui vivent des difficultés de santé mentale, et pour celles qui les accompagnent.",
+    "whyTitle": "Pourquoi nous l’avons créé",
+    "why1": "Parler de santé mentale reste difficile. Beaucoup se taisent par peur d’être reconnus par leur famille, leurs collègues ou leurs voisins.",
+    "why2": "Sakina enlève cette peur : pas de vrai nom, pas de numéro de téléphone, pas de photo. Juste des gens qui comprennent et partagent ce qui les a aidés à tenir.",
+    "believeTitle": "Ce en quoi nous croyons",
+    "principles": {
+      "anon": {
+        "title": "Anonyme par défaut",
+        "body": "Vous êtes un pseudo et un avatar abstrait. Ce que vous partagez n’est jamais lié à qui vous êtes."
+      },
+      "safe": {
+        "title": "La sécurité d’abord",
+        "body": "Chaque message passe un contrôle de sécurité, et les messages à risque vont à un thérapeute avant que quiconque les voie."
+      },
+      "peer": {
+        "title": "Des pairs, pas des ordonnances",
+        "body": "L’expérience vécue aide comme aucun conseil ne peut le faire. Ici, on partage ce qui a marché, pas des diagnostics."
+      },
+      "lang": {
+        "title": "Dans votre langue",
+        "body": "Arabe, français et anglais, écrits comme on parle vraiment, mélangés comme on veut."
+      }
+    },
+    "whoTitle": "Qui est là",
+    "roles": {
+      "members": {
+        "badge": "Membres",
+        "title": "Des gens qui comprennent",
+        "body": "Des adultes qui vivent quelque chose de similaire, ou qui accompagnent un proche. Ils lisent, partagent, réagissent et se retrouvent dans les salons."
+      },
+      "therapists": {
+        "badge": "Thérapeutes",
+        "title": "Des professionnels vérifiés",
+        "body": "Des psychologues et psychiatres guident certains salons et lisent les messages signalés. Ils écoutent et orientent ; ils ne posent jamais de diagnostic et ne prescrivent rien ici."
+      },
+      "moderators": {
+        "badge": "Modérateurs",
+        "title": "Garder un ton bienveillant",
+        "body": "Les modérateurs lisent les signalements, masquent ce qui enfreint les règles et veillent sur les salons. Chacune de leurs actions est enregistrée."
+      }
+    },
+    "privacyTitle": "La confidentialité, simplement",
+    "privacySub": "L’anonymat vous protège. Voici exactement ce que nous demandons, et ce que nous ne faisons jamais.",
+    "neverTitle": "Ce que nous ne demandons jamais",
+    "never1": "Votre vrai nom",
+    "never2": "Votre numéro de téléphone",
+    "never3": "Une photo de vous",
+    "never4": "Une pièce d’identité ou un document",
+    "privateTitle": "Ce qui reste privé",
+    "private1": "Votre e-mail de récupération est chiffré. Les membres et thérapeutes ne le voient jamais ; les administrateurs ne le voient que masqué.",
+    "private2": "Votre tranche d’âge et votre pays sont privés par défaut. Vous décidez de les afficher ou non.",
+    "private3": "Les communautés que vous suivez ne sont visibles que par vous.",
+    "private4": "Les administrateurs ne voient que ce qui est nécessaire à la sécurité, et chacune de leurs actions est enregistrée.",
+    "notTitle": "Ce que Sakina n’est pas",
+    "notBody": "Sakina n’est ni un soin médical, ni une thérapie, ni un diagnostic, ni un service d’urgence. Si vous êtes en danger, utilisez Obtenir de l'aide, sur n’importe quelle page.",
+    "ctaTitle": "Entrez, à votre rythme",
+    "ctaBody": "Commencez par lire. Quand vous vous sentez prêt·e, rejoignez avec un simple pseudo.",
+    "ctaCommunities": "Trouver votre communauté",
+    "ctaGuidelines": "Lire les règles"
+  },
+  "guidelines": {
+    "tag": "Règles de la communauté",
+    "title": "Comment nous prenons soin les uns des autres",
+    "lead": "Sakina fonctionne parce qu’on s’y sent en sécurité. Ces règles s’appliquent aux récits, aux réponses, aux salons et aux discussions privées.",
+    "rulesTitle": "Les règles",
+    "rules": {
+      "anon": {
+        "title": "Gardez tout le monde anonyme",
+        "body": "Ne partagez ni votre vrai nom, ni votre numéro, ni votre adresse, ni vos réseaux sociaux, ni ceux de quelqu’un d’autre. Même en privé."
+      },
+      "kind": {
+        "title": "Soyez bienveillant, même en désaccord",
+        "body": "Pas d’insultes, de moqueries, de jugement ni de pression. Chacun ici porte quelque chose."
+      },
+      "experience": {
+        "title": "Partagez une expérience, pas une ordonnance",
+        "body": "Parlez de ce qui vous a aidé. Ne dites pas aux autres quel médicament prendre ou arrêter, et ne posez de diagnostic sur personne."
+      },
+      "veil": {
+        "title": "Prévenez avant les sujets lourds",
+        "body": "Ajoutez un avertissement quand vous écrivez sur l’automutilation, le deuil, la violence, les abus, l’alimentation ou les substances, pour que chacun choisisse de lire."
+      },
+      "noContact": {
+        "title": "Ni vente, ni recrutement",
+        "body": "Pas de publicité, de liens pour vendre, de collectes ni d’invitations vers d’autres applis. Sakina n’est pas un marché."
+      },
+      "report": {
+        "title": "Signalez plutôt que de vous disputer",
+        "body": "Si quelque chose vous semble anormal, signalez-le en privé. Un modérateur regardera. Vous pouvez aussi bloquer quelqu’un à tout moment."
+      },
+      "danger": {
+        "title": "Si quelqu’un est en danger, agissez",
+        "body": "Si un membre semble en danger, signalez-le : le signalement va d’abord à un thérapeute. Si c’est vous, utilisez Obtenir de l'aide."
+      }
+    },
+    "modsTitle": "Que se passe-t-il quand une règle est enfreinte",
+    "modsSub": "Nous préférons guider plutôt que punir. Modérateurs et thérapeutes interviennent ainsi :",
+    "step1": "Un contrôle de sécurité lit chaque message. Ceux qui présentent un risque sont retenus pour un thérapeute avant d’être visibles.",
+    "step2": "Les signalements vont à un modérateur, ou d’abord à un thérapeute quand quelqu’un peut être en danger.",
+    "step3": "Le contenu qui enfreint les règles est masqué ou supprimé.",
+    "step4": "Des atteintes répétées ou graves peuvent suspendre un compte. Vous pouvez toujours lire et obtenir de l’aide pendant la suspension.",
+    "dangerTitle": "Si vous êtes en danger maintenant",
+    "dangerBody": "Pas besoin de compte pour obtenir de l’aide. Choisissez votre pays pour voir qui appeler, et essayez un court exercice d’ancrage.",
+    "ctaCommunities": "Trouver votre communauté",
+    "ctaAbout": "À propos de Sakina"
   }
 }
