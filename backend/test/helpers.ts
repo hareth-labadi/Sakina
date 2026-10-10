@@ -53,7 +53,10 @@ export function client(app: FastifyInstance) {
     },
     post: async (url: string, payload?: object) =>
       remember(await app.inject({ method: 'POST', url, payload: payload ?? {}, headers: { origin: WEB, ...(cookie && { cookie }) } })),
-    get: async (url: string) => remember(await app.inject({ method: 'GET', url, headers: cookie ? { cookie } : {} }))
+    get: async (url: string) => remember(await app.inject({ method: 'GET', url, headers: cookie ? { cookie } : {} })),
+    put: async (url: string, payload?: object) =>
+      remember(await app.inject({ method: 'PUT', url, ...(payload && { payload }), headers: { origin: WEB, ...(cookie && { cookie }) } })),
+    del: async (url: string) => remember(await app.inject({ method: 'DELETE', url, headers: { origin: WEB, ...(cookie && { cookie }) } }))
   };
 }
 

@@ -15,6 +15,11 @@ import { createMailer, type Mailer } from './lib/mailer.js';
 import { requireSameOrigin } from './lib/same-origin.js';
 import { accountRoutes } from './modules/account/routes.js';
 import { authRoutes } from './modules/auth/routes.js';
+import { communityRoutes } from './modules/content/communities.js';
+import { moderationRoutes } from './modules/content/moderation.js';
+import { notificationRoutes } from './modules/content/notifications.js';
+import { replyRoutes } from './modules/content/replies.js';
+import { storyRoutes } from './modules/content/stories.js';
 
 /**
  * Logs never contain secrets or personal data: cookies and auth headers are hidden, and request
@@ -50,6 +55,10 @@ export async function buildServer(config: Config, db: Db, deps: { mailer?: Maile
   await app.register(rateLimit, {
     max: 300,
     timeWindow: '1 minute',
+    // The web server's own page renders (GET, straight to the API, so no X-Forwarded-For) aren't a
+    // visitor: counting them would throttle the whole site under one IP. Visitors' requests always
+    // come through the proxy with X-Forwarded-For, and the API itself is never exposed.
+    allowList: (req) => req.method === 'GET' && !req.headers['x-forwarded-for'],
     errorResponseBuilder: (_req, ctx) => ({ statusCode: ctx.statusCode, code: 'rate_limited', message: 'rate limited' })
   });
   requireSameOrigin(app, config.PUBLIC_WEB_URL);
@@ -81,6 +90,11 @@ export async function buildServer(config: Config, db: Db, deps: { mailer?: Maile
 
   await authRoutes(app, { db, config, mailer: deps.mailer ?? createMailer(config, app.log) });
   await accountRoutes(app, { db, config });
+  await communityRoutes(app, { db, config });
+  await storyRoutes(app, { db, config });
+  await replyRoutes(app, { db, config });
+  await notificationRoutes(app, { db, config });
+  await moderationRoutes(app, { db, config });
 
   return app;
 }

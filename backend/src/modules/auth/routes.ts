@@ -11,13 +11,14 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { Config } from '../../config.js';
 import type { Db } from '../../db/client.js';
-import { accountCommunities, accounts, recovery, tokens } from '../../db/schema.js';
+import { accountCommunities, accounts, communities, recovery, tokens } from '../../db/schema.js';
 import { decrypt, encrypt, randomToken, safeEqual, sha256 } from '../../lib/crypto.js';
 import type { Mailer } from '../../lib/mailer.js';
 import { isReserved, NICKNAME_PATTERN, nicknameKey } from '../../lib/nickname.js';
 import { burnVerifyTime, hashSecret, isAcceptablePassword, verifySecret } from '../../lib/passwords.js';
 import { generateRecoveryCode, isRecoveryCodeFormat, maskEmail, normalizeRecoveryCode } from '../../lib/recovery.js';
 import { LOCALES, resetEmail, verifyEmail, type Locale } from './emails.js';
+import { unreadCount } from '../content/shared.js';
 import { clearFailures, lockedUntil, recordFailure } from './lockout.js';
 import { clearSessionCookie, currentAccount, endAllSessions, endSession, requireAccount, startSession, type SessionAccount } from './sessions.js';
 
@@ -56,7 +57,8 @@ const signUpBody = z.object({
   locale
 });
 
-export const toUser = (a: SessionAccount) => ({ nickname: a.nickname, avatar: a.avatar, role: a.role, unreadNotifications: 0 });
+/** The SessionUser shape of the web app, with the live unread-notification count. */
+export const toUser = async (db: Db, a: SessionAccount) => ({ nickname: a.nickname, avatar: a.avatar, role: a.role, unreadNotifications: await unreadCount(db, a.id) });
 
 const isUniqueViolation = (err: unknown): boolean => {
   const e = err as { code?: string; cause?: { code?: string } };
@@ -107,6 +109,10 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
     const key = nicknameKey(body.nickname);
     if (isReserved(key)) return reply.status(409).send({ error: 'nickname_taken' });
 
+    const picked = [...new Set(body.communities)];
+    const known = await db.select({ id: communities.id }).from(communities).where(and(inArray(communities.id, picked), eq(communities.status, 'active')));
+    if (known.length !== picked.length) return reply.status(400).send({ error: 'invalid' });
+
     const passwordHash = await hashSecret(body.password);
     const codeHash = body.recovery.type === 'code' ? await hashSecret(normalizeRecoveryCode(body.recovery.code)) : null;
 
@@ -117,7 +123,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
           .insert(accounts)
           .values({ nickname: body.nickname, nicknameKey: key, passwordHash, avatar: body.avatar, ageRange: body.ageRange, country: body.country })
           .returning();
-        await tx.insert(accountCommunities).values([...new Set(body.communities)].map((communityId) => ({ accountId: a!.id, communityId })));
+        await tx.insert(accountCommunities).values(picked.map((communityId) => ({ accountId: a!.id, communityId })));
         await tx.insert(recovery).values(
           body.recovery.type === 'code'
             ? { accountId: a!.id, type: 'code', codeHash }
@@ -133,7 +139,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
     if (body.recovery.type === 'email') await sendVerification(req, account.id, body.recovery.email, body.locale);
     await startSession(db, config, reply, account.id, true);
     return reply.status(201).send({
-      user: toUser(account),
+      user: await toUser(db, account),
       emailToVerify: body.recovery.type === 'email' ? maskEmail(body.recovery.email) : null
     });
   });
@@ -162,7 +168,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
     // Only someone who knows the password learns the account is suspended.
     if (account.status !== 'active') return reply.status(403).send({ error: 'suspended', reason: account.suspendedReason });
     await startSession(db, config, reply, account.id, body.remember);
-    return { user: toUser(account) };
+    return { user: await toUser(db, account) };
   });
 
   app.post('/auth/signout', async (req, reply) => {
@@ -175,7 +181,7 @@ export async function authRoutes(app: FastifyInstance, { db, config, mailer }: A
   /** Who is signed in. A guest is a normal answer here (200 with null), not an error. */
   app.get('/auth/me', async (req) => {
     const s = await currentAccount(db, config, req);
-    return { user: s ? toUser(s.account) : null };
+    return { user: s ? await toUser(db, s.account) : null };
   });
 
   /* ---------- recovery ---------- */

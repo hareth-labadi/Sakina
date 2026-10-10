@@ -7,7 +7,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Config } from '../../config.js';
 import type { Db } from '../../db/client.js';
-import { accountCommunities, recovery } from '../../db/schema.js';
+import { accountCommunities, communities, recovery } from '../../db/schema.js';
 import { decrypt } from '../../lib/crypto.js';
 import { maskEmail } from '../../lib/recovery.js';
 import { requireAccount } from '../auth/sessions.js';
@@ -50,6 +50,8 @@ export async function accountRoutes(app: FastifyInstance, { db, config }: { db: 
     if (!s) return reply;
     const parsed = communityParams.safeParse(req.params);
     if (!parsed.success) return reply.status(400).send({ error: 'invalid' });
+    const [community] = await db.select({ status: communities.status }).from(communities).where(eq(communities.id, parsed.data.id));
+    if (community?.status !== 'active') return reply.status(404).send({ error: 'not_found' });
     await db.insert(accountCommunities).values({ accountId: s.account.id, communityId: parsed.data.id }).onConflictDoNothing();
     return reply.status(204).send();
   });
