@@ -151,7 +151,7 @@ Pages call `src/services` only, which call the API through `services/api.ts` at 
 
 To switch one of the remaining services: add the route in `backend/`, then replace the function body with `api<T>('/path')`; the signature stays, so the screens don't change. Types in `src/types/domain.ts` are the contract.
 
-API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, rate limits, same-origin check, error handling), `db/` (Drizzle schema, client, migration runner), `modules/auth/` (routes, sessions, lockout, emails, cleanup), `modules/account/` (profile, memberships), `lib/` (hashing, encryption, recovery codes, mailer), `cli/` (staff accounts); `db/seed.ts` (demo accounts, development only). Migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
+API layout (`backend/src`): `config.ts` (environment, checked at startup), `server.ts` (app, security headers, rate limits, same-origin check, error handling), `db/` (Drizzle schema, client, migration runner), `modules/auth/` (routes, sessions, lockout, emails, cleanup), `modules/account/` (profile, memberships), `modules/content/` (communities, stories, replies, reactions, saved, notifications, reports, blocks, moderation), `lib/` (hashing, encryption, recovery codes, mailer, safety check, ids and excerpts), `cli/` (staff accounts); `db/seed.ts` (demo accounts, development and staging only). Migrations in `backend/drizzle/` (append-only: never edit a merged one). Logs never include cookies, auth headers or request bodies.
 
 ### API routes
 
@@ -173,6 +173,34 @@ All under `/api` in the browser. Requests that change something must come from t
 | `GET /me/communities` · `PUT`/`DELETE /me/communities/:id` | `memberships` | `{communities}` · `204` (join and leave are idempotent) |
 
 Rules: 5 failed tries lock a nickname for 15 minutes, for unknown nicknames too, with the same answers and timing (no account enumeration). Sessions: 30 days with "remember me", otherwise a browser-session cookie limited to 12 hours on the server. Passwords and recovery codes are argon2id hashes; session and reset tokens are stored as SHA-256; the recovery email is AES-256-GCM encrypted. Expired sessions, tokens and old attempt counters are deleted hourly.
+
+### Content API
+
+Story shapes match `src/types/domain.ts` (`StorySummary`, `Story`, `Reply`, `AppNotification`).
+
+| Route | Answers |
+| --- | --- |
+| `GET /communities` | active communities with `memberCount` and `storyCount` (names and descriptions are UI copy in `src/data/conditions.ts`) |
+| `GET /stories?community=&type=&limit=&before=` | feed, newest first: `{stories, next}`; pass `next` as `before` for the following page |
+| `GET /stories/:id` | the story with `body`, `reactions`, `replies` (two levels) and, when signed in, `viewer: {reactions, saved, isAuthor}`; guests get members-only stories as `locked` with no text |
+| `POST /stories` `{communityId, type, title, body, visibility, veil, mood?}` | `201 {story}`; `story.status = 'held'` when held (below) |
+| `DELETE /stories/:id` | the author deletes; a moderator removes |
+| `PUT`/`DELETE /stories/:id/reactions/:kind` | `{reactions, mine}` |
+| `POST /stories/:id/replies` `{text, parentId?}` | `201 {reply}` (one level of nesting) |
+| `DELETE /replies/:id` · `PUT`/`DELETE /replies/:id/relate` | `204` · `{relateCount, related}` |
+| `GET /me/saved` · `PUT`/`DELETE /me/saved/:id` | saved stories, newest first · `204` |
+| `GET /me/notifications` · `POST /me/notifications/read` `{id?}` | `{notifications, unread}` · `{unread}`; `GET /auth/me` carries `unreadNotifications` |
+| `POST /reports` `{storyId \| replyId, reason, note, block}` | `201 {blocked}` |
+| `GET /me/blocks` · `PUT`/`DELETE /me/blocks/:nickname` | blocked authors disappear from feeds, story pages and notifications for the blocker; they aren't told |
+| `GET /moderation/queue` · `POST /moderation/stories/:id` · `POST /moderation/replies/:id` `{action: 'approve' \| 'remove'}` | moderators and admins only |
+| `GET /moderation/reports` · `POST /moderation/reports/:id/resolve` | open reports with their target; the reporter stays anonymous |
+
+Rules (decided 2026-10-10):
+
+- **Holds.** A story or reply from a member goes live at once, unless it contains identifying details (phone, email, @handle, social app, link, "my name is…", street address: `backend/src/lib/safety.ts`) or it is in a high-sensitivity community. Then it is held: only its author sees it, they get a `held` notification, and a moderator approves (`approved` notification) or removes it. Therapists, moderators and admins are never held.
+- **Limits per account**, on top of per-IP limits: 5 stories a day, 30 replies an hour, 20 reports an hour (`429 {error: 'post_limit'}`).
+- **Notifications** are only about the member's own content: `reply`, `therapist` (a therapist replied), `reaction` (grouped per story, the count grows until read), `held`, `approved`.
+- **Sample content.** Migration `0003_sample_content` puts the six sample stories and their replies in every environment, with reaction counts at 0 (no invented numbers). Their authors are locked accounts nobody can sign in to; in development and staging `npm run db:seed` gives the demo ones the demo password, plus a therapist (`Huda`) and a moderator (`mod_noor`).
 
 ## Content to review
 
