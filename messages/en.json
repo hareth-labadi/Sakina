@@ -459,7 +459,7 @@
       "anonymous": "Anonymous account",
       "profile": "Profile",
       "saved": "Saved",
-      "discussions": "Discussions",
+      "moderation": "Moderation",
       "signOut": "Sign out"
     }
   },
@@ -549,9 +549,45 @@
     "held": {
       "title": "Thank you for trusting us with this.",
       "body": "Your words are safe with us. A therapist will read them soon. They aren't public yet.",
-      "body2": "If you are in danger right now, please use Get help now. You can also sit in a room with others while you wait.",
-      "rooms": "Go to discussions",
+      "body2": "If you are in danger right now, please use Get help now.",
+      "back": "Back to the community",
       "home": "Go to home"
+    }
+  },
+  "write": {
+    "title": "Share something",
+    "share": "Share something",
+    "sub": "Anonymous, in your own words. Take your time: your draft saves itself.",
+    "loading": "Loading…",
+    "community": "Community",
+    "communityPick": "Choose a community",
+    "reviewNote": "In {community}, a moderator reads every post before others see it.",
+    "type": "What is it?",
+    "titleLabel": "Title",
+    "titleHint": "A few words so others know what it is about.",
+    "body": "Your words",
+    "bodyHint": "As much or as little as you want. Leave out names and places.",
+    "audience": "Who can read it?",
+    "members": "Members only",
+    "membersHint": "Only people signed in to Sakina.",
+    "everyone": "Everyone",
+    "everyoneHint": "Anyone visiting Sakina, even without an account.",
+    "submit": "Post",
+    "posting": "Posting…",
+    "discard": "Discard draft",
+    "published": "Your post is shared.",
+    "postLimit": "You've shared several posts today. You can post again tomorrow.",
+    "failed": "That didn't work. Your draft is kept; please try again.",
+    "guestTitle": "Join to share",
+    "guestBody": "Posting is anonymous: just a nickname and a password.",
+    "join": "Join anonymously",
+    "signIn": "Sign in",
+    "errors": {
+      "community": "Choose where to share it.",
+      "title": "Add a title of at least 3 characters.",
+      "body": "Write something first.",
+      "mood": "Choose how today feels.",
+      "veil": "Choose what the content veil is about, or turn it off."
     }
   },
   "chat": {
@@ -661,6 +697,58 @@
         "therapist": "Therapist",
         "member": "Member"
       }
+    }
+  },
+  "moderation": {
+    "title": "Moderation",
+    "held": "Held posts",
+    "reports": "Reports",
+    "heldSub": "Posts and replies waiting for a decision, oldest first. Approving shares them and tells the author.",
+    "reportsSub": "Open reports from members, newest first. Who reported is never shown.",
+    "loading": "Loading…",
+    "failed": "That didn't work. Please try again.",
+    "retry": "Try again",
+    "home": "Go to home",
+    "notAllowedTitle": "This page is for moderators",
+    "notAllowedBody": "If you should have access, ask an admin to give your account the moderator role.",
+    "role": {
+      "moderator": "Moderator",
+      "admin": "Admin"
+    },
+    "reply": "Reply",
+    "story": "Story",
+    "replyTo": "Reply to",
+    "membersOnly": "Members only",
+    "heldBecause": "Held because:",
+    "reasons": {
+      "phone": "Phone number",
+      "email": "Email address",
+      "handle": "Social handle",
+      "social": "Social app",
+      "link": "Link",
+      "name": "Real name",
+      "place": "Street or place",
+      "sensitive_community": "High-sensitivity community"
+    },
+    "approve": "Approve",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "close": "Close",
+    "removeTitle": "Remove this content?",
+    "removeBody": "It will be hidden from everyone, including its author. This is kept for the record.",
+    "approved": "Approved. The author was told.",
+    "removed": "Removed.",
+    "already": "Someone already decided on this.",
+    "emptyHeld": "Nothing is waiting. Thank you.",
+    "emptyReports": "No open reports.",
+    "open": "Open the story",
+    "removeContent": "Remove content",
+    "resolve": "Mark handled",
+    "resolved": "Report handled.",
+    "targetGone": "The reported content no longer exists.",
+    "status": {
+      "held": "held",
+      "removed": "removed"
     }
   },
   "auth": {
