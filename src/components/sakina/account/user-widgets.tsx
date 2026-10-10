@@ -46,7 +46,7 @@ export function UserMenu({ user, onSignOut }: { user: SessionUser; onSignOut: ()
         <MenuSeparator />
         <MenuItem onSelect={() => router.push('/profile')}>{t('profile')}</MenuItem>
         <MenuItem onSelect={() => router.push('/saved')}>{t('saved')}</MenuItem>
-        <MenuItem onSelect={() => router.push('/discussions')}>{t('discussions')}</MenuItem>
+        {user.role === 'moderator' || user.role === 'admin' ? <MenuItem onSelect={() => router.push('/moderation')}>{t('moderation')}</MenuItem> : null}
         <MenuSeparator />
         <MenuItem onSelect={onSignOut}>{t('signOut')}</MenuItem>
       </MenuContent>

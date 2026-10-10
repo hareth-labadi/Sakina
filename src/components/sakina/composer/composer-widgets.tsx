@@ -99,8 +99,8 @@ export function DraftStatus({ savedAt }: { savedAt: Date | null }) {
   );
 }
 
-/** Caring message after the safety check holds a post for a therapist. */
-export function HeldForReview() {
+/** Caring message after the safety check holds a post for review. `backHref`: the post's community. */
+export function HeldForReview({ backHref }: { backHref?: string }) {
   const t = useTranslations('composer.held');
   return (
     <Card tint="green" role="status" className="max-w-205 gap-5 p-8 sm:p-10">
@@ -109,7 +109,7 @@ export function HeldForReview() {
       <p>{t('body2')}</p>
       <div className="flex flex-wrap gap-3">
         <CrisisHelp size="md" />
-        <Link href="/discussions" className={buttonVariants({ variant: 'secondary' })}>{t('rooms')}</Link>
+        {backHref ? <Link href={backHref} className={buttonVariants({ variant: 'secondary' })}>{t('back')}</Link> : null}
         <Link href="/" className={buttonVariants({ variant: 'ghost' })}>{t('home')}</Link>
       </div>
     </Card>

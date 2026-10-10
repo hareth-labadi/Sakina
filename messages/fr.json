@@ -459,7 +459,7 @@
       "anonymous": "Compte anonyme",
       "profile": "Profil",
       "saved": "Enregistrés",
-      "discussions": "Discussions",
+      "moderation": "Modération",
       "signOut": "Se déconnecter"
     }
   },
@@ -549,9 +549,45 @@
     "held": {
       "title": "Merci de nous avoir confié ces mots.",
       "body": "Vos mots sont en sécurité avec nous. Un·e thérapeute les lira bientôt. Ils ne sont pas encore publics.",
-      "body2": "Si vous êtes en danger maintenant, utilisez Obtenir de l'aide. Vous pouvez aussi rejoindre un salon avec d'autres personnes en attendant.",
-      "rooms": "Aller aux discussions",
+      "body2": "Si vous êtes en danger maintenant, utilisez Obtenir de l’aide.",
+      "back": "Retour à la communauté",
       "home": "Aller à l'accueil"
+    }
+  },
+  "write": {
+    "title": "Partager quelque chose",
+    "share": "Partager quelque chose",
+    "sub": "Anonyme, avec vos mots. Prenez votre temps : votre brouillon s’enregistre tout seul.",
+    "loading": "Chargement…",
+    "community": "Communauté",
+    "communityPick": "Choisissez une communauté",
+    "reviewNote": "Dans {community}, un modérateur lit chaque publication avant les autres membres.",
+    "type": "De quoi s’agit-il ?",
+    "titleLabel": "Titre",
+    "titleHint": "Quelques mots pour dire de quoi il s’agit.",
+    "body": "Vos mots",
+    "bodyHint": "Autant ou aussi peu que vous voulez. Évitez les noms et les lieux.",
+    "audience": "Qui peut le lire ?",
+    "members": "Membres seulement",
+    "membersHint": "Seulement les personnes connectées à Sakina.",
+    "everyone": "Tout le monde",
+    "everyoneHint": "Toute personne qui visite Sakina, même sans compte.",
+    "submit": "Publier",
+    "posting": "Publication…",
+    "discard": "Supprimer le brouillon",
+    "published": "Votre publication est partagée.",
+    "postLimit": "Vous avez déjà partagé plusieurs publications aujourd’hui. Vous pourrez publier à nouveau demain.",
+    "failed": "Ça n’a pas fonctionné. Votre brouillon est conservé ; veuillez réessayer.",
+    "guestTitle": "Rejoignez-nous pour partager",
+    "guestBody": "Publier est anonyme : juste un pseudo et un mot de passe.",
+    "join": "Rejoindre anonymement",
+    "signIn": "Se connecter",
+    "errors": {
+      "community": "Choisissez où le partager.",
+      "title": "Ajoutez un titre d’au moins 3 caractères.",
+      "body": "Écrivez quelque chose d’abord.",
+      "mood": "Choisissez comment est la journée.",
+      "veil": "Choisissez le sujet de l’avertissement, ou désactivez-le."
     }
   },
   "chat": {
@@ -661,6 +697,58 @@
         "therapist": "Thérapeute",
         "member": "Membre"
       }
+    }
+  },
+  "moderation": {
+    "title": "Modération",
+    "held": "Publications en attente",
+    "reports": "Signalements",
+    "heldSub": "Publications et réponses en attente de décision, les plus anciennes d’abord. Approuver les publie et prévient l’auteur.",
+    "reportsSub": "Signalements ouverts des membres, les plus récents d’abord. L’auteur du signalement n’est jamais affiché.",
+    "loading": "Chargement…",
+    "failed": "Ça n’a pas fonctionné. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "home": "Aller à l’accueil",
+    "notAllowedTitle": "Cette page est réservée aux modérateurs",
+    "notAllowedBody": "Si vous devriez y avoir accès, demandez à un administrateur de donner le rôle de modérateur à votre compte.",
+    "role": {
+      "moderator": "Modérateur",
+      "admin": "Administrateur"
+    },
+    "reply": "Réponse",
+    "story": "Histoire",
+    "replyTo": "Réponse à",
+    "membersOnly": "Membres seulement",
+    "heldBecause": "Mis en attente pour :",
+    "reasons": {
+      "phone": "Numéro de téléphone",
+      "email": "Adresse e-mail",
+      "handle": "Identifiant social",
+      "social": "Réseau social",
+      "link": "Lien",
+      "name": "Vrai nom",
+      "place": "Rue ou lieu",
+      "sensitive_community": "Communauté très sensible"
+    },
+    "approve": "Approuver",
+    "remove": "Retirer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "removeTitle": "Retirer ce contenu ?",
+    "removeBody": "Il sera masqué pour tout le monde, y compris son auteur. Il est conservé pour le suivi.",
+    "approved": "Approuvé. L’auteur a été prévenu.",
+    "removed": "Retiré.",
+    "already": "Quelqu’un a déjà pris une décision.",
+    "emptyHeld": "Rien en attente. Merci.",
+    "emptyReports": "Aucun signalement ouvert.",
+    "open": "Ouvrir l’histoire",
+    "removeContent": "Retirer le contenu",
+    "resolve": "Marquer comme traité",
+    "resolved": "Signalement traité.",
+    "targetGone": "Le contenu signalé n’existe plus.",
+    "status": {
+      "held": "en attente",
+      "removed": "retiré"
     }
   },
   "auth": {

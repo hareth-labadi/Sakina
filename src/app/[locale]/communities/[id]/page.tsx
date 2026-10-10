@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { CommunityFeed } from '@/components/sakina/community/community-feed';
 import { CommunityMeta } from '@/components/sakina/community-card';
 import { JoinButton } from '@/components/sakina/community/join-button';
+import { WriteButton } from '@/components/sakina/community/write-button';
 import { CrisisHelp } from '@/components/sakina/crisis-help';
 import { Container } from '@/components/ui/container';
 import { Badge, Card } from '@/components/ui/display';
@@ -51,8 +52,9 @@ export default async function CommunityPage({ params }: Props) {
         <h1 className="text-[clamp(2.25rem,4.6vw,3.5rem)]">{name}</h1>
         <p className="max-w-190 text-lead text-ink-2">{community.description[locale]}</p>
         <CommunityMeta storyCount={stats[id]?.storyCount} memberCount={stats[id]?.memberCount} />
-        <div>
+        <div className="flex flex-wrap gap-3">
           <JoinButton communityId={community.id} name={name} />
+          <WriteButton communityId={community.id} />
         </div>
       </header>
 
