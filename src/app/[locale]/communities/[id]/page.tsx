@@ -2,25 +2,22 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { CommunityFeed } from '@/components/sakina/community/community-feed';
+import { CommunityMeta } from '@/components/sakina/community-card';
 import { JoinButton } from '@/components/sakina/community/join-button';
 import { CrisisHelp } from '@/components/sakina/crisis-help';
 import { Container } from '@/components/ui/container';
 import { Badge, Card } from '@/components/ui/display';
 import { BackIcon } from '@/components/ui/icons';
 import { tintBg } from '@/components/ui/tint';
-import { CONDITIONS } from '@/data/conditions';
 import { Link } from '@/i18n/navigation';
 import { toLocale } from '@/i18n/routing';
 import { cn } from '@/lib/cn';
-import { communities, stories } from '@/services';
+import { communities, communityStats, stories } from '@/services';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return CONDITIONS.filter((c) => c.status === 'active').map((c) => ({ id: c.id }));
-}
+// The feed is member content: rendered on each request (as a guest), never at build time.
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale: raw, id } = await params;
@@ -34,7 +31,12 @@ export default async function CommunityPage({ params }: Props) {
   setRequestLocale(locale);
   const community = await communities.get(id);
   if (!community) notFound();
-  const [t, tc, posts] = await Promise.all([getTranslations('community.page'), getTranslations('community'), stories.byCommunity(id)]);
+  const [t, tc, feed, stats] = await Promise.all([
+    getTranslations('community.page'),
+    getTranslations('community'),
+    stories.byCommunity(id).catch(() => ({ stories: [], next: null })),
+    communityStats().catch(() => ({}) as Awaited<ReturnType<typeof communityStats>>)
+  ]);
   const name = community.name[locale];
 
   return (
@@ -48,7 +50,7 @@ export default async function CommunityPage({ params }: Props) {
         {community.sensitivity !== 'standard' ? <Badge className="bg-surface">{tc(`sensitivity.${community.sensitivity}`)}</Badge> : null}
         <h1 className="text-[clamp(2.25rem,4.6vw,3.5rem)]">{name}</h1>
         <p className="max-w-190 text-lead text-ink-2">{community.description[locale]}</p>
-        <p className="text-caption text-ink-2">{tc('meta', { count: posts.length })}</p>
+        <CommunityMeta storyCount={stats[id]?.storyCount} memberCount={stats[id]?.memberCount} />
         <div>
           <JoinButton communityId={community.id} name={name} />
         </div>
@@ -59,7 +61,7 @@ export default async function CommunityPage({ params }: Props) {
           <h2 id="h-posts" className="text-[clamp(1.75rem,3.2vw,2.375rem)]">
             {t('postsTitle')}
           </h2>
-          <CommunityFeed stories={posts} />
+          <CommunityFeed communityId={community.id} initial={feed} />
         </section>
 
         <aside className="flex flex-col gap-5" aria-label={t('aboutTitle')}>

@@ -1,13 +1,11 @@
 /**
  * Data access for the UI. Pages and components call these functions only, never fetch() directly.
  *
- * Accounts, sessions, profiles and memberships go to the API (`./api`). Communities and stories
- * are still static sample data, and saved stories and notifications are kept in this browser
- * (`./mock-db`) until their API exists; each keeps its signature when it switches.
+ * Everything goes to the API (`./api`), except the communities' names and descriptions: those are
+ * curated UI copy in `src/data/conditions.ts` (the API has the same ids, plus live numbers).
  */
 import { CONDITIONS } from '@/data/conditions';
-import { SAMPLE_STORIES } from '@/data/stories';
-import type { Community, StorySummary } from '@/types/domain';
+import type { Community, CommunityStats, NewStory, StorySummary } from '@/types/domain';
 import { request } from './api';
 import * as auth from './auth';
 
@@ -40,14 +38,40 @@ export const accounts = {
 };
 
 export { auth };
-export { savedStories, storyPages } from './reading';
+export { addReply, deleteReply, report, savedStories, setReaction, setRelate, storyPages } from './reading';
+
+type Feed = { stories: StorySummary[]; next: string | null };
+
+async function feed(query: string): Promise<Feed> {
+  const res = await request<Feed>(`/stories?${query}`);
+  return res.status === 200 ? res.data : { stories: [], next: null };
+}
+
+export type PostResult = { ok: true; story: StorySummary } | { ok: false; error: 'post_limit' | 'unknown_community' | 'invalid' };
 
 export const stories = {
+  /** The newest stories across communities (home page). */
   async featured(): Promise<StorySummary[]> {
-    return SAMPLE_STORIES.slice(0, 3);
+    return (await feed('limit=3')).stories;
   },
-  /** Newest first. */
-  async byCommunity(communityId: string): Promise<StorySummary[]> {
-    return SAMPLE_STORIES.filter((s) => s.communityId === communityId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  /** Newest first. Pass `before` (the previous page's `next`) for older ones. */
+  async byCommunity(communityId: string, before?: string): Promise<Feed> {
+    return feed(`community=${encodeURIComponent(communityId)}&limit=20${before ? `&before=${encodeURIComponent(before)}` : ''}`);
+  },
+  /** Post a story. `story.status === 'held'` when it waits for a moderator. */
+  async create(input: NewStory): Promise<PostResult> {
+    const res = await request<{ story: StorySummary; error?: string }>('/stories', { body: input });
+    if (res.status === 201) return { ok: true, story: res.data.story };
+    const error = res.data?.error;
+    return { ok: false, error: error === 'post_limit' || error === 'unknown_community' ? error : 'invalid' };
+  },
+  async remove(id: string): Promise<boolean> {
+    return (await request(`/stories/${encodeURIComponent(id)}`, { method: 'DELETE' })).status === 204;
   }
 };
+
+/** Live numbers per community: members who joined, published stories. */
+export async function communityStats(): Promise<Record<string, CommunityStats>> {
+  const res = await request<{ communities: CommunityStats[] }>('/communities');
+  return res.status === 200 ? Object.fromEntries(res.data.communities.map((c) => [c.id, c])) : {};
+}

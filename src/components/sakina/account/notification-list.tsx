@@ -8,7 +8,7 @@ import { RelativeTime } from '@/components/ui/relative-time';
 import { useToast } from '@/components/ui/toast';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
-import { updateSession, useSessionState } from '@/lib/session';
+import { refreshSession, updateSession, useSessionState } from '@/lib/session';
 import { notifications as service } from '@/services/notifications';
 import type { AppNotification } from '@/types/domain';
 
@@ -29,11 +29,19 @@ export function NotificationList() {
   useEffect(() => {
     let live = true;
     if (nickname) {
-      service.list(nickname).then((list) => {
-        if (!live) return;
-        setItems(list);
-        updateSession({ unreadNotifications: list.filter((n) => !n.read).length });
-      });
+      service
+        .list()
+        .then((res) => {
+          if (!live) return;
+          setItems(res.notifications);
+          updateSession({ unreadNotifications: res.unread });
+        })
+        .catch(() => {
+          if (!live) return;
+          // Most likely the session ended: let it catch up (shows the signed-out view).
+          setItems([]);
+          void refreshSession();
+        });
     }
     return () => {
       live = false;
@@ -61,7 +69,11 @@ export function NotificationList() {
   const unread = items.filter((n) => !n.read).length;
   const markRead = async (id?: string) => {
     setItems((list) => list && list.map((n) => (!id || n.id === id ? { ...n, read: true } : n)));
-    updateSession({ unreadNotifications: await service.markRead(user.nickname, id) });
+    try {
+      updateSession({ unreadNotifications: await service.markRead(id) });
+    } catch {
+      toast(t('failed'));
+    }
   };
 
   return (

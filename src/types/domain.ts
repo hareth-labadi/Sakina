@@ -38,6 +38,8 @@ export type StorySummary = {
   mood?: Mood;
   reactionTotal: number;
   createdAt: string; // ISO 8601
+  /** Only on the viewer's own posts that wait for a moderator. */
+  status?: 'held';
 };
 
 export type Reply = {
@@ -51,6 +53,12 @@ export type Reply = {
   relateCount: number;
   /** One level of nesting only. */
   replies?: Reply[];
+  /** For a signed-in viewer: did they say "I relate". */
+  related?: boolean;
+  /** The viewer wrote it. */
+  mine?: boolean;
+  /** The viewer's own reply, waiting for a moderator. */
+  held?: boolean;
 };
 
 /** A story as shown on its own page. */
@@ -58,6 +66,26 @@ export type Story = StorySummary & {
   body: string;
   reactions: Record<Reaction, number>;
   replies: Reply[];
+  /** A members-only story seen by a guest: no body, no replies. */
+  locked?: boolean;
+  /** Only for a signed-in viewer. */
+  viewer?: { reactions: Reaction[]; saved: boolean; isAuthor: boolean };
+};
+
+/** Live numbers of a community (its name and description are UI copy in src/data). */
+export type CommunityStats = { id: string; memberCount: number; storyCount: number };
+
+export type ReportReason = 'unsafe' | 'harassment' | 'medical' | 'personal' | 'spam' | 'other';
+
+/** What a member sends to post a story. */
+export type NewStory = {
+  communityId: string;
+  type: PostType;
+  title: string;
+  body: string;
+  visibility: Visibility;
+  veil: VeilTopic[];
+  mood?: Mood;
 };
 
 export type Role = 'member' | 'therapist' | 'moderator' | 'admin';

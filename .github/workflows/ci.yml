@@ -21,7 +21,7 @@ env:
 
 jobs:
   web:
-    name: Web (lint, types, i18n, audit, build)
+    name: Web (lint, types, tests, i18n, audit, build)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -33,6 +33,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm test
       - run: npm run check:i18n
       - run: npm run audit
       - run: npm run build

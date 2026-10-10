@@ -1,50 +1,61 @@
 /**
- * Story pages and saved stories (mock). Same rules as `./index.ts`: swap each body for `api()` later.
+ * Story pages and what a member does on them: reactions, replies, "I relate", saving, reporting.
+ * All through the API (backend/src/modules/content).
  */
-import { SAMPLE_STORIES } from '@/data/stories';
-import { STORY_DETAILS } from '@/data/story-details';
-import type { Story, StorySummary } from '@/types/domain';
-import { delay, memberOf, readDb, writeDb } from './mock-db';
+import type { Reaction, Reply, ReportReason, Story, StorySummary } from '@/types/domain';
+import { api, request } from './api';
+
+const enc = encodeURIComponent;
 
 export const storyPages = {
-  ids(): string[] {
-    return SAMPLE_STORIES.map((s) => s.id);
-  },
   /**
-   * The real API must not send a members-only body to guests; the mock returns everything
-   * and the page hides it.
+   * One story, or null when it doesn't exist or this viewer may not see it. A guest gets
+   * members-only stories as `locked` (no text, no replies).
    */
   async get(id: string): Promise<Story | null> {
-    const s = SAMPLE_STORIES.find((x) => x.id === id);
-    if (!s) return null;
-    const d = STORY_DETAILS[id];
-    return {
-      ...s,
-      body: d?.body ?? s.excerpt,
-      reactions: d?.reactions ?? { relate: s.reactionTotal, strength: 0, helped: 0, thanks: 0 },
-      replies: d?.replies ?? []
-    };
+    const res = await request<Story>(`/stories/${enc(id)}`);
+    return res.status === 200 ? res.data : null;
   }
 };
 
-/** Bookmarks. Private to the member. Kept in this browser until the stories API exists (see `./mock-db`). */
+/** Reactions: add or remove one of mine. Answers the new counts and my reactions. */
+export async function setReaction(storyId: string, kind: Reaction, on: boolean) {
+  return api<{ reactions: Record<Reaction, number>; mine: Reaction[] }>(`/stories/${enc(storyId)}/reactions/${kind}`, { method: on ? 'PUT' : 'DELETE' });
+}
+
+export type ReplyResult = { ok: true; reply: Reply } | { ok: false; error: 'post_limit' | 'not_found' | 'invalid' };
+
+/** Reply to a story (or to one of its top-level replies). `reply.held` when it waits for a moderator. */
+export async function addReply(storyId: string, text: string, parentId?: string): Promise<ReplyResult> {
+  const res = await request<{ reply: Reply; error?: string }>(`/stories/${enc(storyId)}/replies`, { body: { text, ...(parentId && { parentId }) } });
+  if (res.status === 201) return { ok: true, reply: res.data.reply };
+  return { ok: false, error: res.status === 429 ? 'post_limit' : res.status === 404 ? 'not_found' : 'invalid' };
+}
+
+export async function deleteReply(replyId: string): Promise<boolean> {
+  return (await request(`/replies/${enc(replyId)}`, { method: 'DELETE' })).status === 204;
+}
+
+/** "I relate" on a reply. */
+export async function setRelate(replyId: string, on: boolean) {
+  return api<{ relateCount: number; related: boolean }>(`/replies/${enc(replyId)}/relate`, { method: on ? 'PUT' : 'DELETE' });
+}
+
+/** Report a story or a reply to the moderators, optionally blocking its author too. */
+export async function report(target: { storyId: string } | { replyId: string }, r: { reason: ReportReason; note: string; block: boolean }) {
+  const res = await request<{ blocked: boolean }>('/reports', { body: { ...target, ...r } });
+  return { ok: res.status === 201, blocked: res.status === 201 && res.data.blocked };
+}
+
+/** Bookmarks. Private to the member. */
 export const savedStories = {
-  async isSaved(nickname: string, storyId: string): Promise<boolean> {
-    return memberOf(readDb(), nickname).saved?.includes(storyId) ?? false;
-  },
-  async setSaved(nickname: string, storyId: string, saved: boolean): Promise<{ ok: boolean }> {
-    await delay(250);
-    const db = readDb();
-    const m = memberOf(db, nickname);
-    const list = m.saved ?? [];
-    m.saved = saved ? [storyId, ...list.filter((id) => id !== storyId)] : list.filter((id) => id !== storyId);
-    writeDb(db);
-    return { ok: true };
+  async setSaved(storyId: string, saved: boolean): Promise<{ ok: boolean }> {
+    const res = await request(`/me/saved/${enc(storyId)}`, { method: saved ? 'PUT' : 'DELETE' });
+    return { ok: res.status === 204 };
   },
   /** Most recently saved first. */
-  async list(nickname: string): Promise<StorySummary[]> {
-    await delay();
-    const ids = memberOf(readDb(), nickname).saved ?? [];
-    return ids.map((id) => SAMPLE_STORIES.find((s) => s.id === id)).filter((s): s is StorySummary => Boolean(s));
+  async list(): Promise<StorySummary[]> {
+    const res = await request<{ stories: StorySummary[] }>('/me/saved');
+    return res.status === 200 ? res.data.stories : [];
   }
 };

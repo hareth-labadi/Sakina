@@ -1,8 +1,15 @@
 /**
- * The one place the UI talks to the API. Same origin (`/api`, forwarded to the API server by
- * Next), so the httpOnly session cookie goes along and no token is ever handled in JavaScript.
+ * The one place the UI talks to the API.
+ *
+ * - In the browser: same origin (`/api`, forwarded to the API by Next), so the httpOnly session
+ *   cookie goes along and no token is ever handled in JavaScript.
+ * - On the server (pages rendering): straight to the API (`API_INTERNAL_URL`), as a guest. Pages
+ *   render the guest view; what depends on who is signed in is fetched again in the browser.
  */
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+export function apiBase(): string {
+  if (typeof window === 'undefined') return process.env.API_INTERNAL_URL || 'http://localhost:4000';
+  return process.env.NEXT_PUBLIC_API_URL || '/api';
+}
 
 export type ApiResponse<T> = { status: number; data: T };
 
@@ -12,11 +19,13 @@ export type ApiResponse<T> = { status: number; data: T };
  */
 export async function request<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<ApiResponse<T>> {
   const hasBody = init.body !== undefined;
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${apiBase()}${path}`, {
     method: init.method ?? (hasBody ? 'POST' : 'GET'),
     credentials: 'same-origin',
     headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
-    body: hasBody ? JSON.stringify(init.body) : undefined
+    body: hasBody ? JSON.stringify(init.body) : undefined,
+    // Member content changes all the time: never serve a cached copy.
+    cache: 'no-store'
   });
   if (res.status >= 500) throw new ApiError(res.status);
   const text = await res.text();

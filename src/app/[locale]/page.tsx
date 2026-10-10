@@ -12,12 +12,16 @@ import { toLocale, type Locale } from '@/i18n/routing';
 import { cn } from '@/lib/cn';
 import { communities, stories } from '@/services';
 
+// Shows the newest stories: rendered on each request, never at build time.
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const param = toLocale((await params).locale);
   setRequestLocale(param);
   const t = await getTranslations('home');
   const locale = (await getLocale()) as Locale;
-  const [allCommunities, featured] = await Promise.all([communities.list(), stories.featured()]);
+  // If the API is briefly unreachable, the home page still shows (without the latest stories).
+  const [allCommunities, featured] = await Promise.all([communities.list(), stories.featured().catch(() => [])]);
   const byId = new Map(allCommunities.map((c) => [c.id, c]));
 
   return (
