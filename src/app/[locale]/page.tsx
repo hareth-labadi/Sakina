@@ -8,11 +8,10 @@ import { Container, Section } from '@/components/ui/container';
 import { Badge, Card, Tag } from '@/components/ui/display';
 import { ArrowIcon } from '@/components/ui/icons';
 import { tintBg, type Tint } from '@/components/ui/tint';
-import { ROOMS } from '@/data/rooms';
 import { Link } from '@/i18n/navigation';
 import { toLocale, type Locale } from '@/i18n/routing';
 import { cn } from '@/lib/cn';
-import { communities, stories } from '@/services';
+import { communities, rooms, stories } from '@/services';
 
 // Shows the newest stories: rendered on each request, never at build time.
 export const dynamic = 'force-dynamic';
@@ -37,10 +36,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(param);
   const t = await getTranslations('home');
   const locale = (await getLocale()) as Locale;
-  // If the API is briefly unreachable, the home page still shows (without the latest stories).
-  const [allCommunities, featured] = await Promise.all([communities.list(), stories.featured().catch(() => [])]);
+  // If the API is briefly unreachable, the home page still shows (without the latest stories and rooms).
+  const [allCommunities, featured, allRooms] = await Promise.all([communities.list(), stories.featured().catch(() => []), rooms.list().catch(() => [])]);
   const byId = new Map(allCommunities.map((c) => [c.id, c]));
-  const liveRooms = ROOMS.filter((r) => r.live).slice(0, 3);
+  const liveRooms = allRooms.filter((r) => r.live).slice(0, 3);
 
   return (
     <>

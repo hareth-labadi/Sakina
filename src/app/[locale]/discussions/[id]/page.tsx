@@ -7,24 +7,28 @@ import { Container } from '@/components/ui/container';
 import { Card } from '@/components/ui/display';
 import { BackIcon } from '@/components/ui/icons';
 import { CONDITIONS } from '@/data/conditions';
-import { getRoom } from '@/data/rooms';
 import { Link } from '@/i18n/navigation';
 import { toLocale } from '@/i18n/routing';
+import { rooms } from '@/services';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, id } = await params;
-  const room = getRoom(id);
-  return room ? { title: room.title[toLocale(locale)] } : {};
+  const page = await rooms.get(id).catch(() => null);
+  return page ? { title: page.room.title[toLocale(locale)] } : {};
 }
 
 export default async function RoomPage({ params }: Props) {
   const { locale: raw, id } = await params;
   const locale = toLocale(raw);
   setRequestLocale(locale);
-  const room = getRoom(id);
-  if (!room) notFound();
+  // Rendered as a guest; the room view fetches again in the browser (with the member's session) and keeps polling.
+  const page = await rooms.get(id);
+  if (!page) notFound();
+  const { room } = page;
   const t = await getTranslations('discussions');
   const community = CONDITIONS.find((c) => c.id === room.communityId);
 
@@ -37,7 +41,7 @@ export default async function RoomPage({ params }: Props) {
 
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0">
-          <RoomView room={room} communityName={community?.name[locale]} />
+          <RoomView initial={page} communityName={community?.name[locale]} />
         </div>
 
         <aside className="flex flex-col gap-5" aria-label={t('aboutTitle')}>

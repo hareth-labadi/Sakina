@@ -41,8 +41,8 @@ export async function setRelate(replyId: string, on: boolean) {
   return api<{ relateCount: number; related: boolean }>(`/replies/${enc(replyId)}/relate`, { method: on ? 'PUT' : 'DELETE' });
 }
 
-/** Report a story or a reply to the moderators, optionally blocking its author too. */
-export async function report(target: { storyId: string } | { replyId: string }, r: { reason: ReportReason; note: string; block: boolean }) {
+/** Report a story, a reply or a room message to the moderators, optionally blocking its author too. */
+export async function report(target: { storyId: string } | { replyId: string } | { roomMessageId: string }, r: { reason: ReportReason; note: string; block: boolean }) {
   const res = await request<{ blocked: boolean }>('/reports', { body: { ...target, ...r } });
   return { ok: res.status === 201, blocked: res.status === 201 && res.data.blocked };
 }

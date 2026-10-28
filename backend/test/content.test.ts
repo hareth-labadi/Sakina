@@ -323,7 +323,7 @@ describe('moderation', () => {
     expect((await b.get(`/stories/${okStory.id}`)).json().replies).toHaveLength(0);
     expect((await mod.post(`/moderation/replies/${heldReply.id}`, { action: 'approve' })).statusCode).toBe(404);
     expect((await mod.post(`/moderation/stories/${held.id}`, { action: 'explode' })).statusCode).toBe(400);
-    expect((await mod.get('/moderation/queue')).json()).toEqual({ stories: [], replies: [] });
+    expect((await mod.get('/moderation/queue')).json()).toEqual({ stories: [], replies: [], messages: [] });
   });
 
   it('moderators remove published stories; authors delete theirs; nobody else can', async () => {

@@ -2,10 +2,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import { buttonVariants } from '@/components/ui/button';
 import { Avatar, Badge, LiveDot } from '@/components/ui/display';
 import { tintBg } from '@/components/ui/tint';
-import type { Room } from '@/data/rooms';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { cn } from '@/lib/cn';
+import type { RoomWithCopy } from '@/services/rooms';
 import type { Community } from '@/types/domain';
 
 /** "Thursday", in the page language. `day` is 0 (Sunday) to 6. */
@@ -15,7 +15,7 @@ export function weekday(locale: Locale, day: number) {
 }
 
 /** One room in the discussions list (and on the home page). */
-export function RoomCard({ room, community, headingLevel: H = 'h3' }: { room: Room; community?: Community; headingLevel?: 'h2' | 'h3' }) {
+export function RoomCard({ room, community, headingLevel: H = 'h3' }: { room: RoomWithCopy; community?: Community; headingLevel?: 'h2' | 'h3' }) {
   const t = useTranslations('discussions');
   const tk = useTranslations('therapistKind');
   const tr = useTranslations('chat.room');
@@ -40,7 +40,7 @@ export function RoomCard({ room, community, headingLevel: H = 'h3' }: { room: Ro
         <div className="flex items-center gap-3">
           <Avatar index={room.host.avatar} size="sm" />
           <div className="flex flex-col leading-tight">
-            <b>{t('host', { name: room.host.name, kind: tk(room.host.kind) })}</b>
+            <b>{t('host', { name: room.host.nickname, kind: tk(room.host.kind) })}</b>
             {room.schedule ? <span className="text-caption text-mute">{t('weekly', { day: weekday(locale, room.schedule.day), time: room.schedule.time })}</span> : null}
           </div>
         </div>
