@@ -25,7 +25,7 @@ export function CommunityCard({
   const name = community.name[locale];
 
   return (
-    <article className={cn('flex min-h-60 flex-col gap-3 rounded-card p-6.5', tintBg[community.tint])}>
+    <article className={cn('lift flex min-h-60 flex-col gap-3 rounded-card p-6.5', tintBg[community.tint])}>
       {community.sensitivity !== 'standard' ? <Badge className="bg-surface">{t(`sensitivity.${community.sensitivity}`)}</Badge> : null}
       <H className="text-[1.75rem]">{name}</H>
       <p className="text-ink-2">{community.description[locale]}</p>

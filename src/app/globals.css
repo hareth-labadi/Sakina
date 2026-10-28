@@ -248,3 +248,44 @@
   0%, 100% { transform: scale(0.6); }
   50% { transform: scale(1); }
 }
+
+/* ---------- Motion (home page polish) ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  50% { transform: translate(-48%, 24px) scale(1.06); }
+}
+
+@keyframes float-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-36px, 28px) scale(1.08); }
+}
+
+/* Fade-up on first paint. Stagger with style="--d: 120ms". */
+@utility rise {
+  animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Sections fade up as they scroll into view, where the browser supports scroll-driven
+   animations. Elsewhere they are simply shown: nothing is ever hidden without it. */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+}
+
+/* A small lift on hover for cards and chips that are links or hold one. */
+@utility lift {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s ease, background-color 0.2s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-soft);
+  }
+}
