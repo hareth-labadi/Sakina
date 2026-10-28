@@ -23,7 +23,7 @@ export function RoomCard({ room, community, headingLevel: H = 'h3' }: { room: Ro
   const title = room.title[locale];
 
   return (
-    <article className="flex flex-col gap-3 rounded-card border border-line bg-surface p-6.5">
+    <article className="lift flex flex-col gap-3 rounded-card border border-line bg-surface p-6.5">
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone={room.kind === 'guided' ? 'therapist' : 'neutral'}>{tr(`kind.${room.kind}`)}</Badge>
         {room.live ? (
