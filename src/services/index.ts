@@ -39,6 +39,7 @@ export const accounts = {
 
 export { auth };
 export { addReply, deleteReply, report, savedStories, setReaction, setRelate, storyPages } from './reading';
+export { rooms } from './rooms';
 
 type Feed = { stories: StorySummary[]; next: string | null };
 

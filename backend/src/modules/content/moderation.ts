@@ -1,13 +1,13 @@
 /**
  * Moderation: held content waiting for a decision, and reports. Moderators and admins only.
- * There is no moderator panel page yet; these routes are what it will call. Reporters stay
+ * The /moderation panel in the web app calls these. Reporters stay
  * anonymous, even to moderators.
  */
 import { and, asc, desc, eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { accounts, replies, reports, stories } from '../../db/schema.js';
+import { accounts, replies, reports, roomMessages, stories } from '../../db/schema.js';
 import { ID_PATTERN } from '../../lib/text.js';
 import { notifyReply } from './replies.js';
 import { notify, requireViewer, type ContentDeps } from './shared.js';
@@ -54,6 +54,13 @@ export async function moderationRoutes(app: FastifyInstance, deps: ContentDeps) 
       .where(eq(replies.status, 'held'))
       .orderBy(asc(replies.createdAt))
       .limit(100);
+    const heldMessages = await db
+      .select({ m: roomMessages, authorNickname: accounts.nickname })
+      .from(roomMessages)
+      .innerJoin(accounts, eq(accounts.id, roomMessages.authorId))
+      .where(eq(roomMessages.status, 'held'))
+      .orderBy(asc(roomMessages.createdAt))
+      .limit(100);
     return {
       stories: heldStories.map(({ s, authorNickname }) => ({
         id: s.id,
@@ -74,6 +81,14 @@ export async function moderationRoutes(app: FastifyInstance, deps: ContentDeps) 
         text: r.text,
         heldReasons: r.heldReasons,
         createdAt: r.createdAt.toISOString()
+      })),
+      messages: heldMessages.map(({ m, authorNickname }) => ({
+        id: m.id,
+        roomId: m.roomId,
+        authorNickname,
+        text: m.text,
+        heldReasons: m.heldReasons,
+        createdAt: m.createdAt.toISOString()
       }))
     };
   });
@@ -112,6 +127,20 @@ export async function moderationRoutes(app: FastifyInstance, deps: ContentDeps) 
     return reply.status(204).send();
   });
 
+  /** Approve (publish) or remove a held room message. Nobody is notified: by then the conversation has moved on. */
+  app.post('/moderation/room-messages/:id', async (req, reply) => {
+    if (!(await requireModerator(req, reply))) return reply;
+    const { id } = parse(idParams, req.params);
+    const { action } = parse(decision, req.body);
+    const [m] = await db
+      .update(roomMessages)
+      .set(action === 'approve' ? { status: 'published', heldReasons: [] } : { status: 'removed' })
+      .where(and(eq(roomMessages.id, id), eq(roomMessages.status, 'held')))
+      .returning({ id: roomMessages.id });
+    if (!m) return reply.status(404).send({ error: 'not_found' });
+    return reply.status(204).send();
+  });
+
   /** Open reports (newest first), with what was reported. Not who reported it. */
   app.get('/moderation/reports', async (req, reply) => {
     if (!(await requireModerator(req, reply))) return reply;
@@ -133,6 +162,13 @@ export async function moderationRoutes(app: FastifyInstance, deps: ContentDeps) 
           .innerJoin(accounts, eq(accounts.id, replies.authorId))
           .where(eq(replies.id, r.replyId));
         if (x) target = { type: 'reply', ...x };
+      } else if (r.roomMessageId) {
+        const [m] = await db
+          .select({ id: roomMessages.id, roomId: roomMessages.roomId, text: roomMessages.text, status: roomMessages.status, authorNickname: accounts.nickname })
+          .from(roomMessages)
+          .innerJoin(accounts, eq(accounts.id, roomMessages.authorId))
+          .where(eq(roomMessages.id, r.roomMessageId));
+        if (m) target = { type: 'message', ...m };
       }
       out.push({ id: r.id, reason: r.reason, note: r.note, createdAt: r.createdAt.toISOString(), target });
     }

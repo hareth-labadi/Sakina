@@ -254,7 +254,7 @@ export const notifications = pgTable(
   (t) => [index('notifications_account_idx').on(t.accountId, t.createdAt)]
 );
 
-/** A member flags a story or a reply. Moderators resolve it. */
+/** A member flags a story, a reply or a room message. Moderators resolve it. */
 export const reports = pgTable(
   'reports',
   {
@@ -262,6 +262,7 @@ export const reports = pgTable(
     reporterId: uuid('reporter_id').references(() => accounts.id, { onDelete: 'set null' }),
     storyId: text('story_id').references(() => stories.id, { onDelete: 'cascade' }),
     replyId: text('reply_id').references(() => replies.id, { onDelete: 'cascade' }),
+    roomMessageId: text('room_message_id').references((): AnyPgColumn => roomMessages.id, { onDelete: 'cascade' }),
     reason: reportReasonEnum('reason').notNull(),
     note: text('note').notNull().default(''),
     status: reportStatusEnum('status').notNull().default('open'),
@@ -284,4 +285,62 @@ export const blocks = pgTable(
     createdAt: createdAt()
   },
   (t) => [primaryKey({ columns: [t.blockerId, t.blockedId] })]
+);
+
+/* ---------- discussion rooms (live group chat) ---------- */
+
+export const roomKindEnum = pgEnum('room_kind', ['guided', 'peer']);
+
+/**
+ * The rooms. Titles and descriptions are UI copy and live in the web app (src/data/rooms.ts);
+ * here only what the server needs. Peer rooms are always open; guided rooms open once a week,
+ * `schedule_day` (0 = Sunday) at `schedule_time` ("HH:MM", Algiers time), for `duration_min`.
+ */
+export const rooms = pgTable('rooms', {
+  id: text('id').primaryKey(),
+  kind: roomKindEnum('kind').notNull(),
+  communityId: text('community_id')
+    .notNull()
+    .references(() => communities.id),
+  /** Guided rooms: the therapist who leads it. */
+  hostId: uuid('host_id').references(() => accounts.id, { onDelete: 'set null' }),
+  scheduleDay: smallint('schedule_day'),
+  scheduleTime: text('schedule_time'),
+  durationMin: smallint('duration_min').notNull().default(60),
+  archived: boolean('archived').notNull().default(false)
+});
+
+/** Same status and hold rules as replies. Stored as written, never translated. */
+export const roomMessages = pgTable(
+  'room_messages',
+  {
+    id: text('id').primaryKey(),
+    roomId: text('room_id')
+      .notNull()
+      .references(() => rooms.id, { onDelete: 'cascade' }),
+    authorId: authorId(),
+    text: text('text').notNull(),
+    status: contentStatusEnum('status').notNull().default('published'),
+    heldReasons: text('held_reasons').array().notNull().default(emptyTextArray),
+    createdAt: createdAt()
+  },
+  (t) => [index('room_messages_room_idx').on(t.roomId, t.createdAt), index('room_messages_author_idx').on(t.authorId), index('room_messages_status_idx').on(t.status)]
+);
+
+/**
+ * Who had a room open recently, only to show "N people here now". Never listed or shown by name.
+ * A row is refreshed each time the member's page fetches the room.
+ */
+export const roomPresence = pgTable(
+  'room_presence',
+  {
+    roomId: text('room_id')
+      .notNull()
+      .references(() => rooms.id, { onDelete: 'cascade' }),
+    accountId: uuid('account_id')
+      .notNull()
+      .references(() => accounts.id, { onDelete: 'cascade' }),
+    seenAt: timestamp('seen_at', { withTimezone: true }).notNull().defaultNow()
+  },
+  (t) => [primaryKey({ columns: [t.roomId, t.accountId] }), index('room_presence_seen_idx').on(t.roomId, t.seenAt)]
 );

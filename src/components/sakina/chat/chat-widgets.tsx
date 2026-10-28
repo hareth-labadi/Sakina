@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState, type KeyboardEvent, type ReactNode } from 'react';
+import { Children, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, Badge, LiveDot } from '@/components/ui/display';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -86,10 +86,26 @@ export function MessageBubble({
   );
 }
 
-/** Scrolling message log. Polite live region so new messages are announced. */
+/**
+ * Scrolling message log. Polite live region so new messages are announced. Stays at the newest
+ * message as they arrive, unless the reader scrolled up to read older ones.
+ */
 export function MessageList({ label, children }: { label: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const atEnd = useRef(true);
+  const count = Children.count(children);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el && atEnd.current) el.scrollTop = el.scrollHeight;
+  }, [count]);
   return (
-    <div role="log" aria-live="polite" aria-label={label} tabIndex={0} className="flex max-h-140 min-h-90 flex-col gap-4 overflow-y-auto bg-bg p-4 sm:p-6">
+    <div
+      ref={ref}
+      onScroll={(e) => {
+        const el = e.currentTarget;
+        atEnd.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+      }}
+      role="log" aria-live="polite" aria-label={label} tabIndex={0} className="flex max-h-140 min-h-90 flex-col gap-4 overflow-y-auto bg-bg p-4 sm:p-6">
       {children}
     </div>
   );
@@ -150,8 +166,8 @@ export function RoomHeader({
   );
 }
 
-/** Message input. Enter sends, Shift+Enter adds a line. Blocks contact details. */
-export function MessageComposer({ onSend, disabled }: { onSend: (text: string) => void | Promise<void>; disabled?: boolean }) {
+/** Message input. Enter sends, Shift+Enter adds a line. Blocks contact details. `onSend` answering false keeps the text. */
+export function MessageComposer({ onSend, disabled }: { onSend: (text: string) => void | boolean | Promise<void | boolean>; disabled?: boolean }) {
   const t = useTranslations('chat.composer');
   const tp = useTranslations('composer.pii');
   const [text, setText] = useState('');
@@ -163,7 +179,7 @@ export function MessageComposer({ onSend, disabled }: { onSend: (text: string) =
     if (x.length > 1000) return setError(t('tooLong'));
     const pii = detectPii(x);
     if (pii.length) return setError(t('removePii', { what: pii.map((p) => tp(`kinds.${p}`)).join(', ') }));
-    await onSend(x);
+    if ((await onSend(x)) === false) return;
     setText('');
     setError(null);
   };

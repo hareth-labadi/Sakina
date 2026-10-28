@@ -645,7 +645,7 @@
     "typing": "{name} écrit…",
     "messages": "Messages",
     "message": {
-      "held": "Vous seul·e voyez ceci jusqu'à la relecture d'un·e thérapeute",
+      "held": "Vous seul·e voyez ceci jusqu'à la relecture d'un·e modérateur·rice",
       "report": "Signaler",
       "reportFrom": "Signaler le message de {nickname}",
       "dm": "Demander un 1:1",
@@ -767,6 +767,8 @@
       "admin": "Administrateur"
     },
     "reply": "Réponse",
+    "message": "Message de salon",
+    "inRoom": "Dans",
     "story": "Histoire",
     "replyTo": "Réponse à",
     "membersOnly": "Membres seulement",
@@ -1023,7 +1025,8 @@
   "discussions": {
     "title": "Discussions",
     "sub": "Des salons en direct pour être avec d’autres. Certains sont guidés par un thérapeute, d’autres sont des salons entre pairs surveillés par des modérateurs.",
-    "preview": "Les salons sont en avant-première : les messages que vous envoyez restent dans cet onglet, et personne d’autre ne les voit pour l’instant.",
+    "watched": "Les salons sont surveillés par des modérateurs, et les salons guidés sont animés par un·e thérapeute vérifié·e.",
+    "unavailable": "Impossible de charger les salons pour le moment. Réessayez dans un instant.",
     "guidelines": "Lire les règles de la communauté",
     "guidedTitle": "Guidés par des thérapeutes",
     "guidedSub": "Des séances hebdomadaires avec un psychologue ou un psychiatre vérifié. Écouter sans écrire, c’est bienvenu.",
@@ -1047,11 +1050,15 @@
     "crisisTitle": "Besoin d’aide maintenant ?",
     "crisisBody": "Un salon n’est pas un service d’urgence. Si vous êtes en danger, l’aide est à portée de main, sans compte.",
     "blocked": "Vous ne verrez plus les messages de {nickname}.",
-    "dmSent": "Demande envoyée à {nickname}.",
     "left": "Vous avez quitté le salon.",
     "muted": "Salon en sourdine.",
     "unmuted": "Sourdine désactivée.",
-    "reportPreview": "Merci. Les salons sont en avant-première, les signalements faits ici ne sont pas encore envoyés. Si quelqu’un est en danger, utilisez Obtenir de l'aide."
+    "empty": "Pas encore de messages. Dites bonjour, ou écoutez simplement.",
+    "postLimit": "Vous avez envoyé beaucoup de messages ces dernières heures. Prenez une pause et réessayez un peu plus tard.",
+    "sendFailed": "Votre message n'a pas été envoyé. Réessayez.",
+    "failed": "Un problème est survenu. Réessayez.",
+    "reported": "Merci. Un·e modérateur·rice va le regarder. Si quelqu’un est en danger, utilisez Obtenir de l'aide.",
+    "reportPick": "Pour signaler quelque chose, utilisez Signaler sous le message. Si quelqu’un est en danger, utilisez Obtenir de l'aide."
   },
   "about": {
     "tag": "À propos de Sakina",

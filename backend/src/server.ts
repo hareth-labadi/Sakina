@@ -19,6 +19,7 @@ import { communityRoutes } from './modules/content/communities.js';
 import { moderationRoutes } from './modules/content/moderation.js';
 import { notificationRoutes } from './modules/content/notifications.js';
 import { replyRoutes } from './modules/content/replies.js';
+import { roomRoutes } from './modules/content/rooms.js';
 import { storyRoutes } from './modules/content/stories.js';
 
 /**
@@ -93,6 +94,7 @@ export async function buildServer(config: Config, db: Db, deps: { mailer?: Maile
   await communityRoutes(app, { db, config });
   await storyRoutes(app, { db, config });
   await replyRoutes(app, { db, config });
+  await roomRoutes(app, { db, config });
   await notificationRoutes(app, { db, config });
   await moderationRoutes(app, { db, config });
 

@@ -8,10 +8,11 @@ import { Badge, Card, EmptyState, LoadingState, Tag } from '@/components/ui/disp
 import { RelativeTime } from '@/components/ui/relative-time';
 import { useToast } from '@/components/ui/toast';
 import { CONDITIONS } from '@/data/conditions';
+import { roomCopy } from '@/data/rooms';
 import { Link, useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { signOut, useSessionState } from '@/lib/session';
-import { moderation, type HeldReply, type HeldStory, type OpenReport } from '@/services/moderation';
+import { moderation, type HeldMessage, type HeldReply, type HeldStory, type OpenReport } from '@/services/moderation';
 import { PanelLayout } from './panel-layout';
 
 type Tab = 'held' | 'reports';
@@ -75,6 +76,11 @@ function useCommunityName() {
   return (id: string) => CONDITIONS.find((c) => c.id === id)?.name[locale] ?? id;
 }
 
+function useRoomTitle() {
+  const locale = useLocale() as Locale;
+  return (id: string) => roomCopy(id)?.title[locale] ?? id;
+}
+
 /** Load a list once, with loading and error states. */
 function useLoad<T>(load: () => Promise<T>) {
   const [data, setData] = useState<T | null>(null);
@@ -115,7 +121,7 @@ function Reasons({ reasons }: { reasons: string[] }) {
 const REASONS = ['phone', 'email', 'handle', 'social', 'link', 'name', 'place', 'sensitive_community'] as const;
 const isKnownReason = (r: string): r is (typeof REASONS)[number] => (REASONS as readonly string[]).includes(r);
 
-type Item = { kind: 'story'; data: HeldStory } | { kind: 'reply'; data: HeldReply };
+type Item = { kind: 'story'; data: HeldStory } | { kind: 'reply'; data: HeldReply } | { kind: 'message'; data: HeldMessage };
 
 /* ---------- held posts ---------- */
 
@@ -124,18 +130,21 @@ function HeldQueue({ onCount }: { onCount: (n: number) => void }) {
   const ts = useTranslations('story.types');
   const { toast } = useToast();
   const community = useCommunityName();
+  const roomTitle = useRoomTitle();
   const { data, setData, failed, reload } = useLoad(moderation.queue);
   const [removing, setRemoving] = useState<Item | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
   const items: Item[] = data
-    ? [...data.stories.map((s) => ({ kind: 'story' as const, data: s })), ...data.replies.map((r) => ({ kind: 'reply' as const, data: r }))].sort((a, b) =>
-        a.data.createdAt.localeCompare(b.data.createdAt)
-      )
+    ? [
+        ...data.stories.map((s) => ({ kind: 'story' as const, data: s })),
+        ...data.replies.map((r) => ({ kind: 'reply' as const, data: r })),
+        ...data.messages.map((m) => ({ kind: 'message' as const, data: m }))
+      ].sort((a, b) => a.data.createdAt.localeCompare(b.data.createdAt))
     : [];
 
   useEffect(() => {
-    if (data) onCount(data.stories.length + data.replies.length);
+    if (data) onCount(data.stories.length + data.replies.length + data.messages.length);
   }, [data, onCount]);
 
   const decide = async (item: Item, action: 'approve' | 'remove') => {
@@ -143,7 +152,14 @@ function HeldQueue({ onCount }: { onCount: (n: number) => void }) {
     try {
       const ok = await moderation.decide(item.kind, item.data.id, action);
       toast(ok ? t(action === 'approve' ? 'approved' : 'removed') : t('already'));
-      setData((d) => d && { stories: d.stories.filter((s) => s.id !== item.data.id), replies: d.replies.filter((r) => r.id !== item.data.id) });
+      setData(
+        (d) =>
+          d && {
+            stories: d.stories.filter((s) => s.id !== item.data.id),
+            replies: d.replies.filter((r) => r.id !== item.data.id),
+            messages: d.messages.filter((m) => m.id !== item.data.id)
+          }
+      );
     } catch {
       toast(t('failed'));
     } finally {
@@ -167,9 +183,16 @@ function HeldQueue({ onCount }: { onCount: (n: number) => void }) {
             <li key={item.data.id}>
               <Card className="gap-4">
                 <div className="flex flex-wrap items-center gap-2 text-caption text-mute">
-                  <Badge>{item.kind === 'story' ? ts(item.data.type) : t('reply')}</Badge>
+                  <Badge>{item.kind === 'story' ? ts(item.data.type) : t(item.kind)}</Badge>
                   {item.kind === 'story' ? (
                     <span>{community(item.data.communityId)}</span>
+                  ) : item.kind === 'message' ? (
+                    <span>
+                      {t('inRoom')}{' '}
+                      <Link href={`/discussions/${item.data.roomId}`} className="underline">
+                        <bdi>{roomTitle(item.data.roomId)}</bdi>
+                      </Link>
+                    </span>
                   ) : (
                     <span>
                       {t('replyTo')}{' '}
@@ -269,11 +292,12 @@ function ReportList({ onCount }: { onCount: (n: number) => void }) {
 
   const targetLink = (r: OpenReport): ReactNode => {
     if (!r.target) return <p className="text-ink-2">{t('targetGone')}</p>;
-    const href = `/stories/${r.target.type === 'story' ? r.target.id : r.target.storyId}`;
+    const href =
+      r.target.type === 'message' ? `/discussions/${r.target.roomId}` : `/stories/${r.target.type === 'story' ? r.target.id : r.target.storyId}`;
     return (
       <div className="flex flex-col gap-1">
         <span className="text-caption text-mute">
-          {r.target.type === 'story' ? t('story') : t('reply')} · <bdi>{r.target.authorNickname}</bdi>
+          {t(r.target.type)} · <bdi>{r.target.authorNickname}</bdi>
           {r.target.status !== 'published' ? ` · ${t(`status.${r.target.status === 'held' ? 'held' : 'removed'}`)}` : ''}
         </span>
         <p dir="auto" className="line-clamp-4 font-semibold">

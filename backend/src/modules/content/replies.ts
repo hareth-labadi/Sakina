@@ -9,6 +9,7 @@ import { accounts, blocks, replies, replyRelates, reports } from '../../db/schem
 import { nicknameKey } from '../../lib/nickname.js';
 import { holdReasons } from '../../lib/safety.js';
 import { ID_PATTERN, newId, tidy } from '../../lib/text.js';
+import { findVisibleRoomMessage } from './rooms.js';
 import { findVisibleStory, notify, overLimit, POST_LIMITS, requireViewer, visibleTo, type ContentDeps, type Viewer } from './shared.js';
 
 const id = z.string().regex(ID_PATTERN);
@@ -28,12 +29,13 @@ const reportBody = z
   .object({
     storyId: id.optional(),
     replyId: id.optional(),
+    roomMessageId: id.optional(),
     reason: z.enum(['unsafe', 'harassment', 'medical', 'personal', 'spam', 'other']),
     note: z.string().trim().max(500).default(''),
     /** Also block the author (they aren't told). */
     block: z.boolean().default(false)
   })
-  .refine((b) => Boolean(b.storyId) !== Boolean(b.replyId), 'exactly one of storyId or replyId');
+  .refine((b) => [b.storyId, b.replyId, b.roomMessageId].filter(Boolean).length === 1, 'exactly one of storyId, replyId or roomMessageId');
 
 /** A reply this viewer may see, with its story. */
 async function findVisibleReply(db: Db, viewer: Viewer, replyId: string) {
@@ -153,7 +155,7 @@ export async function replyRoutes(app: FastifyInstance, deps: ContentDeps) {
 
   /* ---------- reports and blocks ---------- */
 
-  /** Report a story or a reply to the moderators; optionally block its author too. */
+  /** Report a story, a reply or a room message to the moderators; optionally block its author too. */
   app.post('/reports', { config: { rateLimit: { max: 30, timeWindow: '1 hour' } } }, async (req, reply) => {
     const viewer = await requireViewer(deps, req, reply);
     if (!viewer) return reply;
@@ -164,16 +166,27 @@ export async function replyRoutes(app: FastifyInstance, deps: ContentDeps) {
       const story = await findVisibleStory(db, viewer, body.storyId);
       if (!story) return reply.status(404).send({ error: 'not_found' });
       authorId = story.story.authorId;
-    } else {
-      const found = await findVisibleReply(db, viewer, body.replyId!);
+    } else if (body.replyId) {
+      const found = await findVisibleReply(db, viewer, body.replyId);
       if (!found) return reply.status(404).send({ error: 'not_found' });
       authorId = found.reply.authorId;
+    } else {
+      const message = await findVisibleRoomMessage(db, viewer, body.roomMessageId!);
+      if (!message) return reply.status(404).send({ error: 'not_found' });
+      authorId = message.authorId;
     }
     if (await overLimit(db, reports, reports.reporterId, reports.createdAt, viewer.account.id, POST_LIMITS.reports)) {
       return reply.status(429).send({ error: 'post_limit' });
     }
 
-    await db.insert(reports).values({ reporterId: viewer.account.id, storyId: body.storyId ?? null, replyId: body.replyId ?? null, reason: body.reason, note: body.note });
+    await db.insert(reports).values({
+      reporterId: viewer.account.id,
+      storyId: body.storyId ?? null,
+      replyId: body.replyId ?? null,
+      roomMessageId: body.roomMessageId ?? null,
+      reason: body.reason,
+      note: body.note
+    });
     if (body.block && authorId !== viewer.account.id) {
       await db.insert(blocks).values({ blockerId: viewer.account.id, blockedId: authorId }).onConflictDoNothing();
     }

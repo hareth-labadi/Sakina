@@ -175,6 +175,7 @@ export async function unreadCount(db: Db, accountId: string): Promise<number> {
 export const POST_LIMITS = {
   stories: { max: 5, windowMs: 24 * 3_600_000 },
   replies: { max: 30, windowMs: 3_600_000 },
+  messages: { max: 120, windowMs: 3_600_000 },
   reports: { max: 20, windowMs: 3_600_000 }
 } as const;
 

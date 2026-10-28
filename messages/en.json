@@ -645,7 +645,7 @@
     "typing": "{name} is writing…",
     "messages": "Messages",
     "message": {
-      "held": "Only you can see this until a therapist checks it",
+      "held": "Only you can see this until a moderator checks it",
       "report": "Report",
       "reportFrom": "Report message from {nickname}",
       "dm": "Request 1:1",
@@ -767,6 +767,8 @@
       "admin": "Admin"
     },
     "reply": "Reply",
+    "message": "Room message",
+    "inRoom": "In",
     "story": "Story",
     "replyTo": "Reply to",
     "membersOnly": "Members only",
@@ -1023,7 +1025,8 @@
   "discussions": {
     "title": "Discussions",
     "sub": "Live rooms where you can sit with others. Some are guided by a therapist, others are open peer rooms watched by moderators.",
-    "preview": "Rooms are in preview: messages you send stay in this tab, and nobody else sees them yet.",
+    "watched": "Rooms are watched by moderators, and guided rooms are led by a verified therapist.",
+    "unavailable": "Rooms can't be loaded right now. Please try again in a moment.",
     "guidelines": "Read the community guidelines",
     "guidedTitle": "Guided by therapists",
     "guidedSub": "Weekly sessions with a verified psychologist or psychiatrist. Listening without writing is welcome.",
@@ -1047,11 +1050,15 @@
     "crisisTitle": "Need help now?",
     "crisisBody": "A room is not an emergency service. If you are in danger, help is one tap away, no account needed.",
     "blocked": "You won't see messages from {nickname} anymore.",
-    "dmSent": "Request sent to {nickname}.",
     "left": "You left the room.",
     "muted": "Room muted.",
     "unmuted": "Room unmuted.",
-    "reportPreview": "Thank you. Rooms are in preview, so reports from here aren't sent yet. If someone is in danger, use Get help now."
+    "empty": "No messages yet. Say hello, or just listen.",
+    "postLimit": "You've sent a lot of messages in the last hour. Take a breath and try again a little later.",
+    "sendFailed": "Your message wasn't sent. Please try again.",
+    "failed": "Something went wrong. Please try again.",
+    "reported": "Thank you. A moderator will look at it. If someone is in danger, use Get help now.",
+    "reportPick": "To report something, use Report under that message. If someone is in danger, use Get help now."
   },
   "about": {
     "tag": "About Sakina",

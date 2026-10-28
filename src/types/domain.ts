@@ -101,6 +101,36 @@ export type SessionUser = {
 export type RiskLevel = 'high' | 'medium' | 'low';
 export type TherapistKind = 'psychologist' | 'psychiatrist';
 
+/**
+ * A discussion room (live group chat), as the API sends it. Its title and description are UI
+ * copy in src/data/rooms.ts. Guided rooms meet weekly with a therapist; peer rooms are always open.
+ */
+export type Room = {
+  id: string;
+  kind: 'guided' | 'peer';
+  communityId: string;
+  host: { nickname: string; avatar: number; kind: TherapistKind } | null;
+  /** 0 = Sunday … 6 = Saturday; "HH:MM" in Algeria's time. Guided rooms only. */
+  schedule: { day: number; time: string } | null;
+  /** Open for writing right now. */
+  live: boolean;
+  /** Signed-in members who have the room open. Never who. */
+  present: number;
+};
+
+/** A room message. Members write in their own language: `text` is never translated. */
+export type RoomMessage = {
+  id: string;
+  authorNickname: string;
+  authorAvatar: number;
+  text: string;
+  createdAt: string;
+  therapist?: TherapistKind;
+  mine?: true;
+  /** Waiting for a moderator: only its author gets it. */
+  held?: true;
+};
+
 export type NotificationKind = 'reply' | 'reaction' | 'therapist' | 'held' | 'approved';
 
 /** Something that happened to the member's own posts. Always about content, never about who is online. */
