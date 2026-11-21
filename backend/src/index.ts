@@ -1,4 +1,11 @@
-/** Entry point: read config, connect, serve, and shut down cleanly on SIGTERM/SIGINT. */
+/**
+ * Entry point: read config, connect, serve, and shut down cleanly on SIGTERM/SIGINT.
+ *
+ * Also the entry point on Vercel, which looks for a file named index/app/server that imports
+ * `fastify` and starts it with `listen()`. The type import below is what makes it pick this file
+ * instead of server.ts (which only builds the app). Don't remove it.
+ */
+import type { FastifyInstance } from 'fastify';
 import { loadConfig } from './config.js';
 import { createDb } from './db/client.js';
 import { purgeExpired } from './modules/auth/cleanup.js';
@@ -6,7 +13,7 @@ import { buildServer } from './server.js';
 
 const config = loadConfig();
 const { db, pool } = createDb(config.DATABASE_URL);
-const app = await buildServer(config, db);
+const app: FastifyInstance = await buildServer(config, db);
 
 // Hourly: drop expired sessions, tokens and stale attempt counters.
 const purge = () => purgeExpired(db).catch((err: unknown) => app.log.error({ err }, 'cleanup failed'));
